@@ -73,3 +73,45 @@ export function buildWhatsAppUrl(draft: BookingDraft) {
 export function enquiryUrl(text = `Hi Roamigos! I'd like to know more about staying with you.`) {
   return `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(text)}`
 }
+
+export interface ContactDraft {
+  name: string
+  phone: string
+  topic: string
+  checkIn: string
+  checkOut: string
+  guests: string
+  message: string
+}
+
+/**
+ * The contact form's output. Same principle as `bookingMessage`: there is no
+ * inbox and no ticket queue, so this message *is* the enquiry — and because the
+ * page previews it verbatim before sending, what is composed here is exactly
+ * what the visitor has already read.
+ */
+export function contactMessage(draft: ContactDraft) {
+  const lines: string[] = ['*New Enquiry — Roamigos Hostel*', '']
+
+  lines.push(`*Topic:* ${draft.topic}`)
+  if (draft.name) lines.push(`*Name:* ${draft.name}`)
+  if (draft.phone) lines.push(`*Phone:* ${draft.phone}`)
+
+  const nights = nightsBetween(draft.checkIn, draft.checkOut)
+  if (draft.checkIn) lines.push(`*Check-in:* ${formatDate(draft.checkIn)}`)
+  if (draft.checkOut) lines.push(`*Check-out:* ${formatDate(draft.checkOut)}`)
+  if (nights > 0) lines.push(`*Nights:* ${nights}`)
+  if (draft.guests) lines.push(`*Guests:* ${draft.guests}`)
+
+  if (draft.message) {
+    lines.push('')
+    lines.push(draft.message.trim())
+  }
+
+  lines.push('', 'Sent from the Roamigos website.')
+  return lines.join('\n')
+}
+
+export function buildContactUrl(draft: ContactDraft) {
+  return `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(contactMessage(draft))}`
+}

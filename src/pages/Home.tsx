@@ -1,5 +1,6 @@
 import { Hero } from '@/components/home/Hero'
 import { ValueProps } from '@/components/home/ValueProps'
+import { Destinations } from '@/components/home/Destinations'
 import { RoomsPreview } from '@/components/home/RoomsPreview'
 import { MoreThanARoom } from '@/components/home/MoreThanARoom'
 import { Experiences } from '@/components/home/Experiences'
@@ -15,6 +16,7 @@ export default function Home() {
     <>
       <Hero />
       <ValueProps />
+      <Destinations />
       <RoomsPreview />
       <MoreThanARoom />
       <Experiences />

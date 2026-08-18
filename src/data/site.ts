@@ -20,6 +20,18 @@ export const site = {
   phoneDisplay: '+91 98765 43210',
   email: 'stay@roamigos.in',
 
+  /**
+   * Street address of the flagship property, used by the contact page and the
+   * embedded map. TODO: replace with the real registered address before launch —
+   * `mapQuery` is what gets handed to Google Maps, so it has to be searchable.
+   */
+  address: {
+    line1: 'Roamigos Hostel, GS Road',
+    line2: 'Christian Basti, Guwahati',
+    line3: 'Assam 781005, India',
+    mapQuery: 'Christian Basti, GS Road, Guwahati, Assam 781005',
+  },
+
   checkIn: '1:00 PM',
   checkOut: '11:00 AM',
 
@@ -39,9 +51,9 @@ export const site = {
 export const nav = [
   { label: 'Home', to: '/' },
   { label: 'Rooms & Beds', to: '/rooms' },
-  { label: 'Amenities', to: '/#amenities' },
-  { label: 'Experiences', to: '/#experiences' },
-  { label: 'Contact', to: '/#contact' },
+  { label: 'Gallery', to: '/gallery' },
+  { label: 'Blog', to: '/blog' },
+  { label: 'Contact', to: '/contact' },
 ]
 
 export const properties = [
@@ -55,16 +67,16 @@ export const footerLinks = {
   explore: [
     { label: 'Home', to: '/' },
     { label: 'Rooms & Beds', to: '/rooms' },
+    { label: 'Gallery', to: '/gallery' },
+    { label: 'Blog', to: '/blog' },
     { label: 'Amenities', to: '/#amenities' },
     { label: 'Experiences', to: '/#experiences' },
-    { label: 'Gallery', to: '/#gallery' },
-    { label: 'About Us', to: '/#about' },
-    { label: 'Contact Us', to: '/#contact' },
+    { label: 'Contact Us', to: '/contact' },
   ],
   support: [
-    { label: 'Help Center', to: '/#contact' },
-    { label: 'FAQs', to: '/#faq' },
-    { label: 'Cancellation Policy', to: '/#faq' },
+    { label: 'Help Center', to: '/contact' },
+    { label: 'FAQs', to: '/contact#faq' },
+    { label: 'Cancellation Policy', to: '/contact#faq' },
     { label: 'Terms & Conditions', to: '/#terms' },
     { label: 'Privacy Policy', to: '/#privacy' },
   ],

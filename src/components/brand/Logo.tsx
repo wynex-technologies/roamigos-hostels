@@ -10,9 +10,12 @@ import { Wordmark } from './Wordmark'
 export function Logo({
   className,
   compact = false,
+  tone = 'default',
 }: {
   className?: string
   compact?: boolean
+  /** `light` is for the lockup sitting on a dark photo — e.g. the transparent hero header. */
+  tone?: 'default' | 'light'
 }) {
   return (
     <Link
@@ -33,13 +36,15 @@ export function Logo({
       <span className="flex flex-col">
         <Wordmark
           className={cn(
-            'text-primary transition-colors',
+            'transition-colors',
+            tone === 'light' ? 'text-cream' : 'text-primary',
             compact ? 'h-6 w-[4.6rem]' : 'h-7 w-[5.4rem] sm:h-8 sm:w-[6.2rem]',
           )}
         />
         <span
           className={cn(
-            'font-semibold tracking-[0.28em] text-accent uppercase',
+            'font-semibold tracking-[0.28em] uppercase transition-colors',
+            tone === 'light' ? 'text-mustard' : 'text-accent',
             compact ? 'text-[0.5rem]' : 'text-[0.5rem] sm:text-[0.5625rem]',
           )}
         >

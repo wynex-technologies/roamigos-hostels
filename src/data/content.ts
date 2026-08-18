@@ -1,6 +1,79 @@
 /** Marketing content for the homepage and the rooms listing. */
 
-export const heroImage = 'photo-1757330878268-aabaeba00edc'
+/**
+ * The three photographs the hero crossfades between. Order matters — the first
+ * one is the eager-loaded LCP image, so it is the one that must look best cold.
+ */
+export const heroSlides = [
+  {
+    key: 'explore',
+    card: 'Explore Assam',
+    place: 'Brahmaputra',
+    note: 'Wake up minutes from the river, the ghats and the road out of Guwahati.',
+    image: 'photo-1759738101670-7d50ae3f1bd2',
+    /** Focal point for the full-bleed background crop — keeps the boatman and the
+        far hills in frame while the sky takes the top of the section. */
+    focus: 'object-[50%_58%]',
+  },
+  {
+    key: 'private',
+    card: 'Private Rooms',
+    place: 'King suite',
+    note: 'Hotel-grade privacy and linen, at a price a backpacker can carry.',
+    image: 'photo-1734456416941-416c08f0778e',
+    focus: 'object-[55%_center]',
+  },
+  {
+    key: 'dorm',
+    card: 'Dorm Beds',
+    place: 'Pod bunk',
+    note: 'Your own lamp, locker and curtain — the cheapest bed you will love.',
+    image: 'photo-1721299417031-de890ff33b26',
+    focus: 'object-[50%_center]',
+  },
+] as const
+
+/**
+ * The homepage deck — a deliberate mix of what Guwahati gives you and what the
+ * house itself does, so the row reads as one trip rather than a list of sights.
+ */
+export const showcase = [
+  {
+    key: 'brahmaputra',
+    title: 'Brahmaputra',
+    tag: 'Riverfront',
+    note: 'Ten minutes to the ghat.',
+    image: 'photo-1647142465378-5bf5e757f43b',
+  },
+  {
+    key: 'common-room',
+    title: 'Common Room',
+    tag: 'Inside',
+    note: 'Solo check-in, table of six by dinner.',
+    image: 'photo-1648960456182-00643d5d20eb',
+  },
+  {
+    key: 'tea-trails',
+    title: 'Tea Trails',
+    tag: 'Day trip',
+    note: 'An hour out, green to the horizon.',
+    image: 'photo-1758390285674-f1d55b9d1312',
+  },
+  {
+    key: 'rooftop',
+    title: 'Rooftop Cafe',
+    tag: 'Inside',
+    note: 'Filter coffee and slow mornings.',
+    image: 'photo-1785567742040-dc6b37435d4d',
+  },
+  {
+    key: 'bonfire',
+    title: 'Bonfire Nights',
+    tag: 'After dark',
+    note: 'Guitars, bad jokes, real stars.',
+    image: 'photo-1568785919846-27fd1c8f8982',
+  },
+] as const
 
 export const valueProps = [
   { title: 'Affordable Stays', note: 'Best prices for backpackers', icon: 'wallet' },

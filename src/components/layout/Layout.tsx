@@ -25,13 +25,16 @@ function ScrollManager() {
 }
 
 export function Layout() {
+  const { pathname } = useLocation()
   // Room detail pages carry a sticky booking bar on mobile — lift the button clear of it.
-  const hasMobileBookingBar = /^\/rooms\/.+/.test(useLocation().pathname)
+  const hasMobileBookingBar = /^\/rooms\/.+/.test(pathname)
+  // Home opens with a full-bleed photo hero, so the header floats transparently over it.
+  const overlayHeader = pathname === '/'
 
   return (
     <div className="relative flex min-h-dvh flex-col">
       <ScrollManager />
-      <Header />
+      <Header overlay={overlayHeader} />
 
       <main className="relative z-10 flex-1">
         <Outlet />

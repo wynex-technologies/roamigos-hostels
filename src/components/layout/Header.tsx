@@ -8,6 +8,10 @@ import { enquiryUrl } from '@/lib/whatsapp'
 import { useTheme } from '@/lib/theme'
 import { cn } from '@/lib/utils'
 
+/** Frosted treatment for the round controls while the bar floats over the hero. */
+const glassControl =
+  'border-cream/30 bg-cream/10 text-cream backdrop-blur-sm hover:border-cream/60 hover:text-cream'
+
 function ThemeToggle({ className }: { className?: string }) {
   const { theme, toggle } = useTheme()
   return (
@@ -26,7 +30,12 @@ function ThemeToggle({ className }: { className?: string }) {
   )
 }
 
-export function Header() {
+/**
+ * `overlay` lets the bar sit transparently on top of a photographic hero until the
+ * page scrolls. Only pages that open with a full-bleed hero should turn it on —
+ * everywhere else the header keeps its normal cream surface.
+ */
+export function Header({ overlay = false }: { overlay?: boolean }) {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const { pathname, hash } = useLocation()
@@ -55,17 +64,25 @@ export function Header() {
     return pathname === to || pathname.startsWith(`${to}/`)
   }
 
+  // Transparent only while the hero is still behind the bar; once scrolled it
+  // always falls back to the solid surface so links stay readable.
+  const floating = overlay && !scrolled
+
   return (
     <header
       className={cn(
         'sticky top-0 z-50 transition-[background-color,box-shadow,border-color] duration-300',
+        // Pull the page up under the bar so the hero starts at the very top.
+        overlay && '-mb-18 sm:-mb-20',
         scrolled
           ? 'border-b border-line bg-canvas/85 shadow-warm backdrop-blur-xl'
-          : 'border-b border-transparent bg-canvas/60 backdrop-blur-sm',
+          : overlay
+            ? 'border-b border-transparent bg-transparent'
+            : 'border-b border-transparent bg-canvas/60 backdrop-blur-sm',
       )}
     >
       <div className="container-page flex h-18 items-center justify-between gap-4 sm:h-20">
-        <Logo />
+        <Logo tone={floating ? 'light' : 'default'} />
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
           {nav.map((item) => (
@@ -74,7 +91,13 @@ export function Header() {
               to={item.to}
               className={cn(
                 'relative rounded-full px-4 py-2 text-sm font-medium transition-colors',
-                isActive(item.to) ? 'text-primary' : 'text-body hover:text-heading',
+                floating
+                  ? isActive(item.to)
+                    ? 'text-mustard'
+                    : 'text-cream/85 hover:text-cream'
+                  : isActive(item.to)
+                    ? 'text-primary'
+                    : 'text-body hover:text-heading',
               )}
             >
               {item.label}
@@ -90,13 +113,16 @@ export function Header() {
             href={`tel:${site.phoneDisplay.replace(/\s/g, '')}`}
             variant="secondary"
             size="sm"
-            className="hidden xl:inline-flex"
+            className={cn(
+              'hidden xl:inline-flex',
+              floating && glassControl,
+            )}
           >
             <Phone className="size-4" />
             {site.phoneDisplay}
           </ButtonAnchor>
 
-          <ThemeToggle />
+          <ThemeToggle className={cn(floating && glassControl)} />
 
           <ButtonLink to="/rooms" size="sm" className="hidden sm:inline-flex">
             Book Now
@@ -106,7 +132,10 @@ export function Header() {
             type="button"
             onClick={() => setOpen(true)}
             aria-label="Open menu"
-            className="grid size-10 place-items-center rounded-full border border-line bg-surface text-heading lg:hidden"
+            className={cn(
+              'grid size-10 place-items-center rounded-full border border-line bg-surface text-heading lg:hidden',
+              floating && glassControl,
+            )}
           >
             <Menu className="size-[1.15rem]" />
           </button>

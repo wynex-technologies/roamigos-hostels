@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CalendarDays, Search, Sparkles, Users } from 'lucide-react'
 import { Wordmark } from '@/components/brand/Wordmark'
 import { ButtonAnchor, ButtonLink } from '@/components/ui/Button'
-import { heroImage } from '@/data/content'
+import { heroSlides } from '@/data/content'
 import { site } from '@/data/site'
 import { Photo } from '@/components/ui/Photo'
 import { enquiryUrl } from '@/lib/whatsapp'
@@ -112,30 +112,139 @@ function AvailabilityCard() {
   )
 }
 
+/** How long each hero photograph holds before the next one fades in. */
+const SLIDE_MS = 5500
+
+/**
+ * The three preview cards that sit where the stat row used to. Clicking one
+ * brings its photograph forward; the active card widens and carries a timing
+ * bar for the auto-advance.
+ */
+function SlidePreviews({
+  active,
+  onSelect,
+  onPauseChange,
+  paused,
+}: {
+  active: number
+  onSelect: (index: number) => void
+  onPauseChange: (paused: boolean) => void
+  paused: boolean
+}) {
+  return (
+    <div
+      onMouseEnter={() => onPauseChange(true)}
+      onMouseLeave={() => onPauseChange(false)}
+      onFocusCapture={() => onPauseChange(true)}
+      onBlurCapture={() => onPauseChange(false)}
+      className="no-scrollbar -mx-1 flex gap-3 overflow-x-auto px-1 pb-1"
+    >
+      {heroSlides.map((slide, i) => {
+        const on = i === active
+        return (
+          <button
+            key={slide.key}
+            type="button"
+            onClick={() => onSelect(i)}
+            aria-pressed={on}
+            aria-label={`Show ${slide.card}`}
+            className={`group relative h-28 shrink-0 overflow-hidden rounded-2xl text-left ring-1 transition-[width,box-shadow,transform] duration-500 ease-[var(--ease-out-soft)] hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-mustard sm:h-32 ${
+              on
+                ? 'w-52 shadow-lift ring-2 ring-mustard sm:w-60'
+                : 'w-28 ring-cream/25 hover:ring-cream/50 sm:w-32'
+            }`}
+          >
+            <Photo
+              id={slide.image}
+              width={480}
+              widths={[240, 480, 720]}
+              sizes="(max-width: 640px) 14rem, 15rem"
+              alt=""
+              className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/25 to-ink/5"
+            />
+
+            {/* Auto-advance timing bar — restarts with every slide change. */}
+            {on && (
+              <span
+                key={active}
+                aria-hidden
+                className="absolute inset-x-3 top-3 h-[3px] origin-left rounded-full bg-mustard motion-reduce:hidden"
+                style={{
+                  animation: `hero-progress ${SLIDE_MS}ms linear both`,
+                  animationPlayState: paused ? 'paused' : 'running',
+                }}
+              />
+            )}
+
+            <div className="absolute inset-x-2 bottom-2 rounded-xl border border-cream/15 bg-ink/45 px-2.5 py-1.5 backdrop-blur-md">
+              <h3 className="truncate text-[0.75rem] leading-tight font-bold text-cream">
+                {slide.card}
+              </h3>
+              <p
+                className={`mt-0.5 text-[0.6875rem] leading-snug text-cream/75 ${on ? 'line-clamp-2' : 'truncate'}`}
+              >
+                {on ? slide.note : slide.place}
+              </p>
+            </div>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 export function Hero() {
+  const [active, setActive] = useState(0)
+  const [paused, setPaused] = useState(false)
+
+  // Auto-advance through the three photographs; holds while the viewer is on the
+  // preview cards, and stays on the first frame for reduced motion.
+  useEffect(() => {
+    if (paused) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const id = window.setTimeout(() => setActive((a) => (a + 1) % heroSlides.length), SLIDE_MS)
+    return () => window.clearTimeout(id)
+  }, [active, paused])
+
   return (
     <section className="relative isolate overflow-hidden">
-      <Photo
-        id={heroImage}
-        width={1920}
-        widths={[640, 960, 1400, 1920, 2400]}
-        sizes="100vw"
-        alt=""
-        fetchPriority="high"
-        className="absolute inset-0 -z-20 size-full object-cover object-[60%_center] contrast-108 saturate-110"
-      />
-      {/* Maroon-weighted scrim: dark enough for AA text on the left, clear on the right
-          so the photograph still reads as a photograph. */}
+      {heroSlides.map((slide, i) => (
+        <Photo
+          key={slide.key}
+          id={slide.image}
+          width={1920}
+          widths={[640, 960, 1400, 1920, 2400]}
+          sizes="100vw"
+          alt=""
+          aria-hidden
+          loading={i === 0 ? 'eager' : 'lazy'}
+          fetchPriority={i === 0 ? 'high' : 'low'}
+          className={`absolute inset-0 -z-20 size-full object-cover ${slide.focus} contrast-105 saturate-105 transition-opacity duration-[1200ms] ease-out ${
+            i === active ? 'animate-kenburns opacity-100' : 'scale-[1.06] opacity-0'
+          }`}
+        />
+      ))}
+
+      {/* A light, neutral black wash rather than a colour cast — the photographs keep
+          their own palette, and the left side still carries contrast for cream copy. */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-gradient-to-r from-maroon-deep/85 from-8% via-maroon-deep/28 via-52% to-transparent"
+        className="absolute inset-0 -z-10 bg-gradient-to-r from-black/62 from-0% via-black/38 via-45% to-black/18"
       />
+      {/* Vertical weighting: the transparent header floats over the top edge, and the
+          value panel below overlaps the bottom one. */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-gradient-to-t from-canvas from-2% via-transparent via-35% to-ink/35"
+        className="absolute inset-0 -z-10 bg-gradient-to-b from-black/40 via-transparent via-38% to-black/45"
       />
 
-      <div className="container-page grid items-center gap-12 pt-16 pb-20 sm:pt-20 lg:grid-cols-[1.15fr_auto] lg:gap-16 lg:pt-24 lg:pb-32">
+      {/* Top padding carries the header's own height (h-18 / sm:h-20) on top of the
+          section's spacing, since the bar is overlaid rather than stacked above. */}
+      <div className="container-page grid items-center gap-12 pt-34 pb-20 sm:pt-40 lg:grid-cols-[1.15fr_auto] lg:gap-16 lg:pt-44 lg:pb-32">
         <div className="max-w-2xl animate-rise">
           <p className="text-[0.6875rem] font-bold tracking-[0.28em] text-mustard uppercase">
             {site.motto}
@@ -169,18 +278,14 @@ export function Hero() {
             </ButtonAnchor>
           </div>
 
-          <dl className="mt-12 flex flex-wrap gap-x-10 gap-y-5 border-t border-cream/20 pt-7">
-            {[
-              [site.stats.guests, 'Happy guests'],
-              [`${site.stats.rating}/5`, 'Average rating'],
-              ['4', 'Locations in India'],
-            ].map(([value, label]) => (
-              <div key={label}>
-                <dt className="font-display text-3xl font-semibold text-cream">{value}</dt>
-                <dd className="mt-0.5 text-[0.8125rem] text-cream/65">{label}</dd>
-              </div>
-            ))}
-          </dl>
+          <div className="mt-10 border-t border-cream/20 pt-6">
+            <SlidePreviews
+              active={active}
+              onSelect={setActive}
+              onPauseChange={setPaused}
+              paused={paused}
+            />
+          </div>
         </div>
 
         <div className="lg:justify-self-end">
