@@ -28,8 +28,9 @@ export function Layout() {
   const { pathname } = useLocation()
   // Room detail pages carry a sticky booking bar on mobile — lift the button clear of it.
   const hasMobileBookingBar = /^\/rooms\/.+/.test(pathname)
-  // Home opens with a full-bleed photo hero, so the header floats transparently over it.
-  const overlayHeader = pathname === '/'
+  // Home, the rooms listing and every room page open with a full-bleed photo
+  // hero, so the header floats transparently over it.
+  const overlayHeader = pathname === '/' || pathname.startsWith('/rooms')
 
   return (
     <div className="relative flex min-h-dvh flex-col">

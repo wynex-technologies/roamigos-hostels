@@ -63,7 +63,8 @@ export function BookingWidget({
 
   const field =
     'w-full rounded-xl border border-line bg-surface-2 px-4 pt-6 pb-2.5 text-[0.9375rem] font-medium text-heading ' +
-    'transition-colors focus:border-primary focus:outline-none'
+    'transition-[border-color,box-shadow,background-color] duration-300 hover:border-line-strong ' +
+    'focus:border-primary focus:bg-surface focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--primary)_14%,transparent)] focus:outline-none'
   const label =
     'pointer-events-none absolute top-2.5 left-4 text-[0.625rem] font-bold tracking-[0.14em] text-muted uppercase'
 
@@ -76,8 +77,12 @@ export function BookingWidget({
 
   return (
     <div id={id} className="space-y-4">
-      <form onSubmit={submit} className="card-surface p-6 shadow-warm-lg sm:p-7">
-        <h2 className="font-display text-xl font-semibold">Select your dates</h2>
+      <form onSubmit={submit} className="card-raised p-6 shadow-raised-lg sm:p-7">
+        <p className="text-[0.6875rem] font-bold tracking-[0.22em] text-accent uppercase">
+          Book direct
+        </p>
+        <h2 className="mt-2.5 font-display text-xl font-semibold">Select your dates</h2>
+        <span aria-hidden className="mt-4 block h-px w-full bg-line" />
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <div className="relative">
@@ -115,7 +120,7 @@ export function BookingWidget({
         </div>
 
         {/* Guests stepper */}
-        <div className="mt-3 flex items-center justify-between rounded-xl border border-line bg-surface-2 px-4 py-3">
+        <div className="mt-3 flex items-center justify-between rounded-xl border border-line bg-surface-2 px-4 py-3 transition-colors duration-300 hover:border-line-strong">
           <span>
             <span className="block text-[0.625rem] font-bold tracking-[0.14em] text-muted uppercase">
               {isDorm ? 'Beds' : 'Guests'}
@@ -142,7 +147,7 @@ export function BookingWidget({
                 disabled={
                   delta < 0 ? state.guests <= 1 : state.guests >= room.capacity
                 }
-                className="grid size-9 place-items-center rounded-full border border-line-strong text-heading transition-colors hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-35"
+                className="grid size-9 place-items-center rounded-full border border-line-strong text-heading transition-[background-color,border-color,color,transform] duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-0.5 hover:border-primary hover:bg-primary hover:text-on-primary active:scale-95 disabled:pointer-events-none disabled:opacity-35"
               >
                 <StepIcon className="size-4" />
               </button>
@@ -155,7 +160,7 @@ export function BookingWidget({
           type="button"
           onClick={() => setDetailsOpen((v) => !v)}
           aria-expanded={detailsOpen}
-          className="mt-3 flex w-full items-center justify-between rounded-xl px-1 py-2 text-[0.875rem] font-semibold text-heading"
+          className="mt-3 flex w-full items-center justify-between rounded-xl px-1 py-2 text-[0.875rem] font-semibold text-heading transition-colors duration-300 hover:text-primary"
         >
           Add your details <span className="font-normal text-muted">(optional)</span>
           <ChevronDown
@@ -211,7 +216,7 @@ export function BookingWidget({
           <p className="mt-1 text-[0.8125rem] text-muted">Inclusive of all taxes</p>
 
           {nights > 0 && (
-            <dl className="mt-5 space-y-2 rounded-xl bg-surface-2 p-4 text-[0.875rem]">
+            <dl className="mt-5 space-y-2 rounded-xl border border-line bg-surface-2 p-4 text-[0.875rem] animate-rise">
               <div className="flex justify-between">
                 <dt className="text-muted">
                   {formatINR(room.pricePerNight)} × {nights} {nights === 1 ? 'night' : 'nights'}
@@ -232,7 +237,7 @@ export function BookingWidget({
         <button
           type="submit"
           disabled={!ready}
-          className="mt-5 inline-flex h-13 w-full items-center justify-center gap-2 rounded-full bg-primary text-[0.9375rem] font-semibold text-on-primary transition-[background-color,transform] hover:bg-primary-hover active:scale-[0.99] disabled:pointer-events-none disabled:opacity-45"
+          className="gloss-sweep mt-5 inline-flex h-13 w-full items-center justify-center gap-2 rounded-full bg-primary text-[0.9375rem] font-semibold text-on-primary shadow-[0_14px_30px_-16px] shadow-maroon/80 transition-[background-color,transform,box-shadow] duration-300 hover:bg-primary-hover hover:shadow-[0_20px_38px_-18px] active:scale-[0.99] disabled:pointer-events-none disabled:opacity-45 disabled:shadow-none"
         >
           Book Now
         </button>
@@ -255,12 +260,13 @@ export function BookingWidget({
         </div>
       </form>
 
-      <div className="card-surface p-6 sm:p-7">
+      <div className="card-raised p-6 sm:p-7">
         <h2 className="font-display text-lg font-semibold">Why book with {site.name}?</h2>
+        <span aria-hidden className="mt-4 block h-px w-full bg-line" />
         <ul className="mt-5 space-y-5">
           {bookingAssurances.map((item) => (
-            <li key={item.title} className="flex gap-3.5">
-              <span className="mt-0.5 grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 text-accent">
+            <li key={item.title} className="group flex gap-3.5">
+              <span className="mt-0.5 grid size-9 shrink-0 place-items-center rounded-full border border-line text-accent transition-[background-color,border-color,color,transform] duration-400 ease-[var(--ease-out-soft)] group-hover:-translate-y-0.5 group-hover:border-transparent group-hover:bg-mustard group-hover:text-ink">
                 <Icon name={item.icon} className="size-[1.05rem]" />
               </span>
               <span>

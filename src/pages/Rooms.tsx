@@ -1,25 +1,57 @@
 import { useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ChevronRight, MessageCircle, SlidersHorizontal, X } from 'lucide-react'
-import { RoomCard } from '@/components/rooms/RoomCard'
+import {
+  ArrowUpRight,
+  Bath,
+  BedDouble,
+  Check,
+  ChevronRight,
+  Images,
+  MessageCircle,
+  SlidersHorizontal,
+  Star,
+  Users,
+  X,
+} from 'lucide-react'
 import { RoomFilters } from '@/components/rooms/RoomFilters'
 import {
   activeFilterCount,
   applyFilters,
   categoryOptions,
+  counts,
   emptyFilters,
   sortOptions,
   type FilterState,
   type SortKey,
 } from '@/components/rooms/filters'
+import { categoryLabels, rooms as allRooms, type Room } from '@/data/rooms'
+import { Photo } from '@/components/ui/Photo'
 import { ButtonAnchor } from '@/components/ui/Button'
-import { Container, Eyebrow, SectionTitle } from '@/components/ui/primitives'
+import { Badge, Container } from '@/components/ui/primitives'
 import { Icon } from '@/components/ui/Icon'
-import { roomsPageAmenities, roomsPageAssurances } from '@/data/content'
+import { heroSlides, roomsPageAmenities, roomsPageAssurances } from '@/data/content'
 import { site } from '@/data/site'
 import { enquiryUrl } from '@/lib/whatsapp'
 import { usePageMeta } from '@/lib/usePageMeta'
-import { cn, formatDate } from '@/lib/utils'
+import { useReveal } from '@/lib/useReveal'
+import { cn, formatDate, formatINR } from '@/lib/utils'
+
+/** Inline `--lag`, so the reveal order stays readable at the call site. */
+const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
+
+const cheapest = Math.min(...allRooms.map((room) => room.pricePerNight))
+
+/** The four numbers worth printing under the masthead. */
+const marquee = [
+  { value: String(allRooms.length), label: 'Rooms & dorms' },
+  { value: formatINR(cheapest), label: 'Cheapest bed' },
+  {
+    value: `${site.stats.rating}/5`,
+    label: `${site.stats.reviews.toLocaleString('en-IN')} reviews`,
+  },
+  { value: 'On arrival', label: 'Pay at check-in' },
+]
 
 export default function Rooms() {
   usePageMeta(
@@ -34,59 +66,97 @@ export default function Rooms() {
 
   const [filters, setFilters] = useState<FilterState>(emptyFilters)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const masthead = useReveal<HTMLDivElement>(0.15)
 
   const visible = useMemo(() => applyFilters(filters, guests), [filters, guests])
   const active = activeFilterCount(filters)
+  const total = applyFilters(emptyFilters).length
 
   /** Carry the hero's dates through to the room detail page. */
   const query = params.toString()
 
   return (
     <>
-      {/* Page header */}
-      <section className="border-b border-line bg-surface-2 pt-10 pb-12 sm:pt-12 sm:pb-16">
+      {/* ============================== masthead ============================== */}
+      <section className="relative isolate flex min-h-[38rem] flex-col justify-end overflow-hidden pt-32 pb-12 sm:min-h-[46rem] sm:pt-36 lg:min-h-svh lg:pb-20">
+        <Photo
+          id={heroSlides[1].image}
+          width={2000}
+          widths={[900, 1400, 2000]}
+          sizes="100vw"
+          alt=""
+          className="absolute inset-0 -z-20 size-full object-cover object-[55%_center]"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/75 to-ink/45"
+        />
+
         <Container>
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[0.75rem] font-semibold tracking-wide text-muted uppercase">
-            <Link to="/" className="transition-colors hover:text-primary">
-              Home
-            </Link>
-            <ChevronRight className="size-3.5" />
-            <span className="text-heading">Rooms & Beds</span>
-          </nav>
+          <div ref={masthead}>
+            <nav
+              aria-label="Breadcrumb"
+              style={lag(0)}
+              className="reveal-rise flex items-center gap-1.5 text-[0.75rem] font-semibold tracking-wide text-cream/60 uppercase"
+            >
+              <Link to="/" className="transition-colors hover:text-mustard">
+                Home
+              </Link>
+              <ChevronRight className="size-3.5" />
+              <span className="text-cream">Rooms &amp; Beds</span>
+            </nav>
 
-          <div className="mt-6 grid gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
-            <div className="max-w-xl">
-              <Eyebrow>Find your bed</Eyebrow>
-              <SectionTitle as="h1" className="mt-3" underline="Beds">
-                Rooms &
-              </SectionTitle>
-              <p className="mt-5 text-[1.0625rem] leading-relaxed text-pretty">
-                Choose from cozy dorms to private retreats. Find your perfect space to relax,
-                connect &amp; unwind.
+            <h1 className="mt-8 max-w-3xl font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.02] font-semibold text-cream">
+              <span style={lag(0.12)} className="reveal-line">
+                <span>Eight ways to sleep</span>
+              </span>
+              <span style={lag(0.24)} className="reveal-line">
+                <span>
+                  in <em className="font-normal text-mustard italic">Guwahati</em>.
+                </span>
+              </span>
+            </h1>
+
+            <p
+              style={lag(0.4)}
+              className="reveal-rise mt-7 max-w-xl text-[1.0625rem] leading-relaxed text-cream/80 text-pretty"
+            >
+              From a curtained pod bunk at {formatINR(cheapest)} to a family room that takes four.
+              Same warm floor, same front desk, same hot showers at six in the morning.
+            </p>
+
+            {(checkIn || checkOut) && (
+              <p
+                style={lag(0.48)}
+                className="reveal-rise mt-7 inline-flex flex-wrap items-center gap-2 rounded-full border border-cream/20 bg-ink/45 px-4 py-2 text-[0.8125rem] text-cream backdrop-blur-md"
+              >
+                <span className="font-semibold">Your dates:</span>
+                <span className="text-cream/75">
+                  {formatDate(checkIn) || 'Any'} → {formatDate(checkOut) || 'Any'}
+                  {guests ? ` · ${guests} ${guests === 1 ? 'guest' : 'guests'}` : ''}
+                </span>
+                <Link
+                  to="/rooms"
+                  className="font-semibold text-mustard underline-offset-4 hover:underline"
+                >
+                  Clear
+                </Link>
               </p>
+            )}
 
-              {(checkIn || checkOut) && (
-                <p className="mt-5 inline-flex flex-wrap items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-[0.8125rem]">
-                  <span className="font-semibold text-heading">Your dates:</span>
-                  <span className="text-muted">
-                    {formatDate(checkIn) || 'Any'} → {formatDate(checkOut) || 'Any'}
-                    {guests ? ` · ${guests} ${guests === 1 ? 'guest' : 'guests'}` : ''}
-                  </span>
-                  <Link to="/rooms" className="font-semibold text-primary underline-offset-4 hover:underline">
-                    Clear
-                  </Link>
-                </p>
-              )}
-            </div>
-
-            <ul className="grid grid-cols-2 gap-x-8 gap-y-6 rounded-xl2 border border-line bg-surface p-6 sm:grid-cols-4 lg:w-auto">
-              {roomsPageAssurances.map((item) => (
-                <li key={item.title} className="text-center">
-                  <span className="mx-auto grid size-9 place-items-center text-accent">
-                    <Icon name={item.icon} className="size-5" />
-                  </span>
-                  <p className="mt-2 text-[0.8125rem] font-semibold text-heading">{item.title}</p>
-                  <p className="text-[0.75rem] text-muted">{item.note}</p>
+            {/* The numbers, on the hairline that closes the masthead. */}
+            <ul
+              style={lag(0.56)}
+              className="reveal-rise mt-12 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-cream/15 pt-8 sm:grid-cols-4"
+            >
+              {marquee.map((item) => (
+                <li key={item.label}>
+                  <p className="font-display text-[1.625rem] leading-none font-semibold text-cream">
+                    {item.value}
+                  </p>
+                  <p className="mt-2 text-[0.75rem] tracking-[0.14em] text-cream/60 uppercase">
+                    {item.label}
+                  </p>
                 </li>
               ))}
             </ul>
@@ -94,81 +164,114 @@ export default function Rooms() {
         </Container>
       </section>
 
-      {/* Category chips + sort */}
-      <Container className="py-8">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="no-scrollbar -mx-5 flex gap-2.5 overflow-x-auto px-5 lg:mx-0 lg:flex-wrap lg:px-0">
-            {categoryOptions.map((option) => {
-              const isActive = filters.category === option.key
-              return (
-                <button
-                  key={option.key}
-                  type="button"
-                  onClick={() => setFilters({ ...filters, category: option.key })}
-                  aria-pressed={isActive}
-                  className={cn(
-                    'shrink-0 rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors',
-                    isActive
-                      ? 'border-primary bg-primary text-on-primary'
-                      : 'border-line bg-surface text-body hover:border-line-strong hover:text-heading',
-                  )}
-                >
-                  {option.label}
-                </button>
-              )
-            })}
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setDrawerOpen(true)}
-              className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-heading lg:hidden"
-            >
-              <SlidersHorizontal className="size-4" />
-              Filters
-              {active > 0 && (
-                <span className="grid size-5 place-items-center rounded-full bg-primary text-[0.6875rem] text-on-primary">
-                  {active}
-                </span>
-              )}
-            </button>
-
-            <label className="flex items-center gap-2 text-sm text-muted">
-              <span className="hidden sm:inline">Sort by:</span>
-              <select
-                value={filters.sort}
-                onChange={(e) => setFilters({ ...filters, sort: e.target.value as SortKey })}
-                className="rounded-full border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-heading focus:border-primary focus:outline-none"
-              >
-                {sortOptions.map((option) => (
-                  <option key={option.key} value={option.key}>
+      {/* ============================== quick bar ============================= */}
+      <div className="sticky top-18 z-30 border-b border-line bg-canvas/90 backdrop-blur-xl sm:top-20">
+        <Container>
+          <div className="flex flex-col gap-4 py-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="no-scrollbar -mx-5 flex gap-2.5 overflow-x-auto px-5 lg:mx-0 lg:flex-wrap lg:px-0">
+              {categoryOptions.map((option) => {
+                const isActive = filters.category === option.key
+                return (
+                  <button
+                    key={option.key}
+                    type="button"
+                    onClick={() => setFilters({ ...filters, category: option.key })}
+                    aria-pressed={isActive}
+                    className={cn(
+                      'shrink-0 rounded-full border px-5 py-2.5 text-sm font-semibold',
+                      'transition-[background-color,border-color,color,box-shadow] duration-300 ease-[var(--ease-out-soft)]',
+                      isActive
+                        ? 'border-transparent bg-primary text-on-primary shadow-[0_12px_26px_-14px] shadow-maroon/80'
+                        : 'border-line bg-surface text-body hover:border-line-strong hover:text-heading',
+                    )}
+                  >
                     {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-        </div>
-      </Container>
+                    <span
+                      className={cn(
+                        'ml-2 text-[0.6875rem] tabular-nums',
+                        isActive ? 'text-on-primary/70' : 'text-muted',
+                      )}
+                    >
+                      {counts.category[option.key]}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
 
-      {/* Sidebar + grid */}
-      <Container className="pb-20">
-        <div className="grid gap-10 lg:grid-cols-[17rem_1fr] lg:gap-12">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(true)}
+                className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-heading transition-colors hover:border-line-strong lg:hidden"
+              >
+                <SlidersHorizontal className="size-4" />
+                Filters
+                {active > 0 && (
+                  <span className="grid size-5 place-items-center rounded-full bg-primary text-[0.6875rem] text-on-primary">
+                    {active}
+                  </span>
+                )}
+              </button>
+
+              <label className="flex items-center gap-2 text-sm text-muted">
+                <span className="hidden sm:inline">Sort by:</span>
+                <select
+                  value={filters.sort}
+                  onChange={(e) => setFilters({ ...filters, sort: e.target.value as SortKey })}
+                  className="cursor-pointer rounded-full border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-heading transition-colors hover:border-line-strong focus:border-primary focus:outline-none"
+                >
+                  {sortOptions.map((option) => (
+                    <option key={option.key} value={option.key}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </div>
+        </Container>
+      </div>
+
+      {/* =========================== rail + the rooms ========================= */}
+      <Container className="py-10 lg:py-14">
+        <div className="grid gap-10 lg:grid-cols-[18rem_1fr] lg:gap-12">
+          {/* The refine rail. */}
           <aside className="hidden lg:block">
-            <div className="sticky top-28 space-y-6">
-              <div className="card-surface p-6">
-                <h2 className="mb-6 font-display text-xl font-semibold">Filter Rooms</h2>
-                <RoomFilters state={filters} onChange={setFilters} />
+            <div className="sticky top-40 space-y-6">
+              <div className="card-raised p-6">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-[0.6875rem] font-bold tracking-[0.22em] text-accent uppercase">
+                    Refine
+                  </h2>
+                  {active > 0 && (
+                    <span className="grid size-5 place-items-center rounded-full bg-primary text-[0.6875rem] font-semibold text-on-primary">
+                      {active}
+                    </span>
+                  )}
+                </div>
+                <span aria-hidden className="mt-4 mb-6 block h-px w-full bg-line" />
+
+                <RoomFilters
+                  state={filters}
+                  onChange={setFilters}
+                  resultCount={visible.length}
+                  total={total}
+                />
               </div>
 
-              <div className="rounded-xl2 border border-line bg-surface-2 p-6">
-                <h3 className="font-display text-lg font-semibold">Need help choosing?</h3>
+              {/* The desk, one tap away — the only green on the page. */}
+              <div className="card-raised relative overflow-hidden p-6">
+                <span
+                  aria-hidden
+                  className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent-soft to-transparent"
+                />
+                <h3 className="font-display text-lg font-semibold">Still not sure?</h3>
                 <p className="mt-2 text-[0.875rem] leading-relaxed text-muted text-pretty">
-                  Tell us your dates and we&apos;ll suggest the right bed for your trip.
+                  Tell us your dates and how you travel. We reply with one honest suggestion.
                 </p>
                 <ButtonAnchor
-                  href={enquiryUrl("Hi Roamigos! Help me pick the right room, please.")}
+                  href={enquiryUrl('Hi Roamigos! Help me pick the right room, please.')}
                   target="_blank"
                   rel="noreferrer"
                   variant="whatsapp"
@@ -176,29 +279,50 @@ export default function Rooms() {
                   className="mt-5 w-full"
                 >
                   <MessageCircle className="size-4" />
-                  Chat with us
+                  Ask the desk
                 </ButtonAnchor>
               </div>
             </div>
           </aside>
 
-          <div>
-            <p className="mb-6 text-[0.9375rem] text-muted">
-              Showing{' '}
-              <span className="font-semibold text-heading">
-                {visible.length} of {applyFilters(emptyFilters).length}
-              </span>{' '}
-              rooms
-            </p>
+          {/* The rooms. */}
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-5">
+              <p className="text-[0.9375rem] text-muted">
+                Showing{' '}
+                <span className="font-semibold text-heading tabular-nums">
+                  {visible.length} of {total}
+                </span>{' '}
+                rooms
+              </p>
+
+              {active > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setFilters({ ...emptyFilters, sort: filters.sort })}
+                  className="group inline-flex items-center gap-2 text-[0.8125rem] font-semibold text-primary transition-colors hover:text-primary-hover"
+                >
+                  Clear {active} {active === 1 ? 'filter' : 'filters'}
+                  <X className="size-3.5 transition-transform duration-300 group-hover:rotate-90" />
+                </button>
+              )}
+            </div>
 
             {visible.length > 0 ? (
-              <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                {visible.map((room) => (
-                  <RoomCard key={room.id} room={room} search={query} />
+              <ul className="mt-7 space-y-6">
+                {visible.map((room, i) => (
+                  <li key={room.id}>
+                    <RoomRow
+                      room={room}
+                      index={i + 1}
+                      search={query}
+                      style={{ animationDelay: `${Math.min(i, 6) * 70}ms` }}
+                    />
+                  </li>
                 ))}
-              </div>
+              </ul>
             ) : (
-              <div className="card-surface px-6 py-16 text-center">
+              <div className="card-raised mt-7 px-6 py-20 text-center">
                 <p className="font-display text-xl font-semibold">No rooms match those filters</p>
                 <p className="mx-auto mt-3 max-w-sm text-[0.9375rem] text-muted text-pretty">
                   Try widening the price range or clearing a filter — or just message us and
@@ -213,81 +337,259 @@ export default function Rooms() {
                 </button>
               </div>
             )}
-
-            {/* Included with every stay */}
-            <div className="mt-14 rounded-xl2 border border-line bg-surface p-6 sm:p-8">
-              <h2 className="text-[0.6875rem] font-bold tracking-[0.22em] text-accent uppercase">
-                Included with every stay
-              </h2>
-              <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {roomsPageAmenities.map((item) => (
-                  <li key={item.title} className="flex items-start gap-3">
-                    <span className="mt-0.5 grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 text-accent">
-                      <Icon name={item.icon} className="size-[1.05rem]" />
-                    </span>
-                    <span>
-                      <span className="block text-[0.9375rem] font-semibold text-heading">
-                        {item.title}
-                      </span>
-                      <span className="text-[0.8125rem] text-muted">{item.note}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
         </div>
       </Container>
 
-      {/* Mobile filter drawer */}
-      <div
-        className={cn(
-          'fixed inset-0 z-50 overflow-hidden lg:hidden',
-          drawerOpen ? '' : 'pointer-events-none',
-        )}
-        aria-hidden={!drawerOpen}
-      >
+      {/* ========================= included with every stay ==================== */}
+      <section className="border-y border-line bg-surface-2 py-14 lg:py-20">
+        <Container>
+          <div className="grid gap-10 lg:grid-cols-[20rem_1fr] lg:gap-16">
+            <div>
+              <p className="eyebrow flex items-center gap-2.5">
+                <span aria-hidden className="size-1.5 rotate-45 bg-accent-soft" />
+                No small print
+              </p>
+              <h2 className="mt-5 font-display text-[clamp(1.75rem,3.2vw,2.5rem)] leading-tight font-semibold">
+                Every bed comes with the same house.
+              </h2>
+              <ul className="mt-7 flex flex-wrap gap-2.5">
+                {roomsPageAssurances.map((item) => (
+                  <li
+                    key={item.title}
+                    className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-2 text-[0.8125rem] font-semibold text-heading"
+                  >
+                    <Icon name={item.icon} className="size-4 text-accent" />
+                    {item.title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <ul className="grid gap-x-8 gap-y-7 sm:grid-cols-2 xl:grid-cols-3">
+              {roomsPageAmenities.map((item) => (
+                <li key={item.title} className="group flex items-start gap-4">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full border border-line-strong text-accent transition-[background-color,border-color,color,transform] duration-400 ease-[var(--ease-out-soft)] group-hover:-translate-y-0.5 group-hover:border-transparent group-hover:bg-mustard group-hover:text-ink">
+                    <Icon name={item.icon} className="size-[1.15rem]" />
+                  </span>
+                  <span>
+                    <span className="block text-[0.9375rem] font-semibold text-heading">
+                      {item.title}
+                    </span>
+                    <span className="text-[0.8125rem] text-muted">{item.note}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Container>
+      </section>
+
+      {/* ========================== mobile filter drawer ======================
+          Portalled to the body: `<main>` carries `relative z-10`, so a sheet
+          rendered in place would sit under the sticky header. */}
+      {createPortal(
         <div
-          onClick={() => setDrawerOpen(false)}
           className={cn(
-            'absolute inset-0 bg-ink/50 backdrop-blur-sm transition-opacity duration-300',
-            drawerOpen ? 'opacity-100' : 'opacity-0',
+            'fixed inset-0 z-100 overflow-hidden lg:hidden',
+            drawerOpen ? '' : 'pointer-events-none',
           )}
-        />
-        <div
-          className={cn(
-            'absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-[1.75rem] bg-canvas shadow-lift',
-            'transition-transform duration-400 ease-[var(--ease-out-soft)]',
-            drawerOpen ? 'translate-y-0' : 'translate-y-full',
-          )}
+          aria-hidden={!drawerOpen}
         >
-          <div className="sticky top-0 flex items-center justify-between border-b border-line bg-canvas px-6 py-5">
-            <h2 className="font-display text-xl font-semibold">Filter Rooms</h2>
-            <button
-              type="button"
-              onClick={() => setDrawerOpen(false)}
-              aria-label="Close filters"
-              className="grid size-10 place-items-center rounded-full border border-line text-heading"
-            >
-              <X className="size-[1.15rem]" />
-            </button>
+          <div
+            onClick={() => setDrawerOpen(false)}
+            className={cn(
+              'absolute inset-0 bg-ink/50 backdrop-blur-sm transition-opacity duration-300',
+              drawerOpen ? 'opacity-100' : 'opacity-0',
+            )}
+          />
+          <div
+            className={cn(
+              'absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-[1.75rem] bg-canvas shadow-lift',
+              'transition-transform duration-400 ease-[var(--ease-out-soft)]',
+              drawerOpen ? 'translate-y-0' : 'translate-y-full',
+            )}
+          >
+            <div className="sticky top-0 z-10 border-b border-line bg-canvas px-6 pt-3 pb-5">
+              <span
+                aria-hidden
+                className="mx-auto mb-4 block h-1 w-10 rounded-full bg-line-strong"
+              />
+              <div className="flex items-center justify-between">
+                <h2 className="font-display text-xl font-semibold">Refine</h2>
+                <button
+                  type="button"
+                  onClick={() => setDrawerOpen(false)}
+                  aria-label="Close filters"
+                  className="grid size-10 place-items-center rounded-full border border-line text-heading transition-colors hover:border-primary hover:text-primary"
+                >
+                  <X className="size-[1.15rem]" />
+                </button>
+              </div>
+            </div>
+
+            <div className="px-6 py-6">
+              <RoomFilters
+                state={filters}
+                onChange={setFilters}
+                resultCount={visible.length}
+                total={total}
+              />
+            </div>
+
+            <div className="sticky bottom-0 border-t border-line bg-canvas px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(false)}
+                className="h-12 w-full rounded-full bg-primary font-semibold text-on-primary shadow-[0_14px_30px_-16px] shadow-maroon/80 transition-transform duration-200 active:scale-[0.98]"
+              >
+                Show {visible.length} {visible.length === 1 ? 'room' : 'rooms'}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
+    </>
+  )
+}
+
+/**
+ * One room, printed as a plate: the photograph carries the whole band and the
+ * facts sit on glass along its bottom edge. The panel holds the same four things
+ * in the same order every time — name, what it sleeps, the rate, the way in —
+ * so a column of these is still comparable at a glance.
+ */
+function RoomRow({
+  room,
+  index,
+  search,
+  style,
+}: {
+  room: Room
+  index: number
+  search?: string
+  style?: React.CSSProperties
+}) {
+  const CapacityIcon = room.categories.includes('dorm') ? BedDouble : Users
+  const unit = room.categories.includes('dorm') ? 'bed' : 'night'
+
+  return (
+    <Link
+      to={{ pathname: `/rooms/${room.slug}`, search }}
+      style={style}
+      className="group relative isolate block h-[30rem] animate-rise overflow-hidden rounded-xl2 border border-line shadow-warm transition-[transform,box-shadow] duration-500 ease-[var(--ease-out-soft)] hover:-translate-y-1.5 hover:shadow-warm-lg sm:h-[26rem] lg:h-[24rem]"
+    >
+      <Photo
+        id={room.images[0]}
+        width={1400}
+        widths={[700, 1000, 1400]}
+        sizes="(min-width: 1024px) 46rem, 100vw"
+        alt={room.name}
+        loading="lazy"
+        decoding="async"
+        className="absolute inset-0 -z-10 size-full object-cover transition-transform duration-[1400ms] ease-[var(--ease-out-soft)] group-hover:scale-[1.06]"
+      />
+
+      {/* Resting scrim keeps the photograph; the second deepens under the panel. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-gradient-to-t from-ink/90 via-ink/25 to-ink/10"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-gradient-to-t from-ink/95 via-ink/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+      />
+
+      {/* Index and category, printed straight on the picture. */}
+      <p className="absolute top-5 left-5 flex items-center gap-3 sm:top-6 sm:left-6">
+        <span className="font-display text-[0.8125rem] font-semibold text-cream/70 tabular-nums">
+          {String(index).padStart(2, '0')}
+        </span>
+        <span
+          aria-hidden
+          className="h-px w-7 origin-left bg-mustard transition-transform duration-600 ease-[var(--ease-out-soft)] group-hover:scale-x-[2.5]"
+        />
+        <span className="text-[0.6875rem] font-bold tracking-[0.16em] text-mustard uppercase">
+          {categoryLabels[room.categories[0]]}
+        </span>
+      </p>
+
+      <div className="absolute top-5 right-5 flex flex-col items-end gap-2.5 sm:top-6 sm:right-6">
+        {room.badge && (
+          <Badge tone="accent" className="shadow-warm">
+            {room.badge}
+          </Badge>
+        )}
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-cream/20 bg-ink/45 px-2.5 py-1 text-[0.6875rem] font-semibold text-cream backdrop-blur-md">
+          <Images className="size-3" />
+          {room.totalPhotos} photos
+        </span>
+      </div>
+
+      {/* The plate. */}
+      <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-cream/12 bg-ink/45 p-5 backdrop-blur-lg transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:-translate-y-1 sm:inset-x-5 sm:bottom-5 sm:p-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
+          <div className="min-w-0">
+            <h2 className="font-display text-[1.5rem] leading-tight font-semibold text-cream text-balance sm:text-[1.75rem]">
+              {room.name}
+            </h2>
+
+            <p className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.875rem] text-cream/80">
+              <span className="inline-flex items-center gap-1.5">
+                <CapacityIcon className="size-4 text-mustard" />
+                {room.capacityLabel}
+              </span>
+              <span aria-hidden className="size-1 rotate-45 bg-cream/40" />
+              <span className="inline-flex items-center gap-1.5">
+                <Bath className="size-4 text-mustard" />
+                {room.bathroom}
+              </span>
+              <span aria-hidden className="size-1 rotate-45 bg-cream/40" />
+              <span className="inline-flex items-center gap-1.5">
+                <Star className="size-3.5 fill-mustard text-mustard" aria-hidden />
+                <span className="font-semibold text-cream">{room.rating.toFixed(1)}</span>
+                <span className="text-cream/60">({room.reviewCount})</span>
+              </span>
+            </p>
+
+            <p className="mt-3 hidden max-w-lg text-[0.9375rem] leading-relaxed text-cream/75 text-pretty sm:block">
+              {room.shortDescription}
+            </p>
+
+            <ul className="mt-3 hidden flex-wrap gap-x-5 gap-y-1.5 lg:flex">
+              {room.inclusions.slice(0, 2).map((item) => (
+                <li
+                  key={item}
+                  className="inline-flex items-center gap-2 text-[0.8125rem] text-cream/70"
+                >
+                  <Check className="size-3.5 shrink-0 text-mustard" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <div className="px-6 py-6">
-            <RoomFilters state={filters} onChange={setFilters} />
-          </div>
+          {/* The rate corner — same place on every plate. */}
+          <div className="flex items-end justify-between gap-5 border-t border-cream/12 pt-4 lg:shrink-0 lg:flex-col lg:items-end lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
+            <p className="lg:text-right">
+              <span className="block text-[0.625rem] font-bold tracking-[0.2em] text-cream/60 uppercase">
+                From
+              </span>
+              <span className="font-display text-[1.875rem] leading-none font-semibold text-cream">
+                {formatINR(room.pricePerNight)}
+              </span>
+              <span className="text-[0.8125rem] text-cream/70"> / {unit}</span>
+              <span className="mt-1.5 block text-[0.75rem] text-cream/55">Pay at check-in</span>
+            </p>
 
-          <div className="sticky bottom-0 border-t border-line bg-canvas px-6 py-4">
-            <button
-              type="button"
-              onClick={() => setDrawerOpen(false)}
-              className="h-12 w-full rounded-full bg-primary font-semibold text-on-primary"
-            >
-              Show {visible.length} {visible.length === 1 ? 'room' : 'rooms'}
-            </button>
+            <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-cream px-6 py-3 text-[0.875rem] font-semibold text-ink transition-[background-color,transform] duration-300 group-hover:-translate-y-0.5 group-hover:bg-mustard">
+              View room
+              <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" />
+            </span>
           </div>
         </div>
       </div>
-    </>
+    </Link>
   )
 }

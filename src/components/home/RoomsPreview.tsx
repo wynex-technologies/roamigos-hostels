@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, Bath, BedDouble, Images, Star, Users } from 'lucide-react'
 import { categoryLabels, rooms, type Room, type RoomCategory } from '@/data/rooms'
@@ -21,6 +21,9 @@ const filters: { key: RoomCategory | 'all'; label: string }[] = [
 const unit = (room: Room) => (room.categories.includes('dorm') ? 'bed' : 'night')
 const capacityIcon = (room: Room) => (room.categories.includes('dorm') ? BedDouble : Users)
 
+/** How long each room holds the stage before the next one takes it. */
+const DWELL_MS = 2500
+
 /**
  * Rooms, shown the way a hotel shows them: one photograph held at full height,
  * and a numbered index beside it. Running down the index — pointer or keyboard —
@@ -30,6 +33,8 @@ const capacityIcon = (room: Room) => (room.categories.includes('dorm') ? BedDoub
 export function RoomsPreview() {
   const [active, setActive] = useState<RoomCategory | 'all'>('all')
   const [current, setCurrent] = useState(0)
+  /** The stage stops advancing while somebody is actually reading it. */
+  const [held, setHeld] = useState(false)
   const header = useReveal<HTMLDivElement>(0.25)
 
   /** Printed on the chips, so the rail never promises more than it shows. */
@@ -54,6 +59,19 @@ export function RoomsPreview() {
   const index = Math.min(current, visible.length - 1)
   const stage = visible[index]
   const StageCapacityIcon = stage ? capacityIcon(stage) : Users
+
+  /**
+   * Hands the stage to the next room on a timer. It is a chained timeout rather
+   * than an interval, so pointing at a line restarts the dwell instead of the
+   * stage jumping a beat later. Reduced motion never sees it move on its own.
+   */
+  useEffect(() => {
+    if (held || visible.length < 2) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const timer = window.setTimeout(() => setCurrent((index + 1) % visible.length), DWELL_MS)
+    return () => window.clearTimeout(timer)
+  }, [held, index, visible.length])
 
   return (
     <Section id="rooms">
@@ -149,7 +167,13 @@ export function RoomsPreview() {
         ) : (
           <>
             {/* --------------------------- the stage --------------------------- */}
-            <div className="mt-9 hidden gap-10 lg:grid lg:grid-cols-[1.06fr_0.94fr] xl:gap-14">
+            <div
+              onMouseEnter={() => setHeld(true)}
+              onMouseLeave={() => setHeld(false)}
+              onFocusCapture={() => setHeld(true)}
+              onBlurCapture={() => setHeld(false)}
+              className="mt-9 hidden gap-10 lg:grid lg:grid-cols-[1.06fr_0.94fr] xl:gap-14"
+            >
               <div className="relative h-[35rem] overflow-hidden rounded-xl2 border border-line shadow-raised xl:h-[38rem]">
                 {visible.map((room, i) => (
                   <Photo
@@ -174,6 +198,19 @@ export function RoomsPreview() {
                   aria-hidden
                   className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/20 to-ink/25"
                 />
+
+                {/* The dwell, drawn. Restarts with every hand-over, holds still
+                    while the visitor is reading. */}
+                <span
+                  aria-hidden
+                  className="absolute inset-x-0 top-0 h-0.5 bg-cream/15 motion-reduce:hidden"
+                >
+                  <span
+                    key={index}
+                    style={{ animationPlayState: held ? 'paused' : 'running' }}
+                    className="block h-full w-full origin-left bg-mustard [animation:hero-progress_2500ms_linear_forwards]"
+                  />
+                </span>
 
                 {stage.badge && (
                   <Badge tone="accent" className="absolute top-6 left-6 shadow-warm">
