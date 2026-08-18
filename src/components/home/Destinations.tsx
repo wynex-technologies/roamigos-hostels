@@ -49,7 +49,7 @@ export function Destinations() {
 
   return (
     <section id="destinations" className="bg-canvas py-20 lg:py-28">
-      <div ref={header} className="container-page">
+      <div ref={header} className="container-wide">
         {/* Kicker, held between two hairlines that draw outwards from it. */}
         <div className="flex items-center justify-center gap-4 sm:gap-5">
           <span
@@ -123,7 +123,7 @@ export function Destinations() {
 
       {/* Wider than the rest of the page on purpose — the deck is the picture here,
           so the cards get the room rather than the margins. */}
-      <div className="mx-auto w-full max-w-[92rem] px-5 sm:px-8 xl:px-10">
+      <div className="container-wide">
         <ul
           ref={deck}
           className="mt-14 grid grid-cols-2 gap-4 lg:mt-20 lg:grid-cols-5 lg:gap-6"

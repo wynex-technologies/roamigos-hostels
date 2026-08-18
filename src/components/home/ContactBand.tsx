@@ -19,7 +19,7 @@ export function ContactBand() {
 
   return (
     <Section id="contact" className="pb-0">
-      <Container>
+      <Container wide>
         <Slab className="px-6 py-14 sm:px-10 lg:px-14 lg:py-18">
           <div ref={block} className="grid gap-12 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
             {/* ======================= the ask ======================= */}

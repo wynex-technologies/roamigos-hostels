@@ -9,7 +9,7 @@ import { Icon } from '@/components/ui/Icon'
 export function ValueProps() {
   return (
     <section className="relative z-20 -mt-14 pb-12 lg:-mt-20 lg:pb-16">
-      <div className="container-page">
+      <div className="container-wide">
         <ul className="card-raised grid overflow-hidden shadow-raised-lg divide-y divide-line sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-5">
           {valueProps.map((prop, i) => (
             <li

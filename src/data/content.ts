@@ -153,32 +153,8 @@ export const roomsPageAmenities = [
   { title: 'Daily Housekeeping', note: 'Because comfort matters', icon: 'clipboard' },
 ]
 
-export const travelReads = [
-  {
-    title: 'A Travel Guide to Khajjiar: Mini Switzerland of India',
-    author: 'Aayushi Goyal',
-    readTime: '12 mins read',
-    image: 'photo-1651317741360-42af8c912556',
-  },
-  {
-    title: 'Dharamshala Tourist Places: Exploring McLeodganj & Dharamkot',
-    author: 'Aayushi Goyal',
-    readTime: '16 mins read',
-    image: 'photo-1686851205339-96576bb72d6f',
-  },
-  {
-    title: 'Things to Do in Varanasi: Ghats, Food & Complete Travel Guide',
-    author: 'Aayushi Goyal',
-    readTime: '15 mins read',
-    image: 'photo-1751438308897-6e1780630408',
-  },
-  {
-    title: 'The Ultimate Guide to Spiti: The Winter Wonderland',
-    author: 'Aayushi Goyal',
-    readTime: '12 mins read',
-    image: 'photo-1651319484670-aaed6d6726cb',
-  },
-]
+/* The homepage "Travel Reads" section reads straight from `data/blog.ts` — there
+   is one set of stories on the site, not a homepage copy of them. */
 
 export const bookingAssurances = [
   { title: 'Best Price Guarantee', note: 'Get the best rates, always.', icon: 'star' },

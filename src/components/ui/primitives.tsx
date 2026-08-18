@@ -2,8 +2,20 @@ import { Star } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
-export function Container({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cn('container-page', className)}>{children}</div>
+/**
+ * Page measure. `wide` is the homepage measure — eight rem wider, set by the
+ * destination deck — so every band on the home page lines up with it.
+ */
+export function Container({
+  className,
+  wide,
+  children,
+}: {
+  className?: string
+  wide?: boolean
+  children: ReactNode
+}) {
+  return <div className={cn(wide ? 'container-wide' : 'container-page', className)}>{children}</div>
 }
 
 export function Section({

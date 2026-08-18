@@ -218,6 +218,23 @@
   }
 }
 
+/* The homepage runs wider than the inner pages. The destination deck set the
+   measure, and every band on the home page lines up to it — same gutters as
+   `container-page`, eight rem more room. */
+@utility container-wide {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 92rem;
+  padding-inline: 1.25rem;
+
+  @media (width >= 40rem) {
+    padding-inline: 2rem;
+  }
+  @media (width >= 80rem) {
+    padding-inline: 2.5rem;
+  }
+}
+
 /* Small caps label used above section headings. */
 @utility eyebrow {
   font-size: 0.6875rem;

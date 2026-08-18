@@ -244,7 +244,7 @@ export function Hero() {
 
       {/* Top padding carries the header's own height (h-18 / sm:h-20) on top of the
           section's spacing, since the bar is overlaid rather than stacked above. */}
-      <div className="container-page grid items-center gap-12 pt-34 pb-20 sm:pt-40 lg:grid-cols-[1.15fr_auto] lg:gap-16 lg:pt-44 lg:pb-32">
+      <div className="container-wide grid items-center gap-12 pt-34 pb-20 sm:pt-40 lg:grid-cols-[1.15fr_auto] lg:gap-16 lg:pt-44 lg:pb-32">
         <div className="max-w-2xl animate-rise">
           <p className="text-[0.6875rem] font-bold tracking-[0.28em] text-mustard uppercase">
             {site.motto}
