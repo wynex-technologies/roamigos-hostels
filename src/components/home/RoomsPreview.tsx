@@ -196,7 +196,7 @@ export function RoomsPreview() {
 
                 <div
                   aria-hidden
-                  className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/20 to-ink/25"
+                  className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/45 via-40% to-ink/25"
                 />
 
                 {/* The dwell, drawn. Restarts with every hand-over, holds still
@@ -223,8 +223,10 @@ export function RoomsPreview() {
                   {stage.totalPhotos} photos
                 </span>
 
-                {/* Plate. Everything that decides a booking, on glass. */}
-                <div className="absolute inset-x-6 bottom-6 rounded-2xl border border-cream/12 bg-ink/45 p-6 backdrop-blur-lg xl:inset-x-8 xl:bottom-8 xl:p-7">
+                {/* Everything that decides a booking, set straight on the picture -
+                    no card behind it. The wash above and a soft text shadow do the
+                    legibility work instead. */}
+                <div className="absolute inset-x-7 bottom-7 [text-shadow:0_1px_18px_rgb(9_9_11/0.65)] xl:inset-x-9 xl:bottom-9">
                   <div className="flex items-start justify-between gap-6">
                     <div className="min-w-0">
                       <p className="text-[0.625rem] font-bold tracking-[0.22em] text-mustard uppercase">
@@ -250,7 +252,7 @@ export function RoomsPreview() {
                     {stage.shortDescription}
                   </p>
 
-                  <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-cream/12 pt-5">
+                  <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-cream/25 pt-5">
                     <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.8125rem] text-gray-200/85">
                       <span className="inline-flex items-center gap-1.5">
                         <StageCapacityIcon className="size-4 text-mustard" />
@@ -271,7 +273,7 @@ export function RoomsPreview() {
 
                     <Link
                       to={`/rooms/${stage.slug}`}
-                      className="group inline-flex items-center gap-2 rounded-full bg-cream px-5 py-2.5 text-[0.875rem] font-semibold text-ink transition-[background-color,transform] duration-300 hover:bg-mustard active:scale-[0.98]"
+                      className="group inline-flex items-center gap-2 rounded-full bg-cream px-5 py-2.5 text-[0.875rem] font-semibold text-ink [text-shadow:none] transition-[background-color,transform] duration-300 hover:bg-mustard active:scale-[0.98]"
                     >
                       View this room
                       <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" />
