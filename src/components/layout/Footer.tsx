@@ -203,9 +203,15 @@ export function Footer() {
         </div>
       </div>
 
-      {/* ---------------------- the line at the bottom ---------------------- */}
+      {/* ---------------------- the anchor ----------------------
+          The wordmark closes the page at size, sitting in the flow rather than
+          ghosting behind the columns, and the small print rules off under it. */}
       <div className="border-t border-cream/10">
-        <div className="container-page flex flex-col items-center justify-between gap-4 py-6 text-[0.8125rem] sm:flex-row">
+        <div className="container-page pt-12 pb-2">
+          <Wordmark className="mx-auto h-auto w-full max-w-[17rem] text-cream/[0.14] sm:max-w-md lg:max-w-2xl" />
+        </div>
+
+        <div className="container-page flex flex-col items-center justify-between gap-4 border-t border-cream/10 py-6 text-[0.8125rem] sm:flex-row">
           <p className="text-gray-200/55">
             © {new Date().getFullYear()} {site.legalName}. All rights reserved.
           </p>
