@@ -1,6 +1,6 @@
 /**
  * Single source of truth for brand, contact and navigation copy.
- * Change content here — components read from it, they never hardcode strings.
+ * Change content here - components read from it, they never hardcode strings.
  */
 
 export const site = {
@@ -13,7 +13,7 @@ export const site = {
 
   /**
    * Hostel owner's WhatsApp number in international format, digits only.
-   * TODO: replace with the real business number before launch — every
+   * TODO: replace with the real business number before launch - every
    * "Book Now" on the site opens a chat with this number.
    */
   whatsappNumber: '919876543210',
@@ -22,7 +22,7 @@ export const site = {
 
   /**
    * Street address of the flagship property, used by the contact page and the
-   * embedded map. TODO: replace with the real registered address before launch —
+   * embedded map. TODO: replace with the real registered address before launch -
    * `mapQuery` is what gets handed to Google Maps, so it has to be searchable.
    */
   address: {
@@ -69,17 +69,20 @@ export const footerLinks = {
     { label: 'Rooms & Beds', to: '/rooms' },
     { label: 'Gallery', to: '/gallery' },
     { label: 'Blog', to: '/blog' },
-    { label: 'Amenities', to: '/#amenities' },
-    { label: 'Experiences', to: '/#experiences' },
     { label: 'Contact Us', to: '/contact' },
   ],
   support: [
-    { label: 'Help Center', to: '/contact' },
-    { label: 'FAQs', to: '/contact#faq' },
     { label: 'Cancellation Policy', to: '/contact#faq' },
     { label: 'Terms & Conditions', to: '/#terms' },
     { label: 'Privacy Policy', to: '/#privacy' },
   ],
+}
+
+/** The studio that built the site, credited as type on the footer stub. */
+export const builtBy = {
+  prefix: 'Designed & developed by',
+  name: 'Wynex Technologies',
+  href: 'https://www.wynextechnologies.com/',
 }
 
 export const trustBar = [

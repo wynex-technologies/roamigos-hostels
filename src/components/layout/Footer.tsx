@@ -1,59 +1,52 @@
 import { Link } from 'react-router-dom'
 import {
   ArrowUp,
+  ArrowUpRight,
   BadgeCheck,
   BedDouble,
   CalendarCheck,
-  Compass,
   FileText,
   Facebook,
   Headset,
   Home,
   Images,
   Instagram,
-  LifeBuoy,
   Lock,
   Mail,
   MapPin,
   MessageCircle,
-  MessageCircleQuestion,
   Newspaper,
   PhoneCall,
   ShieldCheck,
-  Sparkles,
   Tag,
   Youtube,
   type LucideIcon,
 } from 'lucide-react'
-import { footerLinks, properties, site, trustBar } from '@/data/site'
+import { builtBy, footerLinks, properties, site, trustBar } from '@/data/site'
 import { enquiryUrl } from '@/lib/whatsapp'
 import { Wordmark } from '@/components/brand/Wordmark'
 
 const socialIcons = { instagram: Instagram, facebook: Facebook, youtube: Youtube }
 
-/** Larger, outlined, gold — the trust row is read at a glance, not studied. */
+/** Larger, outlined, gold - the trust row is read at a glance, not studied. */
 const trustIcons = [ShieldCheck, Tag, CalendarCheck, Headset]
 
 /**
  * A mark against every link. Keyed by label so the columns stay driven by
- * `data/site.ts` — a link added there gets the fallback dot, not a crash.
+ * `data/site.ts` - a link added there gets the fallback dot, not a crash.
  */
 const linkIcons: Record<string, LucideIcon> = {
   Home: Home,
   'Rooms & Beds': BedDouble,
   Gallery: Images,
   Blog: Newspaper,
-  Amenities: Sparkles,
-  Experiences: Compass,
   'Contact Us': PhoneCall,
-  'Help Center': LifeBuoy,
-  FAQs: MessageCircleQuestion,
   'Cancellation Policy': BadgeCheck,
   'Terms & Conditions': FileText,
   'Privacy Policy': Lock,
 }
 
-/** Resting angles for the stamp row — no two the same, none of them square. */
+/** Resting angles for the stamp row - no two the same, none of them square. */
 const stampTilts = ['-1.3deg', '0.9deg', '-0.6deg', '1.2deg']
 
 /** Register marks: they start pushed out past the corners and pull in on hover. */
@@ -73,6 +66,41 @@ function ColumnTitle({ children }: { children: React.ReactNode }) {
       {children}
       <span aria-hidden className="h-px flex-1 bg-gradient-to-r from-mustard/30 to-transparent" />
     </h3>
+  )
+}
+
+/**
+ * The build credit on the stub, set as type rather than a badge - a studio line
+ * should read like a signature, not an ad. At rest it is one quiet sentence; on
+ * hover the plate warms, the name takes the mustard with a rule drawn under it,
+ * and the arrow steps out. A click presses the whole line down.
+ */
+function StudioCredit() {
+  return (
+    <a
+      href={builtBy.href}
+      target="_blank"
+      rel="noreferrer noopener"
+      aria-label={`${builtBy.prefix} ${builtBy.name} (opens in a new tab)`}
+      className="group/studio inline-flex items-center gap-2 rounded-full border border-cream/12 bg-cream/[0.03] px-4 py-2 transition-all duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-0.5 hover:border-mustard/45 hover:bg-mustard/[0.07] focus-visible:ring-2 focus-visible:ring-mustard/70 focus-visible:outline-none active:translate-y-0 active:scale-[0.98]"
+    >
+      <span className="text-[0.625rem] font-medium tracking-[0.08em] whitespace-nowrap text-gray-200/45 uppercase transition-colors duration-300 group-hover/studio:text-gray-200/70 sm:text-[0.6875rem] sm:tracking-[0.12em]">
+        {builtBy.prefix}
+      </span>
+
+      <span className="relative font-semibold whitespace-nowrap text-gray-200/90 transition-colors duration-300 group-hover/studio:text-mustard sm:tracking-wide">
+        {builtBy.name}
+        <span
+          aria-hidden
+          className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-mustard to-mustard/20 transition-transform duration-400 ease-[var(--ease-out-soft)] group-hover/studio:scale-x-100"
+        />
+      </span>
+
+      <ArrowUpRight
+        aria-hidden
+        className="size-3.5 shrink-0 text-gray-200/35 transition-all duration-300 ease-[var(--ease-out-soft)] group-hover/studio:translate-x-0.5 group-hover/studio:-translate-y-0.5 group-hover/studio:text-mustard"
+      />
+    </a>
   )
 }
 
@@ -261,7 +289,7 @@ export function Footer() {
         </div>
 
         {/* ===================== the stamp row =====================
-            Not a row of feature cells with dividers between them — four
+            Not a row of feature cells with dividers between them - four
             impressions in a passport. Each sits at its own angle, so the row
             reads as hand-stamped rather than laid out, and hovering one presses
             it: the register marks pull into the corners, the dashed ring inks
@@ -274,7 +302,7 @@ export function Footer() {
                 const Icon = trustIcons[i]
                 return (
                   // The grid stretches the <li> to the tallest card in the row, so
-                  // the stamp inside has to fill it — otherwise the one whose
+                  // the stamp inside has to fill it - otherwise the one whose
                   // title wraps ends up taller than the three beside it.
                   <li key={item.title} className="h-full">
                     <div
@@ -364,7 +392,7 @@ export function Footer() {
               ))}
             </ul>
             <p className="text-[0.8125rem] text-gray-200/55 sm:ml-auto">
-              Pay at check-in — nothing upfront.
+              Pay at check-in - nothing upfront.
             </p>
           </div>
         </div>
@@ -381,10 +409,12 @@ export function Footer() {
           }}
         />
         <div className="bg-black/40">
-          <div className="container-page flex flex-col items-center justify-between gap-4 py-6 text-[0.8125rem] sm:flex-row">
+          <div className="container-page flex flex-col items-center justify-between gap-5 py-6 text-center text-[0.8125rem] lg:flex-row lg:gap-4 lg:text-left">
             <p className="text-gray-200/60">
               © {new Date().getFullYear()} {site.legalName}. All rights reserved.
             </p>
+
+            <StudioCredit />
             <button
               type="button"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -392,7 +422,7 @@ export function Footer() {
             >
               Back to top
               {/* The arrow leaves through the top and the next one is already on
-                  its way up behind it — the button performing its own gesture. */}
+                  its way up behind it - the button performing its own gesture. */}
               <span aria-hidden className="relative block size-4 overflow-hidden">
                 <ArrowUp className="absolute inset-0 size-4 transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover/top:-translate-y-4" />
                 <ArrowUp className="absolute inset-0 size-4 translate-y-4 transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover/top:translate-y-0" />
