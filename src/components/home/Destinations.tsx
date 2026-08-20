@@ -134,12 +134,92 @@ function useAutoSlide(count: number, enabled: boolean) {
   return { index, animate, setPaused, go }
 }
 
+/** How far a finger has to travel before a drag counts as a step. */
+const SWIPE_MIN = 45
+/** Movement below this is a tap, not a drag - it decides nothing about the axis. */
+const AXIS_LOCK = 6
+
+/**
+ * Finger-drag for the deck. The track follows the finger and then either steps
+ * or springs back on release, so the carousel answers a swipe rather than only
+ * the arrows underneath it.
+ *
+ * `touch-pan-y` on the viewport leaves vertical scrolling to the browser, which
+ * means a sideways pan reaches us intact instead of being cancelled mid-gesture.
+ * Mouse pointers are ignored - desktop keeps its hover-to-pause behaviour.
+ */
+function useSwipe(enabled: boolean, step: (dir: number) => void, hold: (held: boolean) => void) {
+  const start = useRef<{ x: number; y: number } | null>(null)
+  const axis = useRef<'x' | 'y' | null>(null)
+  // Set while a drag is in flight, so the click it ends on never opens a card.
+  const moved = useRef(false)
+  const [drag, setDrag] = useState(0)
+
+  const finish = useCallback(
+    (dx: number) => {
+      start.current = null
+      axis.current = null
+      setDrag(0)
+      hold(false)
+      if (Math.abs(dx) >= SWIPE_MIN) step(dx < 0 ? 1 : -1)
+    },
+    [step, hold],
+  )
+
+  const handlers = {
+    onPointerDown(event: React.PointerEvent) {
+      if (!enabled || event.pointerType === 'mouse') return
+      start.current = { x: event.clientX, y: event.clientY }
+      axis.current = null
+      moved.current = false
+      hold(true)
+    },
+    onPointerMove(event: React.PointerEvent) {
+      const from = start.current
+      if (!from) return
+      const dx = event.clientX - from.x
+      const dy = event.clientY - from.y
+
+      if (!axis.current) {
+        if (Math.abs(dx) < AXIS_LOCK && Math.abs(dy) < AXIS_LOCK) return
+        // Locked to the page's scroll direction - hand the gesture back.
+        axis.current = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'
+        if (axis.current === 'y') {
+          start.current = null
+          hold(false)
+          return
+        }
+      }
+
+      moved.current = true
+      setDrag(dx)
+    },
+    onPointerUp(event: React.PointerEvent) {
+      if (start.current) finish(event.clientX - start.current.x)
+    },
+    onPointerCancel() {
+      if (start.current) finish(0)
+    },
+    onClickCapture(event: React.MouseEvent) {
+      if (!moved.current) return
+      moved.current = false
+      event.preventDefault()
+      event.stopPropagation()
+    },
+  }
+
+  return { drag, handlers }
+}
+
 export function Destinations() {
   const [deck, dealt] = useDealOnce<HTMLUListElement>()
   const header = useReveal<HTMLDivElement>(0.4)
   const [reduced] = useState(prefersReducedMotion)
   const { index, animate, setPaused, go } = useAutoSlide(cards.length, dealt && !reduced)
   const current = index % cards.length
+
+  const stepBy = useCallback((dir: number) => go(index + dir), [go, index])
+  const { drag, handlers } = useSwipe(dealt, stepBy, setPaused)
 
   return (
     <section id="destinations" className="bg-canvas py-20 lg:py-28">
@@ -221,11 +301,12 @@ export function Destinations() {
         {/* Viewport. The vertical padding/negative-margin pair leaves room for the
             hover lift and its shadow, which `overflow-hidden` would otherwise clip. */}
         <div
-          className="mt-6 -mb-8 overflow-hidden py-8 lg:mt-12"
+          className="mt-6 -mb-8 touch-pan-y overflow-hidden py-8 select-none lg:mt-12"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           onFocusCapture={() => setPaused(true)}
           onBlurCapture={() => setPaused(false)}
+          {...handlers}
         >
           <ul
             ref={deck}
@@ -233,9 +314,10 @@ export function Destinations() {
               {
                 '--i': index,
                 // One step is a card plus a gap - matches the basis calc on the cards.
-                transform:
-                  'translate3d(calc(var(--i) * -1 * (100% + var(--gap)) / var(--per)), 0, 0)',
-                transition: animate ? `transform ${SLIDE_EASE_MS}ms var(--ease-out-soft)` : 'none',
+                // A drag in progress rides on top of that as a plain pixel offset.
+                transform: `translate3d(calc(var(--i) * -1 * (100% + var(--gap)) / var(--per) + ${drag}px), 0, 0)`,
+                transition:
+                  animate && !drag ? `transform ${SLIDE_EASE_MS}ms var(--ease-out-soft)` : 'none',
               } as React.CSSProperties
             }
             className="flex gap-[var(--gap)] [--gap:1rem] [--per:1.15] will-change-transform sm:[--per:2.25] lg:[--gap:1.5rem] lg:[--per:5]"
