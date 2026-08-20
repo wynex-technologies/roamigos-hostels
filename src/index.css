@@ -4,7 +4,7 @@
 
 /* ---------------------------------------------------------------------------
    Roamigos brand palette. The hues come from the logo source PDF, but every
-   value here is the saturated, high-contrast version of it — the muted
+   value here is the saturated, high-contrast version of it - the muted
    Illustrator fills read matte on screen. Mustard and ink are pinned to the
    agreed values (#ffb300 / zinc-950) and everything else is tuned to sit at
    the same brightness.
@@ -83,14 +83,14 @@
   --edge-hi: rgb(255 255 255 / 0.9);
   --edge-lo: rgb(9 9 11 / 0.05);
 
-  /* The paper grain is what gives a surface its matte cast — off in both themes. */
+  /* The paper grain is what gives a surface its matte cast - off in both themes. */
   --grain-opacity: 0;
   color-scheme: light;
 }
 
 /* ---------------------------- the closing slab ----------------------------
    The band above the footer is the one surface that does not flip with the
-   theme — it is dark on cream and dark on ink — so its palette lives outside
+   theme - it is dark on cream and dark on ink - so its palette lives outside
    both blocks.
 
    The rule it is built on is warm light, cool shadow. Two lit corners only:
@@ -110,7 +110,7 @@
   --slab-vignette: 0.6;
 
   /* The footer is the one place on the site that goes almost black. Legibility
-     is the whole job down here — eight columns of small type — and small text
+     is the whole job down here - eight columns of small type - and small text
      is clearest on a flat, quiet ground, so the warm light is dialled right
      back: a faint maroon wash at the seam where the slab hands over, a gold
      pool low on the right, and nothing else competing with the words. Gold
@@ -184,7 +184,7 @@
     border-radius: 4px;
   }
 
-  /* Warm paper grain — the texture that separates this from a flat template. */
+  /* Warm paper grain - the texture that separates this from a flat template. */
   body::before {
     content: '';
     position: fixed;
@@ -224,7 +224,7 @@
 }
 
 /* The homepage runs wider than the inner pages. The destination deck set the
-   measure, and every band on the home page lines up to it — same gutters as
+   measure, and every band on the home page lines up to it - same gutters as
    `container-page`, eight rem more room. */
 @utility container-wide {
   width: 100%;
@@ -292,7 +292,7 @@
    Editorial reveal. `useReveal` flips `--in` from 0 to 1 once a block scrolls
    into view; everything below reads that single inherited value, and `--lag`
    decides the order. Defaults are the revealed state, so anything that never
-   gets the hook — or a visitor on reduced motion — simply sees the finished
+   gets the hook - or a visitor on reduced motion - simply sees the finished
    composition.
    --------------------------------------------------------------------------- */
 
@@ -328,7 +328,7 @@
 
 /* Destination deck. At `--deal: 0` the cards sit stacked and fanned like a hand
    of cards; at 1 they have been dealt out into the even grid row. The section's
-   scroll handler writes the progress, so the motion itself is pure CSS — and the
+   scroll handler writes the progress, so the motion itself is pure CSS - and the
    whole thing is desktop-only, since the fan needs the width to read. */
 @utility deck-card {
   @media (width >= 64rem) {
@@ -357,7 +357,7 @@
   }
 }
 
-/* Hide scrollbar but keep scrolling — used by the mobile filter rail. */
+/* Hide scrollbar but keep scrolling - used by the mobile filter rail. */
 @utility no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -422,7 +422,7 @@
 
 /* ---------------------------------------------------------------------------
    Journal masthead. The blog hero sets two lines of display type in a
-   photograph — each word is a window onto its own band of one landscape — and
+   photograph - each word is a window onto its own band of one landscape - and
    assembles the stage around them: the plates deal in from the sides, the figure
    rises out of the floor, and the words wipe up from their own baseline.
    Everything is driven by inline `animation` on the elements themselves, so
@@ -440,7 +440,7 @@
   }
 }
 
-/* Once a word has landed, its photograph drifts across the letterforms — the
+/* Once a word has landed, its photograph drifts across the letterforms - the
    type stays put, the view inside it does not. */
 @keyframes fill-pan {
   0%,
@@ -501,7 +501,7 @@
    to earn the space: a warm mesh that leans toward the pointer, an engraved
    grid underneath it for structure, a highlight that keeps crossing the
    headline, and a ticket that reacts to being touched. This file owns the
-   frames and the reusable pieces — the composition lives in
+   frames and the reusable pieces - the composition lives in
    `components/common/Slab.tsx` and `components/common/CtaBand.tsx`.
    --------------------------------------------------------------------------- */
 
@@ -550,7 +550,7 @@
 }
 
 /* One pass of light across a raised control when it is hovered. The control has
-   to clip its own overflow — every button here is a pill, so it already does. */
+   to clip its own overflow - every button here is a pill, so it already does. */
 @utility gloss-sweep {
   position: relative;
   overflow: hidden;
@@ -575,7 +575,7 @@
   }
 }
 
-/* The wax seal on the ticket — one slow rotation, forever, so the band is never
+/* The wax seal on the ticket - one slow rotation, forever, so the band is never
    completely still even when nobody is touching it. */
 @keyframes seal-spin {
   to {
@@ -607,5 +607,45 @@
   .text-sheen {
     background-image: none;
     color: var(--color-mustard);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Offer popup. The backdrop washes in first and the panel arrives a beat later
+   from slightly below, so the modal reads as rising off the page rather than
+   being stamped onto it.
+   --------------------------------------------------------------------------- */
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@utility animate-backdrop-in {
+  animation: backdrop-in 0.35s var(--ease-out-soft) both;
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.965);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility animate-modal-in {
+  animation: modal-in 0.5s 0.06s var(--ease-out-soft) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-modal-in {
+    animation-name: backdrop-in;
   }
 }

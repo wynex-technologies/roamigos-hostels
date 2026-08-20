@@ -3,6 +3,10 @@ import { photo, photoSet } from '@/lib/images'
 
 const MAX_RETRIES = 2
 
+/** Cache-busting query for a retry, on a URL that may or may not already carry one. */
+const bust = (src: string, attempt: number) =>
+  `${src}${src.includes('?') ? '&' : '?'}retry=${attempt}`
+
 interface PhotoProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSet'> {
   /** Unsplash photo id, e.g. `photo-1709805619372-40de3f158e83`. */
   id: string
@@ -14,7 +18,7 @@ interface PhotoProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' | '
  * `<img>` that retries a failed load.
  *
  * Unsplash serves resized derivatives on the fly and intermittently drops one when a
- * page requests a burst of them — the browser reports `complete` with `naturalWidth: 0`
+ * page requests a burst of them - the browser reports `complete` with `naturalWidth: 0`
  * and paints a broken-image icon. A short backoff clears it; two attempts are enough.
  */
 export function Photo({ id, width = 1200, widths, ...props }: PhotoProps) {
@@ -32,7 +36,7 @@ export function Photo({ id, width = 1200, widths, ...props }: PhotoProps) {
 
   return (
     <img
-      src={retrying ? `${photo(id, width)}&retry=${attempt}` : photo(id, width)}
+      src={retrying ? bust(photo(id, width), attempt) : photo(id, width)}
       srcSet={widths && !retrying ? photoSet(id, widths) : undefined}
       onError={() => {
         if (attempt >= MAX_RETRIES) return
