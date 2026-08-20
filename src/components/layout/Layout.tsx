@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Header } from './Header'
 import { Footer } from './Footer'
+import { Footer2 } from './Footer2'
 import { ContactDock } from './ContactDock'
 import { OfferModal } from '@/components/offer/OfferModal'
 
@@ -40,7 +41,13 @@ export function Layout() {
         <Outlet />
       </main>
 
+      {/* TEMPORARY - both footers render so the two can be compared side by side.
+          Drop the loser and this label once the call is made. */}
       <Footer />
+      <div className="bg-black/60 py-2.5 text-center text-[0.6875rem] font-bold tracking-[0.2em] text-gray-200/45 uppercase">
+        Footer 1 above &middot; Footer 2 below
+      </div>
+      <Footer2 />
 
       {/* The offer popup mounts here, not in a page - it belongs to the visit,
           and mounting it once means route changes never re-trigger it. */}

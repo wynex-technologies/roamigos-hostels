@@ -110,14 +110,10 @@
   --slab-vignette: 0.6;
 
   /* The footer is the one place on the site that goes almost black. Legibility
-     is the whole job down here - eight columns of small type - and small text
-     is clearest on a flat, quiet ground, so the warm light is dialled right
-     back: a faint maroon wash at the seam where the slab hands over, a gold
-     pool low on the right, and nothing else competing with the words. Gold
-     carries the accent instead of maroon carrying the field. */
+     is the whole job down here - four columns of small type - and small text is
+     clearest on a flat, unlit ground, so it stays one solid colour: hairlines
+     divide the bands and gold carries the accent. */
   --footer-ground: #09090b;
-  --footer-lit: #b91c1c;
-  --footer-lamp: #f59e0b;
 }
 
 /* ----------------------------------- dark --------------------------------- */

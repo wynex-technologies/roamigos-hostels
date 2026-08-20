@@ -78,13 +78,6 @@ export const footerLinks = {
   ],
 }
 
-/** The studio that built the site, credited as type on the footer stub. */
-export const builtBy = {
-  prefix: 'Designed & developed by',
-  name: 'Wynex Technologies',
-  href: 'https://www.wynextechnologies.com/',
-}
-
 export const trustBar = [
   { title: 'Safe & Secure', note: '24x7 security & CCTV' },
   { title: 'Best Price Guarantee', note: 'Get the best deals online' },
