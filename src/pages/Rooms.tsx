@@ -55,7 +55,7 @@ const marquee = [
 
 export default function Rooms() {
   usePageMeta(
-    `Rooms & Beds — ${site.legalName}`,
+    `Rooms & Beds - ${site.legalName}`,
     'Cozy dorms, private rooms and deluxe stays at Roamigos. Compare beds, prices and amenities, then book on WhatsApp.',
   )
 
@@ -260,7 +260,7 @@ export default function Rooms() {
                 />
               </div>
 
-              {/* The desk, one tap away — the only green on the page. */}
+              {/* The desk, one tap away - the only green on the page. */}
               <div className="card-raised relative overflow-hidden p-6">
                 <span
                   aria-hidden
@@ -325,7 +325,7 @@ export default function Rooms() {
               <div className="card-raised mt-7 px-6 py-20 text-center">
                 <p className="font-display text-xl font-semibold">No rooms match those filters</p>
                 <p className="mx-auto mt-3 max-w-sm text-[0.9375rem] text-muted text-pretty">
-                  Try widening the price range or clearing a filter — or just message us and
+                  Try widening the price range or clearing a filter - or just message us and
                   we&apos;ll sort it out.
                 </p>
                 <button
@@ -457,7 +457,7 @@ export default function Rooms() {
 /**
  * One room, printed as a plate: the photograph carries the whole band and the
  * facts sit on glass along its bottom edge. The panel holds the same four things
- * in the same order every time — name, what it sleeps, the rate, the way in —
+ * in the same order every time - name, what it sleeps, the rate, the way in -
  * so a column of these is still comparable at a glance.
  */
 function RoomRow({
@@ -540,12 +540,12 @@ function RoomRow({
                 <CapacityIcon className="size-4 text-mustard" />
                 {room.capacityLabel}
               </span>
-              <span aria-hidden className="size-1 rotate-45 bg-cream/40" />
+              <span aria-hidden className="hidden size-1 rotate-45 bg-cream/40 sm:block" />
               <span className="inline-flex items-center gap-1.5">
                 <Bath className="size-4 text-mustard" />
                 {room.bathroom}
               </span>
-              <span aria-hidden className="size-1 rotate-45 bg-cream/40" />
+              <span aria-hidden className="hidden size-1 rotate-45 bg-cream/40 sm:block" />
               <span className="inline-flex items-center gap-1.5">
                 <Star className="size-3.5 fill-mustard text-mustard" aria-hidden />
                 <span className="font-semibold text-gray-200">{room.rating.toFixed(1)}</span>
@@ -570,8 +570,10 @@ function RoomRow({
             </ul>
           </div>
 
-          {/* The rate corner — same place on every plate. */}
-          <div className="flex items-end justify-between gap-5 border-t border-cream/12 pt-4 lg:shrink-0 lg:flex-col lg:items-end lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
+          {/* The rate corner - same place on every plate. */}
+          {/* The rate corner - same place on every plate. Phones stack it, since
+              the rate and the button together do not fit on one line there. */}
+          <div className="flex flex-col gap-4 border-t border-cream/12 pt-4 sm:flex-row sm:items-end sm:justify-between sm:gap-5 lg:shrink-0 lg:flex-col lg:items-end lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
             <p className="lg:text-right">
               <span className="block text-[0.625rem] font-bold tracking-[0.2em] text-gray-200/60 uppercase">
                 From
@@ -579,11 +581,13 @@ function RoomRow({
               <span className="font-display text-[1.875rem] leading-none font-semibold text-white">
                 {formatINR(room.pricePerNight)}
               </span>
-              <span className="text-[0.8125rem] text-gray-200/70"> / {unit}</span>
-              <span className="mt-1.5 block text-[0.75rem] text-gray-200/55">Pay at check-in</span>
+              <span className="text-[0.8125rem] whitespace-nowrap text-gray-200/70"> / {unit}</span>
+              <span className="mt-1.5 block text-[0.75rem] whitespace-nowrap text-gray-200/55">
+                Pay at check-in
+              </span>
             </p>
 
-            <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-cream px-6 py-3 text-[0.875rem] font-semibold text-ink transition-[background-color,transform] duration-300 group-hover:-translate-y-0.5 group-hover:bg-mustard">
+            <span className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-cream px-6 py-3 text-[0.875rem] font-semibold text-ink transition-[background-color,transform] duration-300 group-hover:-translate-y-0.5 group-hover:bg-mustard">
               View room
               <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" />
             </span>

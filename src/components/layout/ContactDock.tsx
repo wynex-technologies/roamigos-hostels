@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 
 /**
  * The WhatsApp mark. Lucide ships no brand glyph for it, and the generic speech
- * bubble reads as "chat" rather than "WhatsApp" — on a green button people look
+ * bubble reads as "chat" rather than "WhatsApp" - on a green button people look
  * for the real logo, so it is drawn here as a single filled path.
  */
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -25,7 +25,7 @@ const socialIcons: Record<string, LucideIcon> = {
 
 /**
  * Which socials the dock surfaces, in order. The footer still lists every
- * channel — this is the short list worth interrupting someone mid-page for, so
+ * channel - this is the short list worth interrupting someone mid-page for, so
  * a social added to `data/site.ts` stays out of here until it is named.
  */
 const DOCK_SOCIALS = ['instagram', 'facebook']
@@ -36,14 +36,14 @@ const STAGGER_MS = 45
 /**
  * The floating contact dock. Collapsed it is the WhatsApp shortcut it has always
  * been; tapped, it unfurls the rest of the channels above it. WhatsApp stays
- * green — this is the one CTA the brand rules hand that colour to — and the
+ * green - this is the one CTA the brand rules hand that colour to - and the
  * social buttons take the footer's cream-to-mustard treatment.
  */
 export function ContactDock({ lifted }: { lifted: boolean }) {
   const [open, setOpen] = useState(false)
   const dock = useRef<HTMLDivElement>(null)
 
-  // A dock left hanging open is just clutter — Escape and any outside press close it.
+  // A dock left hanging open is just clutter - Escape and any outside press close it.
   useEffect(() => {
     if (!open) return
     const onKey = (event: KeyboardEvent) => {
@@ -89,9 +89,9 @@ export function ContactDock({ lifted }: { lifted: boolean }) {
     <div
       ref={dock}
       className={cn(
-        'fixed right-5 z-40 flex flex-col items-center gap-3 sm:right-7 sm:bottom-7',
-        // Room detail pages carry a sticky booking bar on mobile — clear it.
-        lifted ? 'bottom-24' : 'bottom-6',
+        'fixed right-5 z-40 flex flex-col items-center gap-3 sm:right-7',
+        // Room detail pages carry a sticky booking bar on mobile - clear it.
+        lifted ? 'bottom-24 sm:bottom-28' : 'bottom-6 sm:bottom-7',
       )}
     >
       <ul

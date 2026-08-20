@@ -30,7 +30,7 @@ const promises = [
  * Closing band shared by the journal, gallery and contact pages.
  *
  * The ask at the bottom of a page is the same every time, so the band cannot
- * lean on new copy to stay interesting — it has to be an object worth arriving
+ * lean on new copy to stay interesting - it has to be an object worth arriving
  * at. Hence the ticket: a real boarding pass with notches punched out of its
  * sides, a perforated tear line, and a seal that never stops turning. It says
  * the same three things the copy says (nothing upfront, confirmed in minutes,
@@ -153,12 +153,12 @@ export function CtaBand({
  * The boarding pass.
  *
  * The notches are punched with a mask rather than drawn with two circles, so
- * the slab's own gradient shows through the holes — which is the whole reason
+ * the slab's own gradient shows through the holes - which is the whole reason
  * it reads as a torn ticket instead of a card with dots on it.
  */
 function BoardingPass() {
   // `useId` hands back colons, which are legal in a fragment but a nuisance
-  // everywhere else — strip them so the seal's <textPath> reference is plain.
+  // everywhere else - strip them so the seal's <textPath> reference is plain.
   const ring = `seal-${useId().replace(/:/g, '')}`
 
   return (
@@ -198,7 +198,7 @@ function BoardingPass() {
             </span>
           </span>
 
-          {/* The route. The dot runs the dashes on hover — one small reward for
+          {/* The route. The dot runs the dashes on hover - one small reward for
               having touched the thing. */}
           <span aria-hidden className="relative mb-1.5 h-px flex-1 bg-cream/25">
             <span
@@ -228,7 +228,7 @@ function BoardingPass() {
         />
 
         {/* ---------------- the counterfoil ---------------- */}
-        <dl className="mt-5 grid grid-cols-3 gap-3">
+        <dl className="mt-5 flex flex-wrap gap-x-7 gap-y-3">
           {[
             { k: 'Deposit', v: '₹0' },
             { k: 'Confirm', v: '~5 min' },
@@ -283,7 +283,7 @@ function BoardingPass() {
           </svg>
 
           <p className="text-[0.8125rem] leading-snug text-gray-200/70">
-            Message the desk and this is the whole booking —
+            Message the desk and this is the whole booking -
             <span className="text-gray-200"> no card, no forms, no deposit.</span>
           </p>
         </div>

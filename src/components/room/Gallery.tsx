@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
  * a filmstrip underneath to move through the set, and a lightbox for anyone who
  * wants the picture and nothing else.
  *
- * `children` is the titling — the page owns that copy, the gallery owns the
+ * `children` is the titling - the page owns that copy, the gallery owns the
  * photograph it sits on.
  */
 export function Gallery({
@@ -26,7 +26,7 @@ export function Gallery({
   name: string
   badge?: string
   totalPhotos: number
-  /** Sits on the top line of the frame, beside the badge — the breadcrumb. */
+  /** Sits on the top line of the frame, beside the badge - the breadcrumb. */
   topSlot?: ReactNode
   children?: ReactNode
 }) {
@@ -60,7 +60,7 @@ export function Gallery({
   return (
     <>
       {/* ------------------------------ the frame ------------------------------ */}
-      <section className="group/stage relative isolate flex min-h-[34rem] flex-col justify-between overflow-hidden pt-26 pb-12 sm:min-h-[40rem] sm:pt-30 lg:min-h-[45rem] lg:pb-16">
+      <section className="group/stage relative isolate flex min-h-[34rem] flex-col justify-between gap-10 overflow-hidden pt-26 pb-12 sm:min-h-[40rem] sm:pt-30 lg:min-h-[45rem] lg:pb-16">
         {images.map((image, i) => (
           <Photo
             key={image}
@@ -68,7 +68,7 @@ export function Gallery({
             width={2000}
             widths={[900, 1400, 2000]}
             sizes="100vw"
-            alt={i === index ? `${name} — photo ${i + 1}` : ''}
+            alt={i === index ? `${name} - photo ${i + 1}` : ''}
             aria-hidden={i !== index}
             className={cn(
               'absolute inset-0 -z-20 size-full object-cover',
@@ -100,7 +100,7 @@ export function Gallery({
       </section>
 
       {/* ----------------------------- the filmstrip ----------------------------
-          The whole control set lives down here with the thumbnails — the frame
+          The whole control set lives down here with the thumbnails - the frame
           above stays a photograph with the room's name on it, nothing else. */}
       <div className="border-b border-line bg-surface-2">
         <div className="container-page">
@@ -177,7 +177,7 @@ export function Gallery({
 
       {/* ------------------------------ the lightbox ----------------------------
           Portalled to the body on purpose: `<main>` carries `relative z-10`, so
-          an overlay rendered in place would sit under the sticky header — and
+          an overlay rendered in place would sit under the sticky header - and
           the close button would be unclickable behind it. */}
       {lightbox &&
         createPortal(
@@ -191,7 +191,7 @@ export function Gallery({
             <Photo
               id={images[index]}
               width={1920}
-              alt={`${name} — photo ${index + 1}`}
+              alt={`${name} - photo ${index + 1}`}
               className="max-h-full max-w-full animate-rise rounded-xl object-contain"
               onClick={(e) => e.stopPropagation()}
             />
