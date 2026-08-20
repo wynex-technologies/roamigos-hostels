@@ -291,19 +291,29 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
             <Block id="amenities" className="mt-16">
               <SectionHead kicker="The house" title="Included with every stay" />
 
-              <ul className="mt-7 grid overflow-hidden rounded-xl2 border border-line sm:grid-cols-2">
-                {hostelAmenities.map((amenity, i) => (
-                  <li
-                    key={amenity}
-                    className={cn(
-                      'group flex items-center gap-3.5 border-line px-5 py-4 transition-colors duration-300 hover:bg-surface-2',
-                      i < hostelAmenities.length - 1 && 'border-b',
-                      i % 2 === 0 && 'sm:border-r',
-                      i >= hostelAmenities.length - 2 && 'sm:border-b-0',
-                    )}
-                  >
-                    <Check className="size-4 shrink-0 text-accent transition-transform duration-400 ease-[var(--ease-out-soft)] group-hover:scale-125" />
-                    <span className="text-[0.9375rem] font-medium text-heading">{amenity}</span>
+              <ul className="mt-7 grid gap-3 sm:grid-cols-2">
+                {hostelAmenities.map((amenity) => (
+                  <li key={amenity.label}>
+                    <div className="group relative flex items-center gap-4 overflow-hidden rounded-xl2 border border-line bg-surface px-5 py-4 transition-[transform,border-color,box-shadow] duration-400 ease-[var(--ease-out-soft)] hover:-translate-y-1 hover:border-line-strong hover:shadow-warm">
+                      {/* A slow mustard wash that crosses the card on hover. */}
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-mustard/12 to-transparent transition-transform duration-[900ms] ease-[var(--ease-out-soft)] group-hover:translate-x-full"
+                      />
+
+                      <span className="relative grid size-11 shrink-0 place-items-center rounded-xl border border-line text-accent transition-[background-color,border-color,color,transform] duration-400 ease-[var(--ease-out-soft)] group-hover:scale-105 group-hover:border-transparent group-hover:bg-mustard group-hover:text-ink">
+                        <amenity.icon className="size-[1.15rem]" />
+                      </span>
+
+                      <span className="relative min-w-0 text-[0.9375rem] font-semibold text-heading text-pretty">
+                        {amenity.label}
+                      </span>
+
+                      <Check
+                        aria-hidden
+                        className="relative ml-auto size-4 shrink-0 translate-x-1 text-accent opacity-0 transition-[opacity,transform] duration-400 ease-[var(--ease-out-soft)] group-hover:translate-x-0 group-hover:opacity-100"
+                      />
+                    </div>
                   </li>
                 ))}
               </ul>

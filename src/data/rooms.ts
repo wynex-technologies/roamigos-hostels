@@ -1,3 +1,14 @@
+import {
+  Coffee,
+  Luggage,
+  MapPinned,
+  ShieldCheck,
+  ShowerHead,
+  Sofa,
+  WashingMachine,
+  Wifi,
+} from 'lucide-react'
+
 export type RoomCategory = 'dorm' | 'private' | 'deluxe' | 'long-stay'
 
 export type AmenityKey = 'ac' | 'ensuite' | 'locker' | 'balcony' | 'desk' | 'mountain-view'
@@ -53,16 +64,19 @@ export const amenityLabels: Record<AmenityKey, string> = {
   'mountain-view': 'Mountain View',
 }
 
-/** Perks that apply to every booking, listed on each room's detail page. */
+/**
+ * Perks that apply to every booking, listed on each room's detail page. Each one
+ * carries its own lucide icon so the card grid stays a single source of truth.
+ */
 export const hostelAmenities = [
-  'Free Wi-Fi',
-  '24x7 Security',
-  'Hot Showers',
-  'Common Area',
-  'Travel Desk',
-  'Laundry Service',
-  'Luggage Storage',
-  'Rooftop Café',
+  { label: 'Free Wi-Fi', icon: Wifi },
+  { label: '24x7 Security', icon: ShieldCheck },
+  { label: 'Hot Showers', icon: ShowerHead },
+  { label: 'Common Area', icon: Sofa },
+  { label: 'Travel Desk', icon: MapPinned },
+  { label: 'Laundry Service', icon: WashingMachine },
+  { label: 'Luggage Storage', icon: Luggage },
+  { label: 'Rooftop Café', icon: Coffee },
 ]
 
 export const rooms: Room[] = [
@@ -94,7 +108,7 @@ export const rooms: Room[] = [
     amenities: ['locker'],
     images: [
       'photo-1709805619372-40de3f158e83',
-      'photo-1768289269971-6171457bed13',
+      'photo-1718711621245-9c18514277cc',
       'photo-1555854877-bab0e564b8d5',
       'photo-1781415980730-bfcf192e38bc',
       'photo-1680965075873-64356db057fb',
@@ -129,8 +143,8 @@ export const rooms: Room[] = [
     ],
     amenities: ['ensuite', 'locker'],
     images: [
-      'photo-1768289269971-6171457bed13',
       'photo-1781415980730-bfcf192e38bc',
+      'photo-1555854877-bab0e564b8d5',
       'photo-1549881567-c622c1080d78',
       'photo-1718711621245-9c18514277cc',
       'photo-1578112010316-b44c50d27b2b',
@@ -270,8 +284,8 @@ export const rooms: Room[] = [
     ],
     amenities: ['ac', 'ensuite', 'locker'],
     images: [
-      'photo-1768289269971-6171457bed13',
       'photo-1549881567-c622c1080d78',
+      'photo-1555854877-bab0e564b8d5',
       'photo-1718711621245-9c18514277cc',
       'photo-1781415980730-bfcf192e38bc',
       'photo-1680965075873-64356db057fb',
