@@ -108,11 +108,18 @@ export function ContactHero() {
               <div className="flex gap-3">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-mustard" />
                 <address className="text-[0.9375rem] leading-relaxed text-gray-200 not-italic">
-                  {site.address.line1}
-                  <br />
-                  {site.address.line2}
-                  <br />
-                  {site.address.line3}
+                  <a
+                    href={site.address.mapUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="transition-colors duration-200 hover:text-mustard"
+                  >
+                    {site.address.line1}
+                    <br />
+                    {site.address.line2}
+                    <br />
+                    {site.address.line3}
+                  </a>
                 </address>
               </div>
 

@@ -21,15 +21,17 @@ export const site = {
   email: 'stay@roamigos.in',
 
   /**
-   * Street address of the flagship property, used by the contact page and the
-   * embedded map. TODO: replace with the real registered address before launch -
-   * `mapQuery` is what gets handed to Google Maps, so it has to be searchable.
+   * The flagship property, as Google Maps has it listed. `mapUrl` is the share
+   * link off the listing - use it for anything a visitor taps. `coords` is the
+   * pin itself, which is what the embed and the directions link take, so they
+   * land on the door rather than on a search result.
    */
   address: {
-    line1: 'Roamigos Hostel, GS Road',
-    line2: 'Christian Basti, Guwahati',
-    line3: 'Assam 781005, India',
-    mapQuery: 'Christian Basti, GS Road, Guwahati, Assam 781005',
+    line1: 'Roamigos Guwahati',
+    line2: 'Pan Bazar, Guwahati',
+    line3: 'Assam, India',
+    coords: '26.1788782,91.7455179',
+    mapUrl: 'https://maps.app.goo.gl/sDFw2wXe223EitR16',
   },
 
   checkIn: '1:00 PM',

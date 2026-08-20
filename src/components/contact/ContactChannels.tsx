@@ -23,7 +23,7 @@ export function ContactChannels() {
     whatsapp: enquiryUrl(),
     phone: `tel:${site.phoneDisplay.replace(/\s/g, '')}`,
     email: `mailto:${site.email}`,
-    visit: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address.mapQuery)}`,
+    visit: site.address.mapUrl,
   }
 
   const values: Record<string, string> = {

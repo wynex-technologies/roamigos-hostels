@@ -12,7 +12,8 @@ const icons = { air: Plane, rail: Train, bus: Bus, onward: Route }
 export function ContactVisit() {
   const list = useReveal<HTMLUListElement>(0.15)
 
-  const query = encodeURIComponent(site.address.mapQuery)
+  /** The pin, not a search - both the embed and the directions link use it. */
+  const pin = encodeURIComponent(site.address.coords)
 
   return (
     <section id="visit" className="scroll-mt-24 py-16 sm:py-20 lg:py-24">
@@ -35,7 +36,7 @@ export function ContactVisit() {
           <div className="overflow-hidden rounded-xl2 border border-line shadow-warm">
             <iframe
               title={`Map showing ${site.legalName}`}
-              src={`https://www.google.com/maps?q=${query}&output=embed`}
+              src={`https://www.google.com/maps?q=${pin}&z=16&output=embed`}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="h-80 w-full border-0 lg:h-full lg:min-h-[28rem]"
@@ -81,7 +82,7 @@ export function ContactVisit() {
             </ul>
 
             <a
-              href={`https://www.google.com/maps/dir/?api=1&destination=${query}`}
+              href={`https://www.google.com/maps/dir/?api=1&destination=${pin}`}
               target="_blank"
               rel="noreferrer"
               className="group mt-6 inline-flex items-center gap-3 text-[0.9375rem] font-semibold text-heading"

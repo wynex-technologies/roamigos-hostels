@@ -151,6 +151,19 @@ export function Footer() {
               <Mail className="size-4 shrink-0 text-mustard" />
               <span className="truncate">{site.email}</span>
             </a>
+            <a
+              href={site.address.mapUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex gap-3 text-gray-200/85 transition-colors duration-200 hover:text-mustard"
+            >
+              <MapPin className="mt-0.5 size-4 shrink-0 text-mustard" />
+              <span>
+                {site.address.line1}, {site.address.line2}
+                <br />
+                {site.address.line3}
+              </span>
+            </a>
           </div>
         </div>
       </div>
