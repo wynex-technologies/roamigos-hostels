@@ -38,7 +38,7 @@ export function Slab({ className, children }: { className?: string; children: Re
       onPointerMove={track}
       onPointerLeave={rest}
       className={cn(
-        'group/slab relative isolate overflow-hidden rounded-[2rem] border border-cream/10 text-cream',
+        'group/slab relative isolate overflow-hidden rounded-[2rem] border border-cream/10 text-gray-200',
         'shadow-[0_40px_90px_-40px_rgb(37_37_34/0.55)]',
         className,
       )}

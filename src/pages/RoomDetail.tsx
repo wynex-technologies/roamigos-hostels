@@ -116,7 +116,7 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
         topSlot={
           <nav
             aria-label="Breadcrumb"
-            className="flex flex-wrap items-center gap-1.5 text-[0.75rem] font-semibold tracking-wide text-cream/60 uppercase"
+            className="flex flex-wrap items-center gap-1.5 text-[0.75rem] font-semibold tracking-wide text-gray-200/60 uppercase"
           >
             <Link to="/" className="transition-colors hover:text-mustard">
               Home
@@ -126,7 +126,7 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
               Rooms &amp; Beds
             </Link>
             <ChevronRight className="size-3.5" />
-            <span className="text-cream">{room.name}</span>
+            <span className="text-gray-200">{room.name}</span>
           </nav>
         }
       >
@@ -136,11 +136,11 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
               {categoryLabels[room.categories[0]]}
             </p>
 
-            <h1 className="mt-4 font-display text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.05] font-semibold text-cream text-balance">
+            <h1 className="mt-4 font-display text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.05] font-semibold text-white text-balance">
               {room.name}
             </h1>
 
-            <p className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.9375rem] text-cream/80">
+            <p className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.9375rem] text-gray-200/80">
               <span className="inline-flex items-center gap-2">
                 <CapacityIcon className="size-4 text-mustard" />
                 {room.capacityLabel}
@@ -153,22 +153,22 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
               <span aria-hidden className="size-1 rotate-45 bg-cream/40" />
               <span className="inline-flex items-center gap-2">
                 <Star className="size-4 fill-mustard text-mustard" aria-hidden />
-                <span className="font-semibold text-cream">{room.rating.toFixed(1)}</span>
-                <span className="text-cream/60">({room.reviewCount})</span>
+                <span className="font-semibold text-gray-200">{room.rating.toFixed(1)}</span>
+                <span className="text-gray-200/60">({room.reviewCount})</span>
               </span>
             </p>
           </div>
 
           {/* The rate, on glass — the one thing that should never need scrolling for. */}
           <div className="rounded-2xl border border-cream/15 bg-ink/45 p-5 backdrop-blur-lg sm:p-6">
-            <p className="text-[0.625rem] font-bold tracking-[0.2em] text-cream/60 uppercase">
+            <p className="text-[0.625rem] font-bold tracking-[0.2em] text-gray-200/60 uppercase">
               From
             </p>
             <p className="mt-2">
-              <span className="font-display text-[2.25rem] leading-none font-semibold text-cream">
+              <span className="font-display text-[2.25rem] leading-none font-semibold text-white">
                 {formatINR(room.pricePerNight)}
               </span>
-              <span className="text-[0.875rem] text-cream/70"> / {unit}</span>
+              <span className="text-[0.875rem] text-gray-200/70"> / {unit}</span>
             </p>
             <a
               href="#book"
@@ -177,7 +177,7 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
               Check dates
               <ArrowUpRight className="size-4" />
             </a>
-            <p className="mt-3 text-center text-[0.75rem] text-cream/60">
+            <p className="mt-3 text-center text-[0.75rem] text-gray-200/60">
               Confirmed on WhatsApp in minutes
             </p>
           </div>
@@ -422,17 +422,17 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
                           aria-hidden
                           className="block h-px w-7 origin-left bg-mustard transition-transform duration-600 ease-[var(--ease-out-soft)] group-hover:scale-x-[3.5]"
                         />
-                        <h3 className="mt-4 font-display text-[1.25rem] leading-tight font-semibold text-cream text-balance">
+                        <h3 className="mt-4 font-display text-[1.25rem] leading-tight font-semibold text-white text-balance">
                           {item.name}
                         </h3>
-                        <p className="mt-2 text-[0.8125rem] text-cream/75">{item.capacityLabel}</p>
+                        <p className="mt-2 text-[0.8125rem] text-gray-200">{item.capacityLabel}</p>
 
                         <p className="mt-4 flex items-end justify-between gap-3 border-t border-cream/15 pt-4">
                           <span>
-                            <span className="font-display text-[1.5rem] leading-none font-semibold text-cream">
+                            <span className="font-display text-[1.5rem] leading-none font-semibold text-white">
                               {formatINR(item.pricePerNight)}
                             </span>
-                            <span className="text-[0.75rem] text-cream/70"> / {otherUnit}</span>
+                            <span className="text-[0.75rem] text-gray-200/70"> / {otherUnit}</span>
                           </span>
                           <span className="grid size-9 shrink-0 place-items-center rounded-full bg-cream/95 text-maroon transition-transform duration-400 ease-[var(--ease-out-soft)] group-hover:rotate-45">
                             <ArrowUpRight className="size-4" />

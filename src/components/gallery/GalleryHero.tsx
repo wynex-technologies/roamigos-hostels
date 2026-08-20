@@ -14,12 +14,12 @@ import { galleryHero as g } from '@/data/gallery'
 const PIN = 'w-[15rem] shrink-0 snap-center xl:pointer-events-auto xl:absolute'
 
 /**
- * The stock itself. Cream rather than a semantic surface on purpose — these are
- * physical prints pinned to a board, so they stay paper-coloured in both themes
- * and the dark canvas reads as the wall behind them.
+ * The stock itself. A fixed white rather than a semantic surface on purpose —
+ * these are physical prints pinned to a board, so they stay paper-coloured in
+ * both themes and the dark canvas reads as the wall behind them.
  */
 const paper =
-  'group/card relative overflow-hidden rounded-[3px] bg-cream shadow-warm-lg ring-1 ring-ink/10 ' +
+  'group/card relative overflow-hidden rounded-[3px] bg-white shadow-warm-lg ring-1 ring-ink/10 ' +
   'transition-transform duration-500 ease-[var(--ease-out-soft)] xl:hover:rotate-0 xl:hover:scale-[1.03]'
 
 /** Pointer drift, in px, applied to the outer node so the card keeps its own tilt. */
@@ -92,11 +92,11 @@ export function GalleryHero() {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-40 -left-32 size-[34rem] rounded-full bg-mustard/12 blur-[120px]"
+        className="pointer-events-none absolute -top-40 -left-32 size-[34rem] rounded-full bg-mustard/6 blur-[120px]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-28 -bottom-48 size-[36rem] rounded-full bg-maroon/12 blur-[120px]"
+        className="pointer-events-none absolute -right-28 -bottom-48 size-[36rem] rounded-full bg-maroon/6 blur-[120px]"
       />
 
       {/* ---------- ghost wordmark behind everything ---------- */}

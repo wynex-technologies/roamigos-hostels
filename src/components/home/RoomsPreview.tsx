@@ -230,28 +230,28 @@ export function RoomsPreview() {
                       <p className="text-[0.625rem] font-bold tracking-[0.22em] text-mustard uppercase">
                         {String(index + 1).padStart(2, '0')} · Now viewing
                       </p>
-                      <h3 className="mt-2.5 font-display text-[clamp(1.6rem,2.4vw,2.125rem)] leading-tight font-semibold text-cream text-balance">
+                      <h3 className="mt-2.5 font-display text-[clamp(1.6rem,2.4vw,2.125rem)] leading-tight font-semibold text-white text-balance">
                         {stage.name}
                       </h3>
                     </div>
 
                     <p className="shrink-0 text-right">
-                      <span className="block text-[0.625rem] font-bold tracking-[0.2em] text-cream/60 uppercase">
+                      <span className="block text-[0.625rem] font-bold tracking-[0.2em] text-gray-200/60 uppercase">
                         From
                       </span>
-                      <span className="font-display text-[1.75rem] leading-none font-semibold text-cream">
+                      <span className="font-display text-[1.75rem] leading-none font-semibold text-white">
                         {formatINR(stage.pricePerNight)}
                       </span>
-                      <span className="text-[0.8125rem] text-cream/70"> / {unit(stage)}</span>
+                      <span className="text-[0.8125rem] text-gray-200/70"> / {unit(stage)}</span>
                     </p>
                   </div>
 
-                  <p className="mt-4 max-w-lg text-[0.9375rem] leading-relaxed text-cream/80 text-pretty">
+                  <p className="mt-4 max-w-lg text-[0.9375rem] leading-relaxed text-gray-200 text-pretty">
                     {stage.shortDescription}
                   </p>
 
                   <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-cream/12 pt-5">
-                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.8125rem] text-cream/85">
+                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.8125rem] text-gray-200/85">
                       <span className="inline-flex items-center gap-1.5">
                         <StageCapacityIcon className="size-4 text-mustard" />
                         {stage.capacityLabel}
@@ -262,10 +262,10 @@ export function RoomsPreview() {
                       </span>
                       <span className="inline-flex items-center gap-1.5">
                         <Star className="size-4 fill-mustard text-mustard" aria-hidden />
-                        <span className="font-semibold text-cream">
+                        <span className="font-semibold text-gray-200">
                           {stage.rating.toFixed(1)}
                         </span>
-                        <span className="text-cream/60">({stage.reviewCount})</span>
+                        <span className="text-gray-200/60">({stage.reviewCount})</span>
                       </span>
                     </div>
 
@@ -414,16 +414,16 @@ function RoomPlate({ room, index }: { room: Room; index: number }) {
         </Badge>
       )}
 
-      <span className="absolute top-4 right-4 font-display text-[0.8125rem] font-semibold text-cream/70 tabular-nums">
+      <span className="absolute top-4 right-4 font-display text-[0.8125rem] font-semibold text-gray-200/70 tabular-nums">
         {String(index).padStart(2, '0')}
       </span>
 
       <div className="p-5">
-        <h3 className="font-display text-[1.375rem] leading-tight font-semibold text-cream text-balance">
+        <h3 className="font-display text-[1.375rem] leading-tight font-semibold text-white text-balance">
           {room.name}
         </h3>
 
-        <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.8125rem] text-cream/80">
+        <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.8125rem] text-gray-200/80">
           <span className="inline-flex items-center gap-1.5">
             <CapacityIcon className="size-3.5 text-mustard" />
             {room.capacityLabel}
@@ -434,19 +434,19 @@ function RoomPlate({ room, index }: { room: Room; index: number }) {
           </span>
         </p>
 
-        <p className="mt-3 line-clamp-2 text-[0.875rem] leading-relaxed text-cream/75 text-pretty">
+        <p className="mt-3 line-clamp-2 text-[0.875rem] leading-relaxed text-gray-200 text-pretty">
           {room.shortDescription}
         </p>
 
         <div className="mt-4 flex items-end justify-between gap-3 border-t border-cream/15 pt-4">
           <p>
-            <span className="block text-[0.625rem] font-bold tracking-[0.2em] text-cream/60 uppercase">
+            <span className="block text-[0.625rem] font-bold tracking-[0.2em] text-gray-200/60 uppercase">
               From
             </span>
-            <span className="font-display text-[1.5rem] leading-none font-semibold text-cream">
+            <span className="font-display text-[1.5rem] leading-none font-semibold text-white">
               {formatINR(room.pricePerNight)}
             </span>
-            <span className="text-[0.75rem] text-cream/70"> / {unit(room)}</span>
+            <span className="text-[0.75rem] text-gray-200/70"> / {unit(room)}</span>
           </p>
 
           <span className="grid size-10 shrink-0 place-items-center rounded-full bg-cream/95 text-maroon">

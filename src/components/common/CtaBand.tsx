@@ -76,14 +76,14 @@ export function CtaBand({
 
               <h2
                 style={lag(0.08)}
-                className="reveal-rise mt-5 font-display text-[clamp(2rem,4.4vw,3.25rem)] leading-[1.06] font-semibold text-cream text-balance"
+                className="reveal-rise mt-5 font-display text-[clamp(2rem,4.4vw,3.25rem)] leading-[1.06] font-semibold text-white text-balance"
               >
                 {title}
               </h2>
 
               <p
                 style={lag(0.16)}
-                className="reveal-rise mt-6 max-w-xl text-[1.0625rem] leading-relaxed text-cream/75 text-pretty"
+                className="reveal-rise mt-6 max-w-xl text-[1.0625rem] leading-relaxed text-gray-200 text-pretty"
               >
                 {copy}
               </p>
@@ -122,10 +122,10 @@ export function CtaBand({
                       <promise.icon className="size-[0.95rem]" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-[0.875rem] font-semibold text-cream">
+                      <span className="block text-[0.875rem] font-semibold text-gray-200">
                         {promise.label}
                       </span>
-                      <span className="mt-0.5 block text-[0.78rem] leading-snug text-cream/55">
+                      <span className="mt-0.5 block text-[0.78rem] leading-snug text-gray-200/55">
                         {promise.note}
                       </span>
                       <span
@@ -183,17 +183,17 @@ function BoardingPass() {
         }}
       >
         {/* ---------------- stub head ---------------- */}
-        <div className="flex items-center justify-between text-[0.6rem] font-bold tracking-[0.24em] text-cream/55 uppercase">
+        <div className="flex items-center justify-between text-[0.6rem] font-bold tracking-[0.24em] text-gray-200/55 uppercase">
           <span>Boarding pass</span>
           <span className="text-mustard">No. 01</span>
         </div>
 
         <div className="mt-5 flex items-end justify-between gap-3">
           <span>
-            <span className="block text-[0.58rem] tracking-[0.2em] text-cream/45 uppercase">
+            <span className="block text-[0.58rem] tracking-[0.2em] text-gray-200/45 uppercase">
               From
             </span>
-            <span className="mt-1 block font-display text-2xl leading-none font-semibold text-cream">
+            <span className="mt-1 block font-display text-2xl leading-none font-semibold text-white">
               You
             </span>
           </span>
@@ -208,7 +208,7 @@ function BoardingPass() {
           </span>
 
           <span className="text-right">
-            <span className="block text-[0.58rem] tracking-[0.2em] text-cream/45 uppercase">
+            <span className="block text-[0.58rem] tracking-[0.2em] text-gray-200/45 uppercase">
               To
             </span>
             <span className="mt-1 block font-display text-2xl leading-none font-semibold text-mustard">
@@ -235,10 +235,10 @@ function BoardingPass() {
             { k: 'Check-in', v: 'Any hour' },
           ].map((cell) => (
             <div key={cell.k}>
-              <dt className="text-[0.56rem] font-bold tracking-[0.18em] text-cream/45 uppercase">
+              <dt className="text-[0.56rem] font-bold tracking-[0.18em] text-gray-200/45 uppercase">
                 {cell.k}
               </dt>
-              <dd className="mt-1 font-display text-[1.0625rem] leading-none font-semibold text-cream">
+              <dd className="mt-1 font-display text-[1.0625rem] leading-none font-semibold text-white">
                 {cell.v}
               </dd>
             </div>
@@ -282,9 +282,9 @@ function BoardingPass() {
             </g>
           </svg>
 
-          <p className="text-[0.8125rem] leading-snug text-cream/70">
+          <p className="text-[0.8125rem] leading-snug text-gray-200/70">
             Message the desk and this is the whole booking —
-            <span className="text-cream"> no card, no forms, no deposit.</span>
+            <span className="text-gray-200"> no card, no forms, no deposit.</span>
           </p>
         </div>
       </div>

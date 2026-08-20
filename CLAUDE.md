@@ -5,7 +5,8 @@
 - **NEVER** add `Co-Authored-By: Claude` (or any Claude/Anthropic co-author trailer) to commit messages.
 - **NEVER** add "Generated with Claude Code" or any similar attribution line to commits or PR bodies.
 - **NEVER** run `git push` unless the user explicitly asks for it in that message.
-- **NEVER** commit unless the user explicitly asks. Never commit directly to `main`/`master`.
+- **NEVER** commit unless the user explicitly asks in that message.
+- Working directly on `main` is fine for this project — no feature branches needed unless asked.
 - Commit messages: plain, human, imperative (`add booking widget`, `fix mobile nav overflow`). No emojis, no bot signatures.
 
 ## Stack
@@ -14,20 +15,27 @@
 - Icons: `lucide-react`. No other UI library — components are hand-built in `src/components/ui`.
 - Path alias: `@/` → `src/`
 
-## Brand — exact colors extracted from `Roamigos 9.pdf` (Illustrator vector fills)
+## Brand — hues from `Roamigos 9.pdf`, values tuned bright
+
+The original Illustrator fills were muted and read matte on screen. Every token
+below is the saturated version of the same hue. Mustard and ink are fixed —
+do not soften them.
 
 | Token | Hex | Use |
 | --- | --- | --- |
-| `--brand-maroon-deep` | `#951A16` | pressed states, deep gradients |
-| `--brand-maroon` | `#A92727` | **primary** — CTAs, headings accent, footer |
-| `--brand-mustard` | `#D9A328` | **accent** — highlights, underlines, badges |
-| `--brand-gold` | `#D78A26` | secondary accent, icon strokes |
-| `--brand-cream` | `#FBF1E6` | page canvas |
-| `--brand-sand` | `#E4C8AC` | borders, muted surfaces |
-| `--brand-coral` | `#F47F72` | flamingo pop — sparing, badges/tags only |
-| `--brand-green-deep` | `#364733` | **minimum use only** — see below |
-| `--brand-green` | `#3F5B3C` | **minimum use only** |
-| `--brand-ink` | `#252522` | body text, dark surfaces |
+| `--color-maroon-deep` | `#B91C1C` | pressed states, deep gradients |
+| `--color-maroon` | `#DC2626` | **primary** — CTAs, headings accent, footer |
+| `--color-mustard` | `#FFB300` | **accent** — highlights, underlines, badges (fixed) |
+| `--color-gold` | `#FF9800` | secondary accent, icon strokes |
+| `--color-cream` | `#FAFAFA` | light fills / overlays on dark bands |
+| `--color-sand` | `#E4E4E7` | borders, muted surfaces |
+| `--color-coral` | `#FF6F61` | flamingo pop — sparing, badges/tags only |
+| `--color-green-deep` | `#15803D` | **minimum use only** — see below |
+| `--color-green` | `#16A34A` | **minimum use only** |
+| `--color-ink` | `#09090B` | text on mustard, dark surfaces (fixed, zinc-950) |
+
+Page canvas is pure white in light, `#09090B` in dark. No warm off-whites, no
+paper grain — anything that gives a matte cast is out.
 
 ### Green usage rule
 Green is **deliberately rare**. Use it only for:
@@ -40,7 +48,7 @@ Never use green for headings, primary CTAs, large backgrounds, or section fills.
 ## Typography
 
 - Headings: **Playfair Display** (this is the logo's actual font, extracted from the PDF)
-- Body / UI: **Inter**
+- Body / UI: **Poppins**
 - Never introduce a third family.
 
 ## Design principles

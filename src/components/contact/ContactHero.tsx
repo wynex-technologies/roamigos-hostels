@@ -18,11 +18,11 @@ export function ContactHero() {
       {/* Warm ambient wash, kept subtle — this section is a workspace, not a poster. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-40 -right-32 size-[36rem] rounded-full bg-mustard/12 blur-[130px]"
+        className="pointer-events-none absolute -top-40 -right-32 size-[36rem] rounded-full bg-mustard/6 blur-[130px]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-48 -left-32 size-[32rem] rounded-full bg-maroon/10 blur-[130px]"
+        className="pointer-events-none absolute -bottom-48 -left-32 size-[32rem] rounded-full bg-maroon/5 blur-[130px]"
       />
 
       <Container className="relative">
@@ -85,7 +85,7 @@ export function ContactHero() {
           </div>
 
           {/* --------------------------- the desk --------------------------- */}
-          <div className="relative isolate overflow-hidden rounded-[1.75rem] border border-line bg-ink text-cream shadow-lift">
+          <div className="relative isolate overflow-hidden rounded-[1.75rem] border border-line bg-ink text-gray-200 shadow-lift">
             <div className="relative h-40 sm:h-48">
               <Photo
                 id="photo-1648960456182-00643d5d20eb"
@@ -107,7 +107,7 @@ export function ContactHero() {
             <div className="p-6 sm:p-8">
               <div className="flex gap-3">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-mustard" />
-                <address className="text-[0.9375rem] leading-relaxed text-cream/85 not-italic">
+                <address className="text-[0.9375rem] leading-relaxed text-gray-200 not-italic">
                   {site.address.line1}
                   <br />
                   {site.address.line2}
@@ -119,26 +119,26 @@ export function ContactHero() {
               <dl className="mt-7 grid gap-x-6 gap-y-5 border-t border-cream/15 pt-6 sm:grid-cols-2">
                 {deskFacts.map((fact) => (
                   <div key={fact.label}>
-                    <dt className="text-[0.625rem] font-bold tracking-[0.2em] text-cream/45 uppercase">
+                    <dt className="text-[0.625rem] font-bold tracking-[0.2em] text-gray-200/45 uppercase">
                       {fact.label}
                     </dt>
-                    <dd className="mt-1 text-[0.875rem] text-cream">{fact.value}</dd>
+                    <dd className="mt-1 text-[0.875rem] text-gray-200">{fact.value}</dd>
                   </div>
                 ))}
               </dl>
 
-              <p className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t border-cream/15 pt-5 text-[0.875rem] text-cream/70">
+              <p className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t border-cream/15 pt-5 text-[0.875rem] text-gray-200/70">
                 <span className="text-[0.625rem] font-bold tracking-[0.2em] text-mustard uppercase">
                   Check-in
                 </span>
-                <span className="font-display text-lg text-cream">{site.checkIn}</span>
-                <span aria-hidden className="text-cream/30">
+                <span className="font-display text-lg text-white">{site.checkIn}</span>
+                <span aria-hidden className="text-gray-200/30">
                   /
                 </span>
                 <span className="text-[0.625rem] font-bold tracking-[0.2em] text-mustard uppercase">
                   Check-out
                 </span>
-                <span className="font-display text-lg text-cream">{site.checkOut}</span>
+                <span className="font-display text-lg text-white">{site.checkOut}</span>
               </p>
             </div>
           </div>

@@ -26,11 +26,11 @@ export function Logo({
       <img
         src="/logo-mark.svg"
         alt=""
-        width={52}
-        height={52}
+        width={56}
+        height={56}
         className={cn(
           'shrink-0 transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:-rotate-3',
-          compact ? 'size-10' : 'size-11 sm:size-13',
+          compact ? 'size-11' : 'size-12 sm:size-14',
         )}
       />
       <span className="flex flex-col">
@@ -38,14 +38,14 @@ export function Logo({
           className={cn(
             'transition-colors',
             tone === 'light' ? 'text-cream' : 'text-primary',
-            compact ? 'h-6 w-[4.6rem]' : 'h-7 w-[5.4rem] sm:h-8 sm:w-[6.2rem]',
+            compact ? 'h-7 w-[5.4rem]' : 'h-8 w-[6.2rem] sm:h-9 sm:w-[7.1rem]',
           )}
         />
         <span
           className={cn(
-            'font-semibold tracking-[0.28em] uppercase transition-colors',
-            tone === 'light' ? 'text-mustard' : 'text-accent',
-            compact ? 'text-[0.5rem]' : 'text-[0.5rem] sm:text-[0.5625rem]',
+            'font-bold tracking-[0.2em] uppercase transition-colors',
+            tone === 'light' ? 'text-mustard' : 'text-heading',
+            compact ? 'text-[0.5625rem]' : 'text-[0.625rem] sm:text-[0.6875rem]',
           )}
         >
           {site.tagline}

@@ -118,8 +118,8 @@ export function BlogHero() {
             WebkitMaskImage: 'linear-gradient(90deg, #000, transparent 32%, transparent 68%, #000)',
           }}
         />
-        <div className="absolute -top-10 -left-40 size-[34rem] rounded-full bg-mustard/14 blur-[120px]" />
-        <div className="absolute -right-32 bottom-4 size-[36rem] rounded-full bg-maroon/14 blur-[120px]" />
+        <div className="absolute -top-10 -left-40 size-[34rem] rounded-full bg-mustard/7 blur-[120px]" />
+        <div className="absolute -right-32 bottom-4 size-[36rem] rounded-full bg-maroon/7 blur-[120px]" />
       </div>
 
       {/* ---------------- vertical edge rails ---------------- */}

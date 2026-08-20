@@ -177,13 +177,13 @@ export function Destinations() {
                     </span>
 
                     {/* Index steps aside for the note. */}
-                    <span className="absolute right-3 bottom-3 font-display text-[0.875rem] font-semibold text-cream/70 tabular-nums transition-opacity duration-300 group-hover:opacity-0">
+                    <span className="absolute right-3 bottom-3 font-display text-[0.875rem] font-semibold text-gray-200/70 tabular-nums transition-opacity duration-300 group-hover:opacity-0">
                       {String(i + 1).padStart(2, '0')}
                     </span>
 
                     {/* The line only exists on hover, so the picture owns the card at
                         rest and every card stays exactly the same height. */}
-                    <p className="absolute inset-x-3 bottom-3 translate-y-3 text-[0.8125rem] leading-snug text-cream opacity-0 transition-[opacity,transform] duration-500 ease-[var(--ease-out-soft)] group-hover:translate-y-0 group-hover:opacity-100">
+                    <p className="absolute inset-x-3 bottom-3 translate-y-3 text-[0.8125rem] leading-snug text-gray-200 opacity-0 transition-[opacity,transform] duration-500 ease-[var(--ease-out-soft)] group-hover:translate-y-0 group-hover:opacity-100">
                       {item.note}
                     </p>
                   </div>

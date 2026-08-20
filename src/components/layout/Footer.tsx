@@ -82,7 +82,7 @@ function FooterLink({ to, label }: { to: string; label: string }) {
   return (
     <Link
       to={to}
-      className="group/link flex items-center gap-3 text-cream/90 transition-colors duration-300 hover:text-mustard"
+      className="group/link flex items-center gap-3 text-gray-200/90 transition-colors duration-300 hover:text-mustard"
     >
       {Icon ? (
         <Icon className="size-[1.05rem] shrink-0 text-mustard transition-transform duration-300 ease-[var(--ease-out-soft)] group-hover/link:-translate-y-0.5" />
@@ -99,7 +99,7 @@ function FooterLink({ to, label }: { to: string; label: string }) {
 export function Footer() {
   return (
     <footer
-      className="relative isolate mt-24 overflow-hidden text-cream/75"
+      className="relative isolate mt-24 overflow-hidden text-gray-200/75"
       style={{ backgroundColor: 'var(--footer-ground)' }}
     >
       {/* ---- warmth, kept low. Small type needs a quiet ground to sit on, so the
@@ -120,7 +120,7 @@ export function Footer() {
         className="pointer-events-none absolute -bottom-8 left-1/2 hidden w-full -translate-x-1/2 justify-center select-none md:flex"
       >
         <span
-          className="font-display text-[15vw] leading-none font-bold tracking-[-0.03em] text-cream/[0.035]"
+          className="font-display text-[15vw] leading-none font-bold tracking-[-0.03em] text-gray-200/[0.035]"
           style={{
             maskImage: 'linear-gradient(to bottom, transparent, #000 75%)',
             WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 75%)',
@@ -151,7 +151,7 @@ export function Footer() {
               </span>
             </div>
 
-            <p className="mt-6 max-w-sm text-[0.9375rem] leading-relaxed text-cream/70">
+            <p className="mt-6 max-w-sm text-[0.9375rem] leading-relaxed text-gray-200">
               {site.description}
             </p>
 
@@ -165,7 +165,7 @@ export function Footer() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label={social.label}
-                    className="grid size-11 place-items-center rounded-full border border-cream/20 bg-cream/[0.04] text-cream/85 transition-all duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-0.5 hover:border-mustard hover:bg-mustard hover:text-ink hover:shadow-[0_12px_24px_-10px] hover:shadow-gold/80"
+                    className="grid size-11 place-items-center rounded-full border border-cream/20 bg-cream/[0.04] text-gray-200/85 transition-all duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-0.5 hover:border-mustard hover:bg-mustard hover:text-ink hover:shadow-[0_12px_24px_-10px] hover:shadow-gold/80"
                   >
                     <Icon className="size-[1.1rem]" />
                   </a>
@@ -176,7 +176,7 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="WhatsApp"
-                className="grid size-11 place-items-center rounded-full border border-cream/20 bg-cream/[0.04] text-cream/85 transition-all duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-0.5 hover:border-mustard hover:bg-mustard hover:text-ink hover:shadow-[0_12px_24px_-10px] hover:shadow-gold/80"
+                className="grid size-11 place-items-center rounded-full border border-cream/20 bg-cream/[0.04] text-gray-200/85 transition-all duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-0.5 hover:border-mustard hover:bg-mustard hover:text-ink hover:shadow-[0_12px_24px_-10px] hover:shadow-gold/80"
               >
                 <MessageCircle className="size-[1.1rem]" />
               </a>
@@ -206,10 +206,10 @@ export function Footer() {
                 >
                   <MapPin className="mt-0.5 size-[1.05rem] shrink-0 text-mustard transition-transform duration-500 group-hover/pin:-translate-y-0.5" />
                   <span>
-                    <span className="block text-[0.9375rem] font-semibold text-cream">
+                    <span className="block text-[0.9375rem] font-semibold text-gray-200">
                       {property.name}
                     </span>
-                    <span className="text-[0.8125rem] text-cream/55">{property.area}</span>
+                    <span className="text-[0.8125rem] text-gray-200/55">{property.area}</span>
                   </span>
                 </li>
               ))}
@@ -238,7 +238,7 @@ export function Footer() {
                   <Headset className="size-[1.15rem]" />
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-[0.6875rem] font-bold tracking-[0.18em] text-cream/55 uppercase">
+                  <span className="block text-[0.6875rem] font-bold tracking-[0.18em] text-gray-200/55 uppercase">
                     Need help?
                   </span>
                   <a
@@ -251,7 +251,7 @@ export function Footer() {
               </div>
               <a
                 href={`mailto:${site.email}`}
-                className="relative mt-4 flex items-center gap-2.5 border-t border-cream/10 pt-4 text-[0.875rem] text-cream/80 transition-colors hover:text-mustard"
+                className="relative mt-4 flex items-center gap-2.5 border-t border-cream/10 pt-4 text-[0.875rem] text-gray-200/80 transition-colors hover:text-mustard"
               >
                 <Mail className="size-4 shrink-0 text-mustard" />
                 <span className="truncate">{site.email}</span>
@@ -305,16 +305,16 @@ export function Footer() {
                           <Icon className="size-[1.2rem]" />
                         </span>
                         <div className="min-w-0">
-                          <p className="text-[0.8125rem] font-bold tracking-[0.1em] text-cream uppercase">
+                          <p className="text-[0.8125rem] font-bold tracking-[0.1em] text-gray-200 uppercase">
                             {item.title}
                           </p>
-                          <p className="mt-1 text-[0.8125rem] leading-snug text-cream/60 transition-colors duration-500 group-hover/stamp:text-cream/85">
+                          <p className="mt-1 text-[0.8125rem] leading-snug text-gray-200/60 transition-colors duration-500 group-hover/stamp:text-gray-200/85">
                             {item.note}
                           </p>
                         </div>
                         <span
                           aria-hidden
-                          className="ml-auto font-display text-[0.6875rem] font-bold tracking-[0.14em] text-cream/25 transition-colors duration-500 group-hover/stamp:text-mustard"
+                          className="ml-auto font-display text-[0.6875rem] font-bold tracking-[0.14em] text-gray-200/25 transition-colors duration-500 group-hover/stamp:text-mustard"
                         >
                           No.0{i + 1}
                         </span>
@@ -350,20 +350,20 @@ export function Footer() {
               aria-hidden
               className="hidden size-3 shrink-0 rounded-full border-2 border-mustard/50 sm:block"
             />
-            <p className="text-[0.6875rem] font-bold tracking-[0.24em] text-cream/50 uppercase">
+            <p className="text-[0.6875rem] font-bold tracking-[0.24em] text-gray-200/50 uppercase">
               We accept
             </p>
             <ul className="flex flex-wrap gap-2.5">
               {payments.map((method) => (
                 <li
                   key={method}
-                  className="cursor-default rounded-lg border border-cream/15 bg-cream/[0.05] px-3.5 py-1.5 text-[0.8125rem] font-semibold text-cream/85 transition-all duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-0.5 hover:border-mustard/60 hover:bg-mustard/10 hover:text-mustard hover:shadow-[0_10px_20px_-12px] hover:shadow-gold/90"
+                  className="cursor-default rounded-lg border border-cream/15 bg-cream/[0.05] px-3.5 py-1.5 text-[0.8125rem] font-semibold text-gray-200/85 transition-all duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-0.5 hover:border-mustard/60 hover:bg-mustard/10 hover:text-mustard hover:shadow-[0_10px_20px_-12px] hover:shadow-gold/90"
                 >
                   {method}
                 </li>
               ))}
             </ul>
-            <p className="text-[0.8125rem] text-cream/55 sm:ml-auto">
+            <p className="text-[0.8125rem] text-gray-200/55 sm:ml-auto">
               Pay at check-in — nothing upfront.
             </p>
           </div>
@@ -382,13 +382,13 @@ export function Footer() {
         />
         <div className="bg-black/40">
           <div className="container-page flex flex-col items-center justify-between gap-4 py-6 text-[0.8125rem] sm:flex-row">
-            <p className="text-cream/60">
+            <p className="text-gray-200/60">
               © {new Date().getFullYear()} {site.legalName}. All rights reserved.
             </p>
             <button
               type="button"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="group/top inline-flex items-center gap-2.5 rounded-full border border-cream/20 bg-cream/[0.05] px-5 py-2 font-semibold text-cream/85 transition-all duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-0.5 hover:border-mustard/70 hover:bg-mustard/10 hover:text-mustard"
+              className="group/top inline-flex items-center gap-2.5 rounded-full border border-cream/20 bg-cream/[0.05] px-5 py-2 font-semibold text-gray-200/85 transition-all duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-0.5 hover:border-mustard/70 hover:bg-mustard/10 hover:text-mustard"
             >
               Back to top
               {/* The arrow leaves through the top and the next one is already on

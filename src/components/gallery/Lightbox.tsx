@@ -67,7 +67,7 @@ export function Lightbox({ shots, index, onClose, onStep }: LightboxProps) {
         <p className="text-[0.6875rem] font-bold tracking-[0.22em] text-mustard uppercase">
           {shot.place}
         </p>
-        <p className="text-[0.8125rem] text-cream/60 tabular-nums">
+        <p className="text-[0.8125rem] text-gray-200/60 tabular-nums">
           {index + 1} / {shots.length}
         </p>
         <button
@@ -114,10 +114,10 @@ export function Lightbox({ shots, index, onClose, onStep }: LightboxProps) {
       </div>
 
       <div className="relative px-5 pt-5 pb-8 text-center sm:px-8">
-        <p className="mx-auto max-w-xl font-display text-[1.0625rem] leading-snug text-cream text-balance sm:text-xl">
+        <p className="mx-auto max-w-xl font-display text-[1.0625rem] leading-snug text-gray-200 text-balance sm:text-xl">
           {shot.caption}
         </p>
-        <p className="mt-3 text-[0.75rem] tracking-[0.16em] text-cream/45 uppercase">
+        <p className="mt-3 text-[0.75rem] tracking-[0.16em] text-gray-200/45 uppercase">
           Use ← → to walk the album · Esc to close
         </p>
       </div>

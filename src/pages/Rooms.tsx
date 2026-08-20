@@ -97,16 +97,16 @@ export default function Rooms() {
             <nav
               aria-label="Breadcrumb"
               style={lag(0)}
-              className="reveal-rise flex items-center gap-1.5 text-[0.75rem] font-semibold tracking-wide text-cream/60 uppercase"
+              className="reveal-rise flex items-center gap-1.5 text-[0.75rem] font-semibold tracking-wide text-gray-200/60 uppercase"
             >
               <Link to="/" className="transition-colors hover:text-mustard">
                 Home
               </Link>
               <ChevronRight className="size-3.5" />
-              <span className="text-cream">Rooms &amp; Beds</span>
+              <span className="text-gray-200">Rooms &amp; Beds</span>
             </nav>
 
-            <h1 className="mt-8 max-w-3xl font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.02] font-semibold text-cream">
+            <h1 className="mt-8 max-w-3xl font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.02] font-semibold text-white">
               <span style={lag(0.12)} className="reveal-line">
                 <span>Eight ways to sleep</span>
               </span>
@@ -119,7 +119,7 @@ export default function Rooms() {
 
             <p
               style={lag(0.4)}
-              className="reveal-rise mt-7 max-w-xl text-[1.0625rem] leading-relaxed text-cream/80 text-pretty"
+              className="reveal-rise mt-7 max-w-xl text-[1.0625rem] leading-relaxed text-gray-200 text-pretty"
             >
               From a curtained pod bunk at {formatINR(cheapest)} to a family room that takes four.
               Same warm floor, same front desk, same hot showers at six in the morning.
@@ -131,7 +131,7 @@ export default function Rooms() {
                 className="reveal-rise mt-7 inline-flex flex-wrap items-center gap-2 rounded-full border border-cream/20 bg-ink/45 px-4 py-2 text-[0.8125rem] text-cream backdrop-blur-md"
               >
                 <span className="font-semibold">Your dates:</span>
-                <span className="text-cream/75">
+                <span className="text-gray-200/75">
                   {formatDate(checkIn) || 'Any'} → {formatDate(checkOut) || 'Any'}
                   {guests ? ` · ${guests} ${guests === 1 ? 'guest' : 'guests'}` : ''}
                 </span>
@@ -151,10 +151,10 @@ export default function Rooms() {
             >
               {marquee.map((item) => (
                 <li key={item.label}>
-                  <p className="font-display text-[1.625rem] leading-none font-semibold text-cream">
+                  <p className="font-display text-[1.625rem] leading-none font-semibold text-white">
                     {item.value}
                   </p>
-                  <p className="mt-2 text-[0.75rem] tracking-[0.14em] text-cream/60 uppercase">
+                  <p className="mt-2 text-[0.75rem] tracking-[0.14em] text-gray-200/60 uppercase">
                     {item.label}
                   </p>
                 </li>
@@ -503,7 +503,7 @@ function RoomRow({
 
       {/* Index and category, printed straight on the picture. */}
       <p className="absolute top-5 left-5 flex items-center gap-3 sm:top-6 sm:left-6">
-        <span className="font-display text-[0.8125rem] font-semibold text-cream/70 tabular-nums">
+        <span className="font-display text-[0.8125rem] font-semibold text-gray-200/70 tabular-nums">
           {String(index).padStart(2, '0')}
         </span>
         <span
@@ -531,11 +531,11 @@ function RoomRow({
       <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-cream/12 bg-ink/45 p-5 backdrop-blur-lg transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:-translate-y-1 sm:inset-x-5 sm:bottom-5 sm:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
           <div className="min-w-0">
-            <h2 className="font-display text-[1.5rem] leading-tight font-semibold text-cream text-balance sm:text-[1.75rem]">
+            <h2 className="font-display text-[1.5rem] leading-tight font-semibold text-white text-balance sm:text-[1.75rem]">
               {room.name}
             </h2>
 
-            <p className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.875rem] text-cream/80">
+            <p className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.875rem] text-gray-200/80">
               <span className="inline-flex items-center gap-1.5">
                 <CapacityIcon className="size-4 text-mustard" />
                 {room.capacityLabel}
@@ -548,12 +548,12 @@ function RoomRow({
               <span aria-hidden className="size-1 rotate-45 bg-cream/40" />
               <span className="inline-flex items-center gap-1.5">
                 <Star className="size-3.5 fill-mustard text-mustard" aria-hidden />
-                <span className="font-semibold text-cream">{room.rating.toFixed(1)}</span>
-                <span className="text-cream/60">({room.reviewCount})</span>
+                <span className="font-semibold text-gray-200">{room.rating.toFixed(1)}</span>
+                <span className="text-gray-200/60">({room.reviewCount})</span>
               </span>
             </p>
 
-            <p className="mt-3 hidden max-w-lg text-[0.9375rem] leading-relaxed text-cream/75 text-pretty sm:block">
+            <p className="mt-3 hidden max-w-lg text-[0.9375rem] leading-relaxed text-gray-200 text-pretty sm:block">
               {room.shortDescription}
             </p>
 
@@ -561,7 +561,7 @@ function RoomRow({
               {room.inclusions.slice(0, 2).map((item) => (
                 <li
                   key={item}
-                  className="inline-flex items-center gap-2 text-[0.8125rem] text-cream/70"
+                  className="inline-flex items-center gap-2 text-[0.8125rem] text-gray-200/70"
                 >
                   <Check className="size-3.5 shrink-0 text-mustard" />
                   {item}
@@ -573,14 +573,14 @@ function RoomRow({
           {/* The rate corner — same place on every plate. */}
           <div className="flex items-end justify-between gap-5 border-t border-cream/12 pt-4 lg:shrink-0 lg:flex-col lg:items-end lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
             <p className="lg:text-right">
-              <span className="block text-[0.625rem] font-bold tracking-[0.2em] text-cream/60 uppercase">
+              <span className="block text-[0.625rem] font-bold tracking-[0.2em] text-gray-200/60 uppercase">
                 From
               </span>
-              <span className="font-display text-[1.875rem] leading-none font-semibold text-cream">
+              <span className="font-display text-[1.875rem] leading-none font-semibold text-white">
                 {formatINR(room.pricePerNight)}
               </span>
-              <span className="text-[0.8125rem] text-cream/70"> / {unit}</span>
-              <span className="mt-1.5 block text-[0.75rem] text-cream/55">Pay at check-in</span>
+              <span className="text-[0.8125rem] text-gray-200/70"> / {unit}</span>
+              <span className="mt-1.5 block text-[0.75rem] text-gray-200/55">Pay at check-in</span>
             </p>
 
             <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-cream px-6 py-3 text-[0.875rem] font-semibold text-ink transition-[background-color,transform] duration-300 group-hover:-translate-y-0.5 group-hover:bg-mustard">

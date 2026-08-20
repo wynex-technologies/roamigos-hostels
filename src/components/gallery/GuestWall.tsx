@@ -80,7 +80,7 @@ export function GuestWall() {
                 aria-hidden
                 className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent"
               />
-              <span className="absolute bottom-3 left-3 text-[0.75rem] font-semibold text-cream">
+              <span className="absolute bottom-3 left-3 text-[0.75rem] font-semibold text-gray-200">
                 {frame.handle}
               </span>
             </li>

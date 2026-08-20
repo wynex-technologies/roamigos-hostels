@@ -3,20 +3,23 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ---------------------------------------------------------------------------
-   Roamigos brand palette — exact values extracted from the logo source PDF
-   (Adobe Illustrator vector fills). Do not eyeball-adjust these.
+   Roamigos brand palette. The hues come from the logo source PDF, but every
+   value here is the saturated, high-contrast version of it — the muted
+   Illustrator fills read matte on screen. Mustard and ink are pinned to the
+   agreed values (#ffb300 / zinc-950) and everything else is tuned to sit at
+   the same brightness.
 --------------------------------------------------------------------------- */
 @theme {
-  --color-maroon-deep: #951a16;
-  --color-maroon: #a92727;
-  --color-mustard: #d9a328;
-  --color-gold: #d78a26;
-  --color-cream: #fbf1e6;
-  --color-sand: #e4c8ac;
-  --color-coral: #f47f72;
-  --color-green-deep: #364733;
-  --color-green: #3f5b3c;
-  --color-ink: #252522;
+  --color-maroon-deep: #b91c1c;
+  --color-maroon: #dc2626;
+  --color-mustard: #ffb300;
+  --color-gold: #ff9800;
+  --color-cream: #fafafa;
+  --color-sand: #e4e4e7;
+  --color-coral: #ff6f61;
+  --color-green-deep: #15803d;
+  --color-green: #16a34a;
+  --color-ink: #09090b;
 
   /* Semantic aliases resolved from the CSS variables below, so every utility
      (bg-surface, text-muted, border-line …) is theme-aware automatically. */
@@ -35,50 +38,51 @@
   --color-accent-soft: var(--accent-soft);
 
   --font-display: 'Playfair Display', ui-serif, Georgia, serif;
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: 'Poppins', 'Poppins Fallback', ui-sans-serif, system-ui, sans-serif;
 
   --radius-xl2: 1.25rem;
 
-  --shadow-warm: 0 1px 2px rgb(37 37 34 / 0.04), 0 8px 24px -8px rgb(149 26 22 / 0.1);
-  --shadow-warm-lg: 0 2px 4px rgb(37 37 34 / 0.04), 0 24px 48px -16px rgb(149 26 22 / 0.18);
-  --shadow-lift: 0 2px 6px rgb(37 37 34 / 0.06), 0 32px 64px -24px rgb(149 26 22 / 0.28);
+  --shadow-warm: 0 1px 2px rgb(9 9 11 / 0.04), 0 8px 24px -8px rgb(9 9 11 / 0.1);
+  --shadow-warm-lg: 0 2px 4px rgb(9 9 11 / 0.04), 0 24px 48px -16px rgb(9 9 11 / 0.18);
+  --shadow-lift: 0 2px 6px rgb(9 9 11 / 0.06), 0 32px 64px -24px rgb(9 9 11 / 0.28);
 
   /* Raised surfaces read as domed rather than drawn: a hairline highlight along
      the top edge, a shade along the bottom, then warm shadow underneath. */
   --shadow-raised:
     inset 0 1px 0 var(--edge-hi), inset 0 -1px 0 var(--edge-lo),
-    0 1px 2px rgb(37 37 34 / 0.05), 0 10px 18px -12px rgb(149 26 22 / 0.22),
-    0 24px 40px -26px rgb(149 26 22 / 0.3);
+    0 1px 2px rgb(9 9 11 / 0.05), 0 10px 18px -12px rgb(9 9 11 / 0.22),
+    0 24px 40px -26px rgb(9 9 11 / 0.3);
   --shadow-raised-lg:
     inset 0 1px 0 var(--edge-hi), inset 0 -1px 0 var(--edge-lo),
-    0 2px 4px rgb(37 37 34 / 0.06), 0 18px 28px -14px rgb(149 26 22 / 0.28),
-    0 40px 64px -30px rgb(149 26 22 / 0.38);
+    0 2px 4px rgb(9 9 11 / 0.06), 0 18px 28px -14px rgb(9 9 11 / 0.28),
+    0 40px 64px -30px rgb(9 9 11 / 0.38);
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ---------------------------------- light --------------------------------- */
 :root {
-  --canvas: #fdf8f2;
+  --canvas: #ffffff;
   --surface: #ffffff;
-  --surface-2: #faf3ea;
-  --line: #ece0d0;
-  --line-strong: #ddcbb4;
-  --body: #4a423a;
-  --muted: #857a6d;
-  --heading: #252522;
-  --primary: #a92727;
-  --primary-hover: #951a16;
-  --on-primary: #fff8f0;
-  --accent: #b8801a;
-  --accent-soft: #d9a328;
+  --surface-2: #ffffff;
+  --line: #e4e4e7;
+  --line-strong: #d4d4d8;
+  --body: #52525b;
+  --muted: #71717a;
+  --heading: #18181b;
+  --primary: #dc2626;
+  --primary-hover: #b91c1c;
+  --on-primary: #ffffff;
+  --accent: #ffb300;
+  --accent-soft: #ffb300;
 
   --surface-hi: #ffffff;
-  --surface-lo: #f8efe4;
+  --surface-lo: #ffffff;
   --edge-hi: rgb(255 255 255 / 0.9);
-  --edge-lo: rgb(37 37 34 / 0.05);
+  --edge-lo: rgb(9 9 11 / 0.05);
 
-  --grain-opacity: 0.4;
+  /* The paper grain is what gives a surface its matte cast — off in both themes. */
+  --grain-opacity: 0;
   color-scheme: light;
 }
 
@@ -97,11 +101,11 @@
 :root {
   /* Colder and deeper than `--color-ink`, so the accents have somewhere to
      glow out of and the unlit half of the panel is genuinely dark. */
-  --slab-ground: #100d0f;
-  --slab-lit: #c0221c;
-  --slab-lamp: #e39a2c;
+  --slab-ground: #09090b;
+  --slab-lit: #dc2626;
+  --slab-lamp: #ffb300;
   /* Depth of the vignette that closes the panel's edges down. */
-  --slab-vignette: 0.66;
+  --slab-vignette: 0.6;
 
   /* The footer is the one place on the site that goes almost black. Legibility
      is the whole job down here — eight columns of small type — and small text
@@ -109,33 +113,33 @@
      back: a faint maroon wash at the seam where the slab hands over, a gold
      pool low on the right, and nothing else competing with the words. Gold
      carries the accent instead of maroon carrying the field. */
-  --footer-ground: #0c0c0b;
-  --footer-lit: #7c1a15;
-  --footer-lamp: #a56c18;
+  --footer-ground: #09090b;
+  --footer-lit: #b91c1c;
+  --footer-lamp: #f59e0b;
 }
 
 /* ----------------------------------- dark --------------------------------- */
 .dark {
-  --canvas: #15120f;
-  --surface: #1e1a16;
-  --surface-2: #262019;
-  --line: #332b23;
-  --line-strong: #453a2f;
-  --body: #d8cec2;
-  --muted: #9c9084;
-  --heading: #f6efe5;
-  --primary: #c9453d;
-  --primary-hover: #d9564d;
-  --on-primary: #fff6ee;
-  --accent: #e2b043;
-  --accent-soft: #d9a328;
+  --canvas: #09090b;
+  --surface: #18181b;
+  --surface-2: #27272a;
+  --line: #27272a;
+  --line-strong: #3f3f46;
+  --body: #e5e7eb;
+  --muted: #a1a1aa;
+  --heading: #ffffff;
+  --primary: #ef4444;
+  --primary-hover: #f87171;
+  --on-primary: #ffffff;
+  --accent: #ffb300;
+  --accent-soft: #ffb300;
 
-  --surface-hi: #292219;
-  --surface-lo: #1b1713;
-  --edge-hi: rgb(255 255 255 / 0.07);
-  --edge-lo: rgb(0 0 0 / 0.35);
+  --surface-hi: #27272a;
+  --surface-lo: #18181b;
+  --edge-hi: rgb(255 255 255 / 0.08);
+  --edge-lo: rgb(0 0 0 / 0.4);
 
-  --grain-opacity: 0.22;
+  --grain-opacity: 0;
   color-scheme: dark;
 }
 
@@ -153,7 +157,6 @@
     background-color: var(--canvas);
     color: var(--body);
     font-family: var(--font-sans);
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;

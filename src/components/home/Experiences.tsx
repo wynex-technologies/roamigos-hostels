@@ -108,7 +108,7 @@ export function Experiences() {
                     <Icon name={item.icon} className="size-[1.1rem]" />
                   </span>
 
-                  <span className="absolute top-5 right-5 font-display text-[0.8125rem] font-semibold text-cream/60 tabular-nums">
+                  <span className="absolute top-5 right-5 font-display text-[0.8125rem] font-semibold text-gray-200/60 tabular-nums">
                     {String(i + 1).padStart(2, '0')}
                   </span>
 
@@ -120,7 +120,7 @@ export function Experiences() {
 
                     <h3
                       className={cn(
-                        'mt-4 font-display leading-tight font-semibold text-cream text-balance',
+                        'mt-4 font-display leading-tight font-semibold text-white text-balance',
                         featured ? 'text-[clamp(1.5rem,2.4vw,2rem)]' : 'text-[1.25rem]',
                       )}
                     >
@@ -129,7 +129,7 @@ export function Experiences() {
 
                     <p
                       className={cn(
-                        'mt-2 text-[0.9375rem] leading-relaxed text-cream/80 text-pretty',
+                        'mt-2 text-[0.9375rem] leading-relaxed text-gray-200 text-pretty',
                         featured ? 'max-w-md' : 'line-clamp-2',
                       )}
                     >

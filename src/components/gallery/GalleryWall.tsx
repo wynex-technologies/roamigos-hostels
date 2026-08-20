@@ -111,7 +111,7 @@ export function GalleryWall() {
                     {shot.place}
                   </span>
                   {/* The caption only exists on hover, so the photograph owns the tile at rest. */}
-                  <span className="mt-1 block max-h-0 translate-y-1 overflow-hidden text-[0.8125rem] leading-snug text-cream opacity-0 transition-[max-height,opacity,transform] duration-500 ease-[var(--ease-out-soft)] group-hover:max-h-20 group-hover:translate-y-0 group-hover:opacity-100">
+                  <span className="mt-1 block max-h-0 translate-y-1 overflow-hidden text-[0.8125rem] leading-snug text-gray-200 opacity-0 transition-[max-height,opacity,transform] duration-500 ease-[var(--ease-out-soft)] group-hover:max-h-20 group-hover:translate-y-0 group-hover:opacity-100">
                     {shot.caption}
                   </span>
                 </span>

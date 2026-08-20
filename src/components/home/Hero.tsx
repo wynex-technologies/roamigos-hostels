@@ -43,10 +43,10 @@ function AvailabilityCard() {
 
       <form
         onSubmit={search}
-        className="card-surface w-full max-w-md space-y-3 p-6 shadow-lift sm:p-7"
+        className="card-surface w-full max-w-lg space-y-3.5 p-7 shadow-lift sm:p-8"
       >
-        <h2 className="font-display text-2xl font-semibold">Check Availability</h2>
-        <p className="!mt-1 pb-2 text-[0.875rem] text-muted">
+        <h2 className="font-display text-[1.75rem] leading-tight font-bold">Check Availability</h2>
+        <p className="!mt-1.5 pb-2 text-[0.9375rem] text-muted">
           Pick your dates — we confirm on WhatsApp in minutes.
         </p>
 
@@ -102,7 +102,7 @@ function AvailabilityCard() {
 
         <button
           type="submit"
-          className="mt-1 inline-flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-primary text-[0.9375rem] font-semibold text-on-primary transition-[background-color,transform] hover:bg-primary-hover active:scale-[0.99]"
+          className="mt-1 inline-flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-on-primary transition-[background-color,transform] hover:bg-primary-hover active:scale-[0.99]"
         >
           <Search className="size-4" />
           Search Availability
@@ -115,100 +115,15 @@ function AvailabilityCard() {
 /** How long each hero photograph holds before the next one fades in. */
 const SLIDE_MS = 5500
 
-/**
- * The three preview cards that sit where the stat row used to. Clicking one
- * brings its photograph forward; the active card widens and carries a timing
- * bar for the auto-advance.
- */
-function SlidePreviews({
-  active,
-  onSelect,
-  onPauseChange,
-  paused,
-}: {
-  active: number
-  onSelect: (index: number) => void
-  onPauseChange: (paused: boolean) => void
-  paused: boolean
-}) {
-  return (
-    <div
-      onMouseEnter={() => onPauseChange(true)}
-      onMouseLeave={() => onPauseChange(false)}
-      onFocusCapture={() => onPauseChange(true)}
-      onBlurCapture={() => onPauseChange(false)}
-      className="no-scrollbar -mx-1 flex gap-3 overflow-x-auto px-1 pb-1"
-    >
-      {heroSlides.map((slide, i) => {
-        const on = i === active
-        return (
-          <button
-            key={slide.key}
-            type="button"
-            onClick={() => onSelect(i)}
-            aria-pressed={on}
-            aria-label={`Show ${slide.card}`}
-            className={`group relative h-28 shrink-0 overflow-hidden rounded-2xl text-left ring-1 transition-[width,box-shadow,transform] duration-500 ease-[var(--ease-out-soft)] hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-mustard sm:h-32 ${
-              on
-                ? 'w-52 shadow-lift ring-2 ring-mustard sm:w-60'
-                : 'w-28 ring-cream/25 hover:ring-cream/50 sm:w-32'
-            }`}
-          >
-            <Photo
-              id={slide.image}
-              width={480}
-              widths={[240, 480, 720]}
-              sizes="(max-width: 640px) 14rem, 15rem"
-              alt=""
-              className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-            <div
-              aria-hidden
-              className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/25 to-ink/5"
-            />
-
-            {/* Auto-advance timing bar — restarts with every slide change. */}
-            {on && (
-              <span
-                key={active}
-                aria-hidden
-                className="absolute inset-x-3 top-3 h-[3px] origin-left rounded-full bg-mustard motion-reduce:hidden"
-                style={{
-                  animation: `hero-progress ${SLIDE_MS}ms linear both`,
-                  animationPlayState: paused ? 'paused' : 'running',
-                }}
-              />
-            )}
-
-            <div className="absolute inset-x-2 bottom-2 rounded-xl border border-cream/15 bg-ink/45 px-2.5 py-1.5 backdrop-blur-md">
-              <h3 className="truncate text-[0.75rem] leading-tight font-bold text-cream">
-                {slide.card}
-              </h3>
-              <p
-                className={`mt-0.5 text-[0.6875rem] leading-snug text-cream/75 ${on ? 'line-clamp-2' : 'truncate'}`}
-              >
-                {on ? slide.note : slide.place}
-              </p>
-            </div>
-          </button>
-        )
-      })}
-    </div>
-  )
-}
-
 export function Hero() {
   const [active, setActive] = useState(0)
-  const [paused, setPaused] = useState(false)
 
-  // Auto-advance through the three photographs; holds while the viewer is on the
-  // preview cards, and stays on the first frame for reduced motion.
+  // Auto-advance through the photographs; stays on the first frame for reduced motion.
   useEffect(() => {
-    if (paused) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const id = window.setTimeout(() => setActive((a) => (a + 1) % heroSlides.length), SLIDE_MS)
     return () => window.clearTimeout(id)
-  }, [active, paused])
+  }, [active])
 
   return (
     <section className="relative isolate overflow-hidden">
@@ -244,22 +159,22 @@ export function Hero() {
 
       {/* Top padding carries the header's own height (h-18 / sm:h-20) on top of the
           section's spacing, since the bar is overlaid rather than stacked above. */}
-      <div className="container-wide grid items-center gap-12 pt-34 pb-20 sm:pt-40 lg:grid-cols-[1.15fr_auto] lg:gap-16 lg:pt-44 lg:pb-32">
-        <div className="max-w-2xl animate-rise">
-          <p className="text-[0.6875rem] font-bold tracking-[0.28em] text-mustard uppercase">
+      <div className="container-wide grid items-center gap-12 pt-34 pb-20 sm:pt-40 lg:grid-cols-[1.15fr_auto] lg:items-start lg:gap-16 lg:pt-44 lg:pb-32">
+        <div className="max-w-3xl animate-rise">
+          <p className="text-[0.8125rem] font-bold tracking-[0.28em] text-mustard uppercase">
             {site.motto}
           </p>
 
-          <h1 className="mt-5 font-display text-[clamp(2.75rem,7.5vw,5.25rem)] leading-[0.95] font-semibold text-cream">
+          <h1 className="mt-5 font-display text-[clamp(3rem,8vw,6rem)] leading-[0.95] font-extrabold text-white">
             Travel More.
             <br />
             Pay Less.
           </h1>
 
           {/* The third line is the real logo lettering, not a font imitation. */}
-          <Wordmark className="mt-4 h-[clamp(3rem,7vw,4.75rem)] w-[clamp(9.5rem,22vw,15rem)] text-mustard" />
+          <Wordmark className="mt-4 h-[clamp(3.25rem,7.5vw,5.25rem)] w-[clamp(10.5rem,24vw,16.5rem)] text-mustard" />
 
-          <p className="mt-7 max-w-md text-[1.0625rem] leading-relaxed text-cream/85 text-pretty">
+          <p className="mt-7 max-w-lg text-[1.1875rem] leading-relaxed text-gray-200 text-pretty">
             Comfortable stays, great vibes and new friends. Your journey begins here.
           </p>
 
@@ -277,18 +192,10 @@ export function Hero() {
               Chat with us
             </ButtonAnchor>
           </div>
-
-          <div className="mt-10 border-t border-cream/20 pt-6">
-            <SlidePreviews
-              active={active}
-              onSelect={setActive}
-              onPauseChange={setPaused}
-              paused={paused}
-            />
-          </div>
         </div>
 
-        <div className="lg:justify-self-end">
+        {/* `lg:mt-10` puts the card's top edge on the "Travel More" baseline-top. */}
+        <div className="lg:mt-10 lg:justify-self-end">
           <AvailabilityCard />
         </div>
       </div>

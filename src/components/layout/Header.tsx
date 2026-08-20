@@ -94,10 +94,10 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
                 floating
                   ? isActive(item.to)
                     ? 'text-mustard'
-                    : 'text-cream/85 hover:text-cream'
+                    : 'text-white hover:text-mustard'
                   : isActive(item.to)
                     ? 'text-primary'
-                    : 'text-body hover:text-heading',
+                    : 'text-body hover:text-heading dark:text-white',
               )}
             >
               {item.label}

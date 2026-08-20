@@ -44,7 +44,7 @@ export function ContactBand() {
 
               <h2
                 style={lag(0.08)}
-                className="reveal-rise mt-5 font-display text-[clamp(2rem,4.5vw,3.25rem)] leading-[1.06] font-semibold text-cream text-balance"
+                className="reveal-rise mt-5 font-display text-[clamp(2rem,4.5vw,3.25rem)] leading-[1.06] font-semibold text-white text-balance"
               >
                 Pick a bed. Send one message.
                 <br />
@@ -53,7 +53,7 @@ export function ContactBand() {
 
               <p
                 style={lag(0.16)}
-                className="reveal-rise mt-6 max-w-lg text-[1.0625rem] leading-relaxed text-cream/75 text-pretty"
+                className="reveal-rise mt-6 max-w-lg text-[1.0625rem] leading-relaxed text-gray-200 text-pretty"
               >
                 No prepayment, no long forms. Choose your room, hit Book Now and your dates land
                 straight in our WhatsApp — we confirm within minutes and you pay at check-in.
@@ -116,14 +116,14 @@ export function ContactBand() {
                       <channel.icon className="size-[1.05rem]" />
                     </span>
                     <span className="relative min-w-0">
-                      <span className="block text-[0.6875rem] tracking-[0.18em] text-cream/50 uppercase">
+                      <span className="block text-[0.6875rem] tracking-[0.18em] text-gray-200/50 uppercase">
                         {channel.label}
                       </span>
                       <span
                         className={
                           channel.display
-                            ? 'font-display text-lg text-cream'
-                            : 'block truncate text-[0.9375rem] text-cream'
+                            ? 'font-display text-lg text-white'
+                            : 'block truncate text-[0.9375rem] text-gray-200'
                         }
                       >
                         {channel.value}
@@ -146,8 +146,8 @@ export function ContactBand() {
                     >
                       <MapPin className="mt-0.5 size-4 shrink-0 text-mustard transition-transform duration-500 group-hover/pin:-translate-y-0.5" />
                       <span>
-                        <span className="block text-cream">{property.name}</span>
-                        <span className="text-cream/55">{property.area}</span>
+                        <span className="block text-gray-200">{property.name}</span>
+                        <span className="text-gray-200/55">{property.area}</span>
                       </span>
                     </li>
                   ))}
