@@ -165,7 +165,7 @@ export function Hero() {
             {site.motto}
           </p>
 
-          <h1 className="mt-5 font-display text-[clamp(3rem,8vw,6rem)] leading-[0.95] font-extrabold text-white">
+          <h1 className="mt-5 font-display text-[clamp(3rem,8vw,6rem)] leading-[0.95] font-bold text-white">
             Travel More.
             <br />
             Pay Less.
