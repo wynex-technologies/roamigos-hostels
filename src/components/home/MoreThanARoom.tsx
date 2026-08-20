@@ -15,7 +15,7 @@ const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProper
 /**
  * The house itself, on one raised panel: a photograph mosaic with the guest
  * ticket floating over the seam on the left, and everything a room comes with
- * — as chips, not a bare icon row — on the right.
+ * - as chips, not a bare icon row - on the right.
  */
 export function MoreThanARoom() {
   const [lead, ...rest] = commonSpaceImages
@@ -26,7 +26,7 @@ export function MoreThanARoom() {
       <Container wide>
         <div ref={block} className="card-raised overflow-hidden p-5 sm:p-8 lg:p-10">
           <div className="grid gap-9 lg:grid-cols-[0.92fr_1.08fr] lg:items-center lg:gap-12">
-            {/* Photo mosaic — one tall plate, two stacked beside it. */}
+            {/* Photo mosaic - one tall plate, two stacked beside it. */}
             <div style={lag(0)} className="reveal-rise relative">
               <div className="grid grid-cols-5 gap-3">
                 <div className="col-span-3 overflow-hidden rounded-xl2 bg-surface-2">
@@ -98,7 +98,7 @@ export function MoreThanARoom() {
                 className="reveal-rise mt-5 max-w-lg text-[1.0625rem] leading-relaxed text-muted text-pretty"
               >
                 Hot water at six in the morning, a desk that answers at two in the night, and a
-                common room that fills up before dinner. The small things, handled — so the trip
+                common room that fills up before dinner. The small things, handled - so the trip
                 gets your whole attention.
               </p>
 
@@ -106,12 +106,12 @@ export function MoreThanARoom() {
                 {roomPerks.map((perk) => (
                   <li
                     key={perk.title}
-                    className="flex items-center gap-3 rounded-xl border border-line bg-surface-2/70 px-3.5 py-3 transition-[border-color,background-color] duration-300 hover:border-line-strong hover:bg-surface-2"
+                    className="flex flex-col items-start gap-2 rounded-xl border border-line bg-surface-2/70 px-3 py-3 transition-[border-color,background-color] duration-300 hover:border-line-strong hover:bg-surface-2 sm:flex-row sm:items-center sm:gap-3 sm:px-3.5"
                   >
                     <span className="grid size-9 shrink-0 place-items-center rounded-full border border-line-strong text-accent">
                       <Icon name={perk.icon} className="size-4" />
                     </span>
-                    <span className="text-[0.8125rem] leading-snug font-semibold text-heading text-pretty">
+                    <span className="min-w-0 hyphens-auto text-[0.8125rem] leading-snug font-semibold break-words text-heading text-pretty">
                       {perk.title}
                     </span>
                   </li>

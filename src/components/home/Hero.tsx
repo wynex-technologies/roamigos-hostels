@@ -47,7 +47,7 @@ function AvailabilityCard() {
       >
         <h2 className="font-display text-[1.75rem] leading-tight font-bold">Check Availability</h2>
         <p className="!mt-1.5 pb-2 text-[0.9375rem] text-muted">
-          Pick your dates — we confirm on WhatsApp in minutes.
+          Pick your dates - we confirm on WhatsApp in minutes.
         </p>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -144,7 +144,7 @@ export function Hero() {
         />
       ))}
 
-      {/* A light, neutral black wash rather than a colour cast — the photographs keep
+      {/* A light, neutral black wash rather than a colour cast - the photographs keep
           their own palette, and the left side still carries contrast for cream copy. */}
       <div
         aria-hidden
@@ -159,8 +159,8 @@ export function Hero() {
 
       {/* Top padding carries the header's own height (h-18 / sm:h-20) on top of the
           section's spacing, since the bar is overlaid rather than stacked above. */}
-      <div className="container-wide grid items-center gap-12 pt-34 pb-20 sm:pt-40 lg:grid-cols-[1.15fr_auto] lg:items-start lg:gap-16 lg:pt-44 lg:pb-32">
-        <div className="max-w-3xl animate-rise">
+      <div className="container-wide grid items-center gap-10 pt-28 pb-16 sm:gap-12 sm:pt-40 sm:pb-20 lg:grid-cols-[1.15fr_auto] lg:items-start lg:gap-16 lg:pt-44 lg:pb-32">
+        <div className="order-2 max-w-3xl animate-rise lg:order-1">
           <p className="text-[0.8125rem] font-bold tracking-[0.28em] text-mustard uppercase">
             {site.motto}
           </p>
@@ -194,8 +194,10 @@ export function Hero() {
           </div>
         </div>
 
-        {/* `lg:mt-10` puts the card's top edge on the "Travel More" baseline-top. */}
-        <div className="lg:mt-10 lg:justify-self-end">
+        {/* Card leads on mobile - copy and CTAs follow underneath. On desktop it moves
+            back to the right, where `lg:mt-10` puts its top edge on the "Travel More"
+            baseline-top. */}
+        <div className="order-1 lg:order-2 lg:mt-10 lg:justify-self-end">
           <AvailabilityCard />
         </div>
       </div>

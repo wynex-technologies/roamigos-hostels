@@ -13,7 +13,7 @@ const labelFor = (post: BlogPost) =>
   blogCategories.find((entry) => entry.key === post.category)?.label ?? 'Journal'
 
 /**
- * A trailer for the journal — the same posts the blog page publishes, never a
+ * A trailer for the journal - the same posts the blog page publishes, never a
  * separate set. The lead story gets the plate; two full cards stand beside it,
  * sized so their photographs read rather than sit as thumbnails.
  */
@@ -23,8 +23,10 @@ export function TravelReads() {
   const lead = blogPosts.find((post) => post.featured) ?? blogPosts[0]
   const rest = blogPosts.filter((post) => post.slug !== lead.slug).slice(0, 2)
 
+  // Desktop/tablet only - on phones the journal trailer pushed the contact band
+  // too far down to be worth the scroll.
   return (
-    <Section id="journal">
+    <Section id="journal" className="hidden md:block">
       <Container wide>
         <div ref={header}>
           <p style={lag(0)} className="reveal-rise eyebrow flex items-center gap-2.5">
@@ -48,7 +50,7 @@ export function TravelReads() {
               style={lag(0.42)}
               className="reveal-rise max-w-sm text-[1.0625rem] leading-relaxed text-muted text-pretty lg:pb-2"
             >
-              Every guide below was walked, eaten and rewritten by somebody working downstairs — so
+              Every guide below was walked, eaten and rewritten by somebody working downstairs - so
               the timings are the real ones.
             </p>
           </div>
@@ -136,7 +138,7 @@ export function TravelReads() {
                 className="card-raised group flex min-h-0 flex-1 flex-col overflow-hidden transition-[transform,box-shadow] duration-500 ease-[var(--ease-out-soft)] hover:-translate-y-1.5 hover:shadow-raised-lg"
               >
                 {/* The photograph is absolutely placed so it contributes no
-                    intrinsic height — the column stretches to the lead card and
+                    intrinsic height - the column stretches to the lead card and
                     the image fills whatever is left, never the other way round. */}
                 <div className="relative aspect-16/10 overflow-hidden lg:aspect-auto lg:min-h-0 lg:flex-1">
                   <Photo
