@@ -47,9 +47,11 @@ Never use green for headings, primary CTAs, large backgrounds, or section fills.
 
 ## Typography
 
-- Headings: **Playfair Display** (this is the logo's actual font, extracted from the PDF)
-- Body / UI: **Poppins**
-- Never introduce a third family.
+- **Poppins** everywhere — headings, body and UI. There is no second family.
+- `font-display` still exists as a utility for headline type, but it resolves to the
+  same Poppins stack as `font-sans`. Never introduce another family.
+- Weight carries the hierarchy instead of a contrasting face: headlines run
+  `font-bold`/`font-extrabold`, body runs regular.
 
 ## Design principles
 

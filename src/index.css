@@ -37,7 +37,9 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
 
-  --font-display: 'Playfair Display', ui-serif, Georgia, serif;
+  /* One family across the whole site. `font-display` stays as a hook for
+     headline type, but it resolves to the same Poppins stack as the body. */
+  --font-display: 'Poppins', 'Poppins Fallback', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Poppins', 'Poppins Fallback', ui-sans-serif, system-ui, sans-serif;
 
   --radius-xl2: 1.25rem;
@@ -304,7 +306,7 @@
 }
 
 /* One line of display type, rising out from behind its own top edge. The padding
-   pair keeps Playfair's descenders from being clipped by the mask. */
+   pair keeps the descenders from being clipped by the mask. */
 @utility reveal-line {
   display: block;
   overflow: hidden;
