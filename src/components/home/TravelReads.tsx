@@ -14,14 +14,14 @@ const labelFor = (post: BlogPost) =>
 
 /**
  * A trailer for the journal — the same posts the blog page publishes, never a
- * separate set. The lead story gets the plate; the next three are set beside it
- * as a contents list.
+ * separate set. The lead story gets the plate; two full cards stand beside it,
+ * sized so their photographs read rather than sit as thumbnails.
  */
 export function TravelReads() {
   const header = useReveal<HTMLDivElement>(0.25)
 
   const lead = blogPosts.find((post) => post.featured) ?? blogPosts[0]
-  const rest = blogPosts.filter((post) => post.slug !== lead.slug).slice(0, 3)
+  const rest = blogPosts.filter((post) => post.slug !== lead.slug).slice(0, 2)
 
   return (
     <Section id="journal">
@@ -125,56 +125,73 @@ export function TravelReads() {
             </div>
           </Link>
 
-          {/* Contents beside it. */}
-          <div className="card-raised flex flex-col p-5 sm:p-7">
-            <p className="text-[0.6875rem] font-bold tracking-[0.22em] text-accent uppercase">
-              Also in this issue
-            </p>
+          {/* Two cards beside it. They split the lead card's height between them
+              and let the photograph take whatever the text does not need, so the
+              images carry the column instead of sitting in it as thumbnails. */}
+          <div className="flex min-h-0 flex-col gap-6 lg:gap-8">
+            {rest.map((post, i) => (
+              <Link
+                key={post.slug}
+                to="/blog"
+                className="card-raised group flex min-h-0 flex-1 flex-col overflow-hidden transition-[transform,box-shadow] duration-500 ease-[var(--ease-out-soft)] hover:-translate-y-1.5 hover:shadow-raised-lg"
+              >
+                {/* The photograph is absolutely placed so it contributes no
+                    intrinsic height — the column stretches to the lead card and
+                    the image fills whatever is left, never the other way round. */}
+                <div className="relative aspect-16/10 overflow-hidden lg:aspect-auto lg:min-h-0 lg:flex-1">
+                  <Photo
+                    id={post.image}
+                    width={900}
+                    widths={[400, 600, 900]}
+                    sizes="(min-width: 1024px) 34rem, 100vw"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 size-full object-cover transition-transform duration-[1100ms] ease-[var(--ease-out-soft)] group-hover:scale-[1.06]"
+                  />
+                  <div
+                    aria-hidden
+                    className="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-ink/15"
+                  />
 
-            <ul className="mt-3 flex flex-1 flex-col">
-              {rest.map((post, i) => (
-                <li key={post.slug} className="flex flex-1 items-center border-b border-line last:border-0">
-                  <Link to="/blog" className="group flex w-full items-start gap-4 py-4 sm:gap-5">
-                    <div className="relative size-18 shrink-0 overflow-hidden rounded-xl bg-surface-2 sm:size-20">
-                      <Photo
-                        id={post.image}
-                        width={240}
-                        widths={[160, 240, 320]}
-                        sizes="5rem"
-                        alt=""
-                        loading="lazy"
-                        decoding="async"
-                        className="size-full object-cover transition-transform duration-700 ease-[var(--ease-out-soft)] group-hover:scale-110"
-                      />
-                    </div>
+                  <span className="absolute top-4 left-4 rounded-full bg-mustard px-2.5 py-1 text-[0.625rem] font-bold tracking-[0.14em] text-ink uppercase shadow-warm">
+                    {labelFor(post)}
+                  </span>
 
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2.5 text-[0.625rem] font-bold tracking-[0.16em] uppercase">
-                        <span className="font-display text-[0.75rem] tracking-normal text-line-strong tabular-nums">
-                          {String(i + 2).padStart(2, '0')}
-                        </span>
-                        <span className="text-accent">{labelFor(post)}</span>
-                      </div>
+                  <span className="absolute top-4 right-4 inline-flex items-center gap-1.5 rounded-full border border-cream/20 bg-ink/45 px-2.5 py-1 text-[0.6875rem] font-semibold text-cream backdrop-blur-md">
+                    <Clock className="size-3" />
+                    {post.readTime}
+                  </span>
 
-                      <h4 className="mt-1.5 line-clamp-2 font-display text-[1rem] leading-snug font-semibold text-pretty transition-colors duration-300 group-hover:text-primary">
-                        {post.title}
-                      </h4>
+                  {/* Keeps the lead card's numbering running down the column. */}
+                  <span className="absolute right-4 bottom-3 font-display text-[0.875rem] font-semibold text-gray-200/70 tabular-nums">
+                    {String(i + 2).padStart(2, '0')}
+                  </span>
+                </div>
 
-                      <p className="mt-1.5 flex items-center gap-2 text-[0.75rem] text-muted">
-                        <Clock className="size-3" />
-                        {post.readTime}
-                        <span aria-hidden className="size-1 rotate-45 bg-line-strong" />
-                        {formatDate(post.date)}
-                      </p>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                <div className="flex items-start gap-4 p-5 sm:p-6">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="line-clamp-2 font-display text-[1.0625rem] leading-snug font-semibold text-pretty transition-colors duration-300 group-hover:text-primary sm:text-[1.1875rem]">
+                      {post.title}
+                    </h4>
+
+                    <p className="mt-2 text-[0.75rem] text-muted">
+                      {post.author}
+                      <span aria-hidden className="mx-2 inline-block size-1 rotate-45 bg-line-strong align-middle" />
+                      {formatDate(post.date)}
+                    </p>
+                  </div>
+
+                  <span className="grid size-9 shrink-0 place-items-center rounded-full border border-line-strong text-accent transition-[background-color,border-color,color,transform] duration-400 ease-[var(--ease-out-soft)] group-hover:rotate-45 group-hover:border-primary group-hover:bg-primary group-hover:text-on-primary">
+                    <ArrowUpRight className="size-4" />
+                  </span>
+                </div>
+              </Link>
+            ))}
 
             <Link
               to="/blog"
-              className="group mt-5 inline-flex items-center gap-2 border-t border-line pt-5 text-[0.875rem] font-semibold text-primary transition-colors hover:text-primary-hover"
+              className="group inline-flex items-center gap-2 self-start text-[0.875rem] font-semibold text-primary transition-colors hover:text-primary-hover"
             >
               Read all {blogPosts.length} stories
               <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

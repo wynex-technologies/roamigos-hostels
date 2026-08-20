@@ -132,39 +132,6 @@ export const blogPosts: BlogPost[] = [
     image: 'photo-1588644525273-f37b60d78512',
   },
   {
-    slug: 'pobitora-or-kaziranga',
-    title: 'Pobitora or Kaziranga? Picking the Rhino Safari That Fits Your Trip',
-    excerpt:
-      'Pobitora is 50 km out and doable before lunch. Kaziranga is 190 km and wants two nights. If you have one free morning the answer is easy; if you have three days it is the other one entirely.',
-    category: 'city',
-    author: 'Rohit Deka',
-    date: '2026-06-22',
-    readTime: '9 min read',
-    image: 'photo-1675296098616-53e3d4a1dd57',
-  },
-  {
-    slug: 'tea-trails-day-trip',
-    title: 'Tea Trails: A Day in the Gardens an Hour Outside the City',
-    excerpt:
-      'An hour of traffic, then rows of green all the way to the tree line. How the second flush is picked, which estates let you walk in, and why the tasting is worth doing before you buy a single packet.',
-    category: 'table',
-    author: 'Ankita Baruah',
-    date: '2026-06-09',
-    readTime: '7 min read',
-    image: 'photo-1615472910606-9d4f7291944f',
-  },
-  {
-    slug: 'dawki-and-mawlynnong',
-    title: 'Dawki and Mawlynnong: The Clearest River and the Tidiest Village in Asia',
-    excerpt:
-      'The Umngot runs so clear that boats appear to hover over their own shadows — but only outside the monsoon. Time it right, pair it with Mawlynnong, and do both in one long day out of Shillong.',
-    category: 'hills',
-    author: 'Priyam Saikia',
-    date: '2026-05-28',
-    readTime: '9 min read',
-    image: 'photo-1552978534-9d01e1f91517',
-  },
-  {
     slug: 'packing-for-the-northeast',
     title: 'Packing for the Northeast: Monsoon, Leeches, and the Winter Nobody Expects',
     excerpt:
