@@ -10,7 +10,7 @@ import { usePageMeta } from '@/lib/usePageMeta'
 import { site } from '@/data/site'
 
 export default function Home() {
-  usePageMeta(`${site.legalName} — Stay. Explore. Connect.`, site.description)
+  usePageMeta(`${site.legalName} - Stay. Explore. Connect.`, site.description)
 
   return (
     <>

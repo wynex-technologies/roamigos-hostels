@@ -8,12 +8,12 @@ import { useReveal } from '@/lib/useReveal'
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
 
-/** Places first, then whatever offers are running — one deck, one rotation. */
+/** Places first, then whatever offers are running - one deck, one rotation. */
 const cards: ShowcaseCard[] = [...showcase, ...promos]
 
 /** Only the first row's worth of cards fans out; the rest wait off-stage. */
 const DEAL_COUNT = showcase.length
-/** Middle of that row — cards fan outwards from here. */
+/** Middle of that row - cards fan outwards from here. */
 const CENTRE = (DEAL_COUNT - 1) / 2
 
 /** Longest deal transition (1.5s) plus the outermost card's lag and the caption's. */
@@ -38,7 +38,7 @@ const prefersReducedMotion = () =>
  * instead of being scrubbed by however fast the visitor happens to scroll.
  *
  * `dealt` turns true once that spread has finished, which is the cue for the
- * carousel to take over — the two motions never run on top of each other.
+ * carousel to take over - the two motions never run on top of each other.
  */
 function useDealOnce<T extends HTMLElement>() {
   const ref = useRef<T>(null)
@@ -48,7 +48,7 @@ function useDealOnce<T extends HTMLElement>() {
   useLayoutEffect(() => {
     const el = ref.current
     if (!el) return
-    // Reduced motion never sees the shuffle — `--deal` stays at its dealt default.
+    // Reduced motion never sees the shuffle - `--deal` stays at its dealt default.
     if (prefersReducedMotion()) {
       setDealt(true)
       return
@@ -86,7 +86,7 @@ function useAutoSlide(count: number, enabled: boolean) {
   const [animate, setAnimate] = useState(true)
   const [paused, setPaused] = useState(false)
 
-  /** Manual moves wrap inside the real set — the seam is autoplay's business. */
+  /** Manual moves wrap inside the real set - the seam is autoplay's business. */
   const go = useCallback(
     (next: number) => {
       setAnimate(true)
@@ -101,7 +101,7 @@ function useAutoSlide(count: number, enabled: boolean) {
     return () => window.clearTimeout(id)
   }, [enabled, paused, index])
 
-  // Landed on the duplicate's first frame — cut back to the real one silently.
+  // Landed on the duplicate's first frame - cut back to the real one silently.
   useEffect(() => {
     if (index !== count) return
     const id = window.setTimeout(() => {
@@ -166,7 +166,7 @@ export function Destinations() {
           />
         </div>
 
-        {/* Two masked lines — the display type rises out from behind its own edge. */}
+        {/* Two masked lines - the display type rises out from behind its own edge. */}
         <h2 className="mx-auto mt-7 max-w-4xl text-center font-display text-[clamp(2.1rem,5vw,4rem)] leading-[1.08] font-semibold">
           <span style={lag(0.18)} className="reveal-line">
             <span>Your whole trip starts</span>
@@ -185,7 +185,7 @@ export function Destinations() {
         />
 
         {/* Detail and the way onward, set against each other rather than stacked
-            centre — it reads as a spread, not a stack of three centred lines. */}
+            centre - it reads as a spread, not a stack of three centred lines. */}
         <div
           style={lag(0.65)}
           className="reveal-rise mt-7 flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:justify-between"
@@ -215,7 +215,7 @@ export function Destinations() {
         </div>
       </div>
 
-      {/* Wider than the rest of the page on purpose — the deck is the picture here,
+      {/* Wider than the rest of the page on purpose - the deck is the picture here,
           so the cards get the room rather than the margins. */}
       <div className="container-wide">
         {/* Viewport. The vertical padding/negative-margin pair leaves room for the
@@ -232,7 +232,7 @@ export function Destinations() {
             style={
               {
                 '--i': index,
-                // One step is a card plus a gap — matches the basis calc on the cards.
+                // One step is a card plus a gap - matches the basis calc on the cards.
                 transform:
                   'translate3d(calc(var(--i) * -1 * (100% + var(--gap)) / var(--per)), 0, 0)',
                 transition: animate ? `transform ${SLIDE_EASE_MS}ms var(--ease-out-soft)` : 'none',
@@ -298,7 +298,7 @@ export function Destinations() {
                         {item.tag}
                       </span>
 
-                      {/* Offer ribbon — only promotional cards carry one, so a running
+                      {/* Offer ribbon - only promotional cards carry one, so a running
                           deal reads instantly against the plain place cards. */}
                       {item.offer && (
                         <span className="absolute top-3 right-3 rounded-full bg-mustard px-2.5 py-1 text-[0.6875rem] font-bold tracking-wide text-ink uppercase shadow-warm">
@@ -306,7 +306,7 @@ export function Destinations() {
                         </span>
                       )}
 
-                      {/* Index steps aside for the note — and for an offer ribbon. */}
+                      {/* Index steps aside for the note - and for an offer ribbon. */}
                       {!item.offer && (
                         <span className="absolute right-3 bottom-3 font-display text-[0.875rem] font-semibold text-gray-200/70 tabular-nums transition-opacity duration-300 group-hover:opacity-0">
                           {String(real + 1).padStart(2, '0')}
@@ -343,7 +343,7 @@ export function Destinations() {
           </ul>
         </div>
 
-        {/* Controls fade in with the carousel itself — before the deck has dealt
+        {/* Controls fade in with the carousel itself - before the deck has dealt
             there is nothing to steer. */}
         <div
           className={`mt-12 flex items-center justify-center gap-5 transition-opacity duration-700 ${

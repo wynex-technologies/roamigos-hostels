@@ -3,7 +3,7 @@ import { Icon } from '@/components/ui/Icon'
 
 /**
  * One elevated panel that straddles the hero's bottom edge, split into segments by
- * hairline rules — the row reads as a single object sitting on the photograph
+ * hairline rules - the row reads as a single object sitting on the photograph
  * rather than five cards floating on the canvas.
  */
 export function ValueProps() {

@@ -14,13 +14,13 @@ export function Logo({
 }: {
   className?: string
   compact?: boolean
-  /** `light` is for the lockup sitting on a dark photo — e.g. the transparent hero header. */
+  /** `light` is for the lockup sitting on a dark photo - e.g. the transparent hero header. */
   tone?: 'default' | 'light'
 }) {
   return (
     <Link
       to="/"
-      aria-label={`${site.name} — ${site.tagline}`}
+      aria-label={`${site.name} - ${site.tagline}`}
       className={cn('group inline-flex items-center gap-2.5 sm:gap-3', className)}
     >
       <img
@@ -55,7 +55,7 @@ export function Logo({
   )
 }
 
-/** Full circular badge — used where the logo stands alone. */
+/** Full circular badge - used where the logo stands alone. */
 export function LogoBadge({ className }: { className?: string }) {
   return (
     <img

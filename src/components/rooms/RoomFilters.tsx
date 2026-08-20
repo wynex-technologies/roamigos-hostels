@@ -21,7 +21,7 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
   )
 }
 
-/** Pill toggle — used for amenities and capacity, where more than one can be on. */
+/** Pill toggle - used for amenities and capacity, where more than one can be on. */
 function Chip({ label, on, onClick }: { label: string; on: boolean; onClick: () => void }) {
   return (
     <button
@@ -44,7 +44,7 @@ function Chip({ label, on, onClick }: { label: string; on: boolean; onClick: () 
 
 /**
  * The refine rail. One panel, four plain-language groups, every option carrying
- * the number of rooms behind it — so nothing on the list ever promises a result
+ * the number of rooms behind it - so nothing on the list ever promises a result
  * it cannot deliver.
  */
 export function RoomFilters({
@@ -67,7 +67,7 @@ export function RoomFilters({
 
   return (
     <div className="space-y-6">
-      {/* Live summary — the rail answers before you scroll the list. */}
+      {/* Live summary - the rail answers before you scroll the list. */}
       {resultCount !== undefined && total !== undefined && (
         <div className="border-b border-line pb-6">
           <p className="flex items-baseline justify-between gap-3">

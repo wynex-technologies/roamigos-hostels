@@ -15,7 +15,7 @@ import { enquiryUrl } from '@/lib/whatsapp'
 export function ContactHero() {
   return (
     <section className="relative overflow-hidden border-b border-line bg-surface-2 pt-10 pb-16 sm:pt-12 sm:pb-20">
-      {/* Warm ambient wash, kept subtle — this section is a workspace, not a poster. */}
+      {/* Warm ambient wash, kept subtle - this section is a workspace, not a poster. */}
       <div
         aria-hidden
         className="pointer-events-none absolute -top-40 -right-32 size-[36rem] rounded-full bg-mustard/6 blur-[130px]"
@@ -53,13 +53,13 @@ export function ContactHero() {
               will answer you.
             </p>
 
-            {/* Live-ish signal — the one claim worth putting above the buttons. */}
+            {/* Live-ish signal - the one claim worth putting above the buttons. */}
             <p className="mt-7 inline-flex items-center gap-2.5 rounded-full border border-line bg-surface px-4 py-2 text-[0.8125rem] font-medium text-heading">
               <span aria-hidden className="relative grid size-2.5 place-items-center">
                 <span className="absolute size-2.5 animate-ping rounded-full bg-green/60 motion-reduce:animate-none" />
                 <span className="size-2 rounded-full bg-green-deep dark:bg-green" />
               </span>
-              Front desk online — usually replies in under 10 minutes
+              Front desk online - usually replies in under 10 minutes
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">

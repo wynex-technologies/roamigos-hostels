@@ -71,7 +71,7 @@ export function BookingWidget({
   function submit(event: React.FormEvent) {
     event.preventDefault()
     if (!ready) return
-    // No payment step and no booking record yet — this message *is* the booking.
+    // No payment step and no booking record yet - this message *is* the booking.
     window.open(buildWhatsAppUrl(toDraft(room, state)), '_blank', 'noopener,noreferrer')
   }
 
@@ -244,7 +244,7 @@ export function BookingWidget({
 
         <p className="mt-3 text-center text-[0.8125rem] text-muted">
           {ready
-            ? 'Opens WhatsApp with your booking details — we confirm in minutes.'
+            ? 'Opens WhatsApp with your booking details - we confirm in minutes.'
             : 'Pick your dates to continue.'}
         </p>
         <p className="mt-1 text-center text-[0.8125rem] font-medium text-heading">

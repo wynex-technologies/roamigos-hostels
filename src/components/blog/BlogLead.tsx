@@ -9,8 +9,8 @@ import { formatDate } from '@/lib/utils'
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
 
 /**
- * The lead story. One post gets the full spread — photograph on the left, the
- * standfirst and three hard facts on the right — so the page has a front page
+ * The lead story. One post gets the full spread - photograph on the left, the
+ * standfirst and three hard facts on the right - so the page has a front page
  * before it has a contents list.
  */
 export function BlogLead() {

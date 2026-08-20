@@ -1,7 +1,7 @@
 /** Marketing content for the homepage and the rooms listing. */
 
 /**
- * The three photographs the hero crossfades between. Order matters — the first
+ * The three photographs the hero crossfades between. Order matters - the first
  * one is the eager-loaded LCP image, so it is the one that must look best cold.
  */
 export const heroSlides = [
@@ -11,7 +11,7 @@ export const heroSlides = [
     place: 'Brahmaputra',
     note: 'Wake up minutes from the river, the ghats and the road out of Guwahati.',
     image: 'photo-1759738101670-7d50ae3f1bd2',
-    /** Focal point for the full-bleed background crop — keeps the boatman and the
+    /** Focal point for the full-bleed background crop - keeps the boatman and the
         far hills in frame while the sky takes the top of the section. */
     focus: 'object-[50%_58%]',
   },
@@ -27,19 +27,19 @@ export const heroSlides = [
     key: 'dorm',
     card: 'Dorm Beds',
     place: 'Pod bunk',
-    note: 'Your own lamp, locker and curtain — the cheapest bed you will love.',
+    note: 'Your own lamp, locker and curtain - the cheapest bed you will love.',
     image: 'photo-1721299417031-de890ff33b26',
     focus: 'object-[50%_center]',
   },
 ] as const
 
 /**
- * The homepage deck — a deliberate mix of what Guwahati gives you and what the
+ * The homepage deck - a deliberate mix of what Guwahati gives you and what the
  * house itself does, so the row reads as one trip rather than a list of sights.
  */
 /**
  * One card in the homepage showcase carousel. Promotional cards are the same
- * shape as the place cards — they just carry an `offer` ribbon and their own
+ * shape as the place cards - they just carry an `offer` ribbon and their own
  * link, so a running deal slides through the same deck as everything else.
  */
 export type ShowcaseCard = {
@@ -48,7 +48,7 @@ export type ShowcaseCard = {
   tag: string
   note: string
   image: string
-  /** Present only on promotional cards — renders the mustard offer ribbon. */
+  /** Present only on promotional cards - renders the mustard offer ribbon. */
   offer?: string
   /** Where the card leads. Defaults to the rooms listing. */
   href?: string
@@ -170,7 +170,7 @@ export const roomsPageAmenities = [
   { title: 'Daily Housekeeping', note: 'Because comfort matters', icon: 'clipboard' },
 ]
 
-/* The homepage "Travel Reads" section reads straight from `data/blog.ts` — there
+/* The homepage "Travel Reads" section reads straight from `data/blog.ts` - there
    is one set of stories on the site, not a homepage copy of them. */
 
 export const bookingAssurances = [
@@ -181,7 +181,7 @@ export const bookingAssurances = [
 
 /**
  * Running offers and promotions. These ride the same homepage carousel as the
- * `showcase` places — add, edit or empty this list and the deck adjusts itself;
+ * `showcase` places - add, edit or empty this list and the deck adjusts itself;
  * nothing in the component needs touching.
  */
 export const promos: ShowcaseCard[] = [

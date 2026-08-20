@@ -33,7 +33,7 @@ const sections = [
   { id: 'book', label: 'Book' },
 ]
 
-/** Kicker, display heading and the mustard rule — repeated down the page. */
+/** Kicker, display heading and the mustard rule - repeated down the page. */
 function SectionHead({ kicker, title }: { kicker: string; title: string }) {
   return (
     <div>
@@ -79,7 +79,7 @@ export default function RoomDetail() {
 
 function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>> }) {
   usePageMeta(
-    `${room.name} — ${site.legalName}`,
+    `${room.name} - ${site.legalName}`,
     `${room.shortDescription} From ${formatINR(room.pricePerNight)} per night at ${site.legalName}.`,
   )
 
@@ -95,7 +95,7 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
     .filter((r) => r.id !== room.id && r.categories.some((c) => room.categories.includes(c)))
     .slice(0, 3)
 
-  /** The spec sheet — one fact per line, the way a rate card prints it. */
+  /** The spec sheet - one fact per line, the way a rate card prints it. */
   const specs = [
     { label: isDorm ? 'Beds' : 'Sleeps', value: room.capacityLabel, icon: CapacityIcon },
     { label: 'Bathroom', value: room.bathroom, icon: Bath },
@@ -159,7 +159,7 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
             </p>
           </div>
 
-          {/* The rate, on glass — the one thing that should never need scrolling for. */}
+          {/* The rate, on glass - the one thing that should never need scrolling for. */}
           <div className="rounded-2xl border border-cream/15 bg-ink/45 p-5 backdrop-blur-lg sm:p-6">
             <p className="text-[0.625rem] font-bold tracking-[0.2em] text-gray-200/60 uppercase">
               From
@@ -220,7 +220,7 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
       <Container className="py-12 pb-24 lg:py-16">
         <div className="grid gap-12 lg:grid-cols-[1fr_23rem] lg:gap-14 xl:grid-cols-[1fr_25rem]">
           <div className="min-w-0">
-            {/* Overview — the lead, then the spec sheet beside it. */}
+            {/* Overview - the lead, then the spec sheet beside it. */}
             <Block id="overview">
               <SectionHead kicker="The room" title="What you are booking" />
 
@@ -287,7 +287,7 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
               </ul>
             </Block>
 
-            {/* House amenities — a spec table, not tiles. */}
+            {/* House amenities - a spec table, not tiles. */}
             <Block id="amenities" className="mt-16">
               <SectionHead kicker="The house" title="Included with every stay" />
 
@@ -309,7 +309,7 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
               </ul>
             </Block>
 
-            {/* Reviews — the score, then the words. */}
+            {/* Reviews - the score, then the words. */}
             <Block id="reviews" className="mt-16">
               <SectionHead kicker="From the guest book" title="What guests are saying" />
 

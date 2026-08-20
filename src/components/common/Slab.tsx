@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
  * A flat dark rectangle with a headline in it is the default every template
  * ships with, so this one is built in layers instead: a warm mesh baked into
  * the ground, an engraved grid that gives the surface a grain to catch light
- * on, and — the part that makes it feel like an object rather than a section —
+ * on, and - the part that makes it feel like an object rather than a section -
  * a mustard bloom that leans toward the pointer. The bloom is written as
  * `--mx` / `--my` on the wrapper, so the whole effect is one repaint of one
  * gradient and no React state changes while the cursor moves.
@@ -26,7 +26,7 @@ export function Slab({ className, children }: { className?: string; children: Re
     node.style.setProperty('--my', `${(((event.clientY - rect.top) / rect.height) * 100).toFixed(1)}%`)
   }
 
-  // Back to the resting position — top-left, where the maroon already sits.
+  // Back to the resting position - top-left, where the maroon already sits.
   const rest = () => {
     el.current?.style.setProperty('--mx', '18%')
     el.current?.style.setProperty('--my', '14%')

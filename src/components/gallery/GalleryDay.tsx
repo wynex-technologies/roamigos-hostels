@@ -31,7 +31,7 @@ export function GalleryDay() {
           </p>
         </div>
 
-        {/* The rule the whole strip hangs from — drawn out from the middle. */}
+        {/* The rule the whole strip hangs from - drawn out from the middle. */}
         <div className="relative mt-16 lg:mt-20">
           <span
             aria-hidden

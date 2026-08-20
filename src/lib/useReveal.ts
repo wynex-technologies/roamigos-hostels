@@ -5,7 +5,7 @@ import { useLayoutEffect, useRef } from 'react'
  * entire block of `reveal-*` utilities can play from one inherited value with
  * `--lag` deciding the order.
  *
- * It runs once and then disconnects — the reveal is an arrival, not something the
+ * It runs once and then disconnects - the reveal is an arrival, not something the
  * visitor can scrub back and forth. Reduced motion never sees the hidden state:
  * `--in` is simply left at its dealt default of 1.
  */

@@ -8,7 +8,7 @@ import { useReveal } from '@/lib/useReveal'
 import { cn } from '@/lib/utils'
 
 /**
- * Tile footprints. The mix is what keeps the wall from reading as a grid — a
+ * Tile footprints. The mix is what keeps the wall from reading as a grid - a
  * `wide` frame takes two columns, a `tall` one takes an extra row, and dense
  * auto-flow backfills the holes that leaves behind.
  */
@@ -49,7 +49,7 @@ export function GalleryWall() {
           </p>
         </div>
 
-        {/* Album chips — same control language as the rooms filter rail. */}
+        {/* Album chips - same control language as the rooms filter rail. */}
         <div className="no-scrollbar -mx-5 mt-10 flex gap-2.5 overflow-x-auto px-5 lg:mx-0 lg:flex-wrap lg:px-0">
           {galleryAlbums.map((entry) => {
             const active = entry.key === album

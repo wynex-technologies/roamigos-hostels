@@ -1,6 +1,6 @@
 /**
  * Blog ("The Roamigos Journal") content. The page reads as an issue of a
- * magazine — a masthead, a lead story, then the contents — so the hero copy
+ * magazine - a masthead, a lead story, then the contents - so the hero copy
  * and the chapter index live here alongside the posts themselves.
  */
 
@@ -29,7 +29,7 @@ export const blogHero = {
     { key: 'kamakhya', name: 'Kamakhya', img: 'photo-1609770836167-7a74ed99bfad' },
   ],
   copy:
-    'Nobody writes this from an office. Every guide below was walked, eaten, missed-the-last-ferry-for and rewritten by someone working the desk downstairs — so the timings are the real ones and the shortcuts actually work.',
+    'Nobody writes this from an office. Every guide below was walked, eaten, missed-the-last-ferry-for and rewritten by someone working the desk downstairs - so the timings are the real ones and the shortcuts actually work.',
   tagline: 'Written where it happened',
   cta: 'Read the issue',
   indexTitle: 'In this issue',
@@ -55,7 +55,7 @@ export const blogCategories: { key: PostCategory | 'all'; label: string }[] = [
 export interface BlogPost {
   slug: string
   title: string
-  /** Standfirst — the line that runs under the headline on the card. */
+  /** Standfirst - the line that runs under the headline on the card. */
   excerpt: string
   category: PostCategory
   author: string
@@ -102,7 +102,7 @@ export const blogPosts: BlogPost[] = [
     slug: 'nongriat-root-bridge-trek',
     title: 'The Nongriat Trek: 3,000 Steps Down to the Double-Decker Root Bridge',
     excerpt:
-      'It starts at Tyrna village, drops through the gorge on stone steps, and ends at a bridge that people grew instead of building. Five to six hours return if you keep moving — and the walk back up is the part nobody warns you about.',
+      'It starts at Tyrna village, drops through the gorge on stone steps, and ends at a bridge that people grew instead of building. Five to six hours return if you keep moving - and the walk back up is the part nobody warns you about.',
     category: 'hills',
     author: 'Rohit Deka',
     date: '2026-07-19',
@@ -113,7 +113,7 @@ export const blogPosts: BlogPost[] = [
     slug: 'majuli-ferry-guide',
     title: 'Majuli: Catching the Nimati Ghat Ferry to the Largest River Island on Earth',
     excerpt:
-      'Jorhat, then 14 km to Nimati Ghat, then a flat-bottomed boat across the Brahmaputra for about an hour. Aim for the 10 am government ferry, and understand this one rule — when the sun goes down, the boats stop.',
+      'Jorhat, then 14 km to Nimati Ghat, then a flat-bottomed boat across the Brahmaputra for about an hour. Aim for the 10 am government ferry, and understand this one rule - when the sun goes down, the boats stop.',
     category: 'river',
     author: 'Priyam Saikia',
     date: '2026-07-11',
@@ -135,7 +135,7 @@ export const blogPosts: BlogPost[] = [
     slug: 'packing-for-the-northeast',
     title: 'Packing for the Northeast: Monsoon, Leeches, and the Winter Nobody Expects',
     excerpt:
-      'Meghalaya is one of the wettest places on the planet and Assam gets genuinely cold in January. A short, unromantic list of what earns its place in the bag — and the four things people always leave behind.',
+      'Meghalaya is one of the wettest places on the planet and Assam gets genuinely cold in January. A short, unromantic list of what earns its place in the bag - and the four things people always leave behind.',
     category: 'kit',
     author: 'Rohit Deka',
     date: '2026-05-14',
@@ -144,10 +144,10 @@ export const blogPosts: BlogPost[] = [
   },
 ]
 
-/** Sidebar list — ordered by what the front desk gets asked about most. */
+/** Sidebar list - ordered by what the front desk gets asked about most. */
 export const mostAsked = [
   { slug: 'guwahati-to-shillong', title: 'Guwahati to Shillong: buses, sumos and costs', note: 'Asked 3x a day' },
   { slug: 'majuli-ferry-guide', title: 'The Nimati Ghat ferry timings, honestly', note: 'Asked every ferry season' },
-  { slug: 'nongriat-root-bridge-trek', title: 'Can I do Nongriat in one day?', note: 'Yes — leave before ten' },
+  { slug: 'nongriat-root-bridge-trek', title: 'Can I do Nongriat in one day?', note: 'Yes - leave before ten' },
   { slug: 'assamese-food-guide', title: 'What do I order on my first night?', note: 'Start with masor tenga' },
 ] as const

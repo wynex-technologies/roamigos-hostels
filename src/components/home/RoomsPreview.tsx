@@ -26,7 +26,7 @@ const DWELL_MS = 2500
 
 /**
  * Rooms, shown the way a hotel shows them: one photograph held at full height,
- * and a numbered index beside it. Running down the index — pointer or keyboard —
+ * and a numbered index beside it. Running down the index - pointer or keyboard -
  * changes the plate; clicking a line opens the room. Below `lg` the same rooms
  * become a snap rail, because a stage needs width to be worth anything.
  */
@@ -99,7 +99,7 @@ export function RoomsPreview() {
               className="reveal-rise max-w-sm text-[1.0625rem] leading-relaxed text-muted text-pretty lg:pb-2"
             >
               Curtained pod bunks, private doubles, a family room that takes four. Eight ways to
-              stay — all of them on the same warm floor.
+              stay - all of them on the same warm floor.
             </p>
           </div>
 
@@ -384,7 +384,7 @@ export function RoomsPreview() {
   )
 }
 
-/** The rail card below `lg` — the stage, cut down to one portrait plate. */
+/** The rail card below `lg` - the stage, cut down to one portrait plate. */
 function RoomPlate({ room, index }: { room: Room; index: number }) {
   const CapacityIcon = capacityIcon(room)
 

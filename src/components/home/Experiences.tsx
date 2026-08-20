@@ -147,7 +147,7 @@ export function Experiences() {
           })}
         </ul>
 
-        {/* Closing ticket — one line of reassurance and the way to book any of it. */}
+        {/* Closing ticket - one line of reassurance and the way to book any of it. */}
         <div className="card-raised mt-10 flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
           <div className="flex items-center gap-4">
             <span

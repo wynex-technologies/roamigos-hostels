@@ -9,7 +9,7 @@ const prefersReduced = () =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /**
- * The landscape that shows through the letters. It is one photograph — each
+ * The landscape that shows through the letters. It is one photograph - each
  * word is cropped to its own horizontal band of it, so the two lines read as a
  * single continuous view rather than two separate pictures.
  *
@@ -38,7 +38,7 @@ export function BlogHero() {
   const [shown, setShown] = useState(false)
   const [reduce] = useState(prefersReduced)
 
-  // The masthead assembles itself once, on arrival — it is not scrubbable.
+  // The masthead assembles itself once, on arrival - it is not scrubbable.
   useEffect(() => {
     const el = section.current
     if (!el) return
@@ -54,7 +54,7 @@ export function BlogHero() {
     return () => observer.disconnect()
   }, [])
 
-  // Pointer parallax — the figure leads, the wordmark and plates lag behind it.
+  // Pointer parallax - the figure leads, the wordmark and plates lag behind it.
   const move = (event: React.MouseEvent) => {
     const el = stage.current
     if (!el || reduce) return
@@ -97,7 +97,7 @@ export function BlogHero() {
               'radial-gradient(120% 82% at 50% 14%, var(--surface) 0%, var(--canvas) 44%, var(--surface-2) 100%)',
           }}
         />
-        {/* Contour rings — a topographic map read from far above. */}
+        {/* Contour rings - a topographic map read from far above. */}
         <div
           className="absolute inset-0"
           style={{
@@ -204,7 +204,7 @@ export function BlogHero() {
                     </div>
                   </div>
                   {/* Engraved brass nameplate, hanging off the bottom of the frame.
-                      The place name is the whole label — a coordinate under it
+                      The place name is the whole label - a coordinate under it
                       only ever read as clutter at this size. */}
                   <div className="relative z-10 mx-auto -mt-3 w-[80%] rounded-lg bg-gradient-to-b from-gold to-maroon-deep px-3 py-2 text-center text-cream shadow-warm transition-transform duration-500 group-hover/plate:-translate-y-0.5">
                     <p className="font-display text-[0.9rem] leading-none font-semibold tracking-[0.06em]">
@@ -219,10 +219,10 @@ export function BlogHero() {
           {/* ---------- the two words ---------- */}
           <div className="relative w-full pt-6 text-center [transform:translate3d(calc(var(--px,0)*-14px),calc(var(--py,0)*-8px),0)] [transition:transform_.5s_ease-out] sm:pt-10">
             <h1 className="sr-only">
-              {b.words[0]} {b.words[1]} — the {b.eyebrow}
+              {b.words[0]} {b.words[1]} - the {b.eyebrow}
             </h1>
 
-            {/* Sized so nine characters still clear the container at 1440 — the
+            {/* Sized so nine characters still clear the container at 1440 - the
                 word is the widest thing on the page, so it sets the ceiling. */}
             <div className="overflow-hidden">
               <span

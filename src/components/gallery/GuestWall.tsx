@@ -26,7 +26,7 @@ export function GuestWall() {
             </SectionTitle>
             <p className="mt-5 text-[1.0625rem] leading-relaxed text-pretty">
               Tag <span className="font-semibold text-heading">@roamigos</span> and your frame goes
-              up on the board by the stairs — the physical one, with actual pins.
+              up on the board by the stairs - the physical one, with actual pins.
             </p>
           </div>
 
@@ -57,7 +57,7 @@ export function GuestWall() {
 
         <ul
           className="flex w-max gap-4 pl-4 [animation:marquee_48s_linear_infinite] hover:[animation-play-state:paused] motion-reduce:[animation:none]"
-          // The duplicate half is decorative — it exists only so the loop is seamless.
+          // The duplicate half is decorative - it exists only so the loop is seamless.
           aria-label="Photographs shared by our guests"
         >
           {[...guestFrames, ...guestFrames].map((frame, i) => (

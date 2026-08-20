@@ -9,8 +9,8 @@ import { site } from '@/data/site'
 
 export default function Contact() {
   usePageMeta(
-    `Contact — ${site.legalName}`,
-    `Talk to the Roamigos front desk in Guwahati — WhatsApp, phone, email or walk in. Directions from the airport, station and ISBT, plus answers to the questions we get most.`,
+    `Contact - ${site.legalName}`,
+    `Talk to the Roamigos front desk in Guwahati - WhatsApp, phone, email or walk in. Directions from the airport, station and ISBT, plus answers to the questions we get most.`,
   )
 
   return (

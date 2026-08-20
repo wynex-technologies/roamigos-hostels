@@ -11,7 +11,7 @@ const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProper
 
 /**
  * The homepage's closing band. Same slab, same light and same micro-interactions
- * as the one the inner pages end on — but this one still carries the actual
+ * as the one the inner pages end on - but this one still carries the actual
  * contact details, because the homepage is where people look for them.
  */
 export function ContactBand() {
@@ -56,7 +56,7 @@ export function ContactBand() {
                 className="reveal-rise mt-6 max-w-lg text-[1.0625rem] leading-relaxed text-gray-200 text-pretty"
               >
                 No prepayment, no long forms. Choose your room, hit Book Now and your dates land
-                straight in our WhatsApp — we confirm within minutes and you pay at check-in.
+                straight in our WhatsApp - we confirm within minutes and you pay at check-in.
               </p>
 
               <div style={lag(0.24)} className="reveal-rise mt-9 flex flex-wrap gap-3">

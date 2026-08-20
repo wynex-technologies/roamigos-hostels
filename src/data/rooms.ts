@@ -15,7 +15,7 @@ export interface Room {
   name: string
   categories: RoomCategory[]
   badge?: string
-  /** Sleeping capacity — beds for dorms, guests for private rooms. */
+  /** Sleeping capacity - beds for dorms, guests for private rooms. */
   capacity: number
   capacityLabel: string
   bathroom: string
@@ -31,7 +31,7 @@ export interface Room {
   about: string
   inclusions: string[]
   amenities: AmenityKey[]
-  /** At least 5 — the detail gallery shows one main image plus a 2x2 thumbnail block. */
+  /** At least 5 - the detail gallery shows one main image plus a 2x2 thumbnail block. */
   images: string[]
   totalPhotos: number
   maxGuestsNote: string
@@ -147,7 +147,7 @@ export const rooms: Room[] = [
     capacityLabel: '2 Guests',
     bathroom: 'Private Bathroom',
     shortDescription: 'Cozy private room with all essential amenities.',
-    subtitle: 'Your own door, your own bathroom — with the hostel common room still a floor away.',
+    subtitle: 'Your own door, your own bathroom - with the hostel common room still a floor away.',
     pricePerNight: 1499,
     rating: 4.8,
     reviewCount: 195,
@@ -183,7 +183,7 @@ export const rooms: Room[] = [
     capacityLabel: '2 Guests',
     bathroom: 'Private Bathroom',
     shortDescription: 'Spacious room with mountain view & balcony.',
-    subtitle: 'Our best room in the house — king bed, private balcony and the mountain right there.',
+    subtitle: 'Our best room in the house - king bed, private balcony and the mountain right there.',
     pricePerNight: 1999,
     rating: 4.9,
     reviewCount: 233,
@@ -224,7 +224,7 @@ export const rooms: Room[] = [
     reviewCount: 178,
     highlights: ['6 Beds', 'Shared Bathroom', 'Locker', 'Reading Light', 'Power Plug', 'Air Circulation'],
     about:
-      'Our smallest-priced bed and still the same everything else — sturdy bunks, a locker each, and a common room downstairs that never really empties out.',
+      'Our smallest-priced bed and still the same everything else - sturdy bunks, a locker each, and a common room downstairs that never really empties out.',
     inclusions: [
       'Six bunk beds with privacy curtains',
       'Personal locker for your belongings',
@@ -253,13 +253,13 @@ export const rooms: Room[] = [
     capacityLabel: '4 Beds',
     bathroom: 'Ensuite Bathroom',
     shortDescription: 'More privacy with curtains, lights & lockers.',
-    subtitle: 'A dorm bed that feels like a pod — blackout curtain, own light, own plug, own shelf.',
+    subtitle: 'A dorm bed that feels like a pod - blackout curtain, own light, own plug, own shelf.',
     pricePerNight: 649,
     rating: 4.7,
     reviewCount: 143,
     highlights: ['4 Beds', 'Ensuite Bathroom', 'AC', 'Locker', 'Reading Light', 'Bedside Shelf'],
     about:
-      'Built for light sleepers. Each bed is a pod with a blackout curtain, its own dimmable light, two plug points and a bedside shelf — plus an ensuite bathroom shared by four people, not the floor.',
+      'Built for light sleepers. Each bed is a pod with a blackout curtain, its own dimmable light, two plug points and a bedside shelf - plus an ensuite bathroom shared by four people, not the floor.',
     inclusions: [
       'Pod-style bunks with blackout privacy curtains',
       'Dimmable reading light & two power sockets per bed',
@@ -288,7 +288,7 @@ export const rooms: Room[] = [
     capacityLabel: '2 Guests',
     bathroom: 'Private Bathroom',
     shortDescription: 'Premium comfort with AC, work desk & more.',
-    subtitle: 'Set up for people who stay a while — a real desk, fast Wi-Fi and monthly rates.',
+    subtitle: 'Set up for people who stay a while - a real desk, fast Wi-Fi and monthly rates.',
     pricePerNight: 1799,
     rating: 4.9,
     reviewCount: 167,
@@ -301,7 +301,7 @@ export const rooms: Room[] = [
       'Priority Wi-Fi access point in the room',
       'Private bathroom with hot shower',
       'Air conditioning, wardrobe & luggage rack',
-      'Weekly & monthly rates — ask us on WhatsApp',
+      'Weekly & monthly rates - ask us on WhatsApp',
     ],
     amenities: ['ac', 'ensuite', 'desk'],
     images: [
@@ -323,7 +323,7 @@ export const rooms: Room[] = [
     capacityLabel: '4 Guests',
     bathroom: 'Private Bathroom',
     shortDescription: 'Spacious room for families or groups.',
-    subtitle: 'One big room for four — a double bed, two singles and a bathroom of your own.',
+    subtitle: 'One big room for four - a double bed, two singles and a bathroom of your own.',
     pricePerNight: 2499,
     rating: 4.8,
     reviewCount: 121,

@@ -5,7 +5,7 @@ import { usePageMeta } from '@/lib/usePageMeta'
 import { site } from '@/data/site'
 
 export default function NotFound() {
-  usePageMeta(`Page not found — ${site.legalName}`)
+  usePageMeta(`Page not found - ${site.legalName}`)
 
   return (
     <Container className="flex min-h-[60vh] flex-col items-center justify-center py-24 text-center">

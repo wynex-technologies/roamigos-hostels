@@ -1,4 +1,4 @@
-// Generated from the source logo (Roamigos 9.pdf) — the script "Roamigos" lettering
+// Generated from the source logo (Roamigos 9.pdf) - the script "Roamigos" lettering
 // as vector outlines, so it renders identically without shipping the display font.
 // Fills use currentColor: set the text colour on the parent to recolour the wordmark.
 // Regenerate rather than hand-edit.

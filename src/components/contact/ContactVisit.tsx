@@ -20,7 +20,7 @@ export function ContactVisit() {
         <div className="max-w-xl">
           <Eyebrow>Getting here</Eyebrow>
           <SectionTitle className="mt-3" underline="door">
-            Airport, station, ISBT —
+            Airport, station, ISBT -
             <br />
             then our
           </SectionTitle>

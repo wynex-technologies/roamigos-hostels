@@ -1,12 +1,12 @@
 /**
- * Gallery page content — the pinned postcard hero, the album wall and the
+ * Gallery page content - the pinned postcard hero, the album wall and the
  * guest strip. Photographs are Unsplash ids, resolved by `@/lib/images`.
  */
 
 /**
  * The hero is a corkboard: a handful of pinned pieces floating around a centred
  * core on desktop, and the same pieces in one snap-scrolling rail on mobile.
- * Each key below is one pinned piece — the component places them by hand, so
+ * Each key below is one pinned piece - the component places them by hand, so
  * this object is deliberately shaped rather than a flat list.
  */
 export const galleryHero = {
@@ -15,11 +15,11 @@ export const galleryHero = {
   script: 'Postcards from the front desk',
   heading: ['Two years of check-ins,', 'pinned to one wall'],
   copy:
-    'Everything on this board was shot by someone who stayed here — the rooftop at six, the river at seven, and whatever the common room turned into by ten.',
+    'Everything on this board was shot by someone who stayed here - the rooftop at six, the river at seven, and whatever the common room turned into by ten.',
   cta: 'Open the full wall',
   meta: '340 frames · added to every month',
 
-  /** Bleeds off the left edge — no caption, it is the mood, not a picture of a thing. */
+  /** Bleeds off the left edge - no caption, it is the mood, not a picture of a thing. */
   traveller: {
     img: 'photo-1523341139367-9de570b874ed',
     alt: 'A traveller on a ridge trail outside Guwahati',
@@ -62,7 +62,7 @@ export const galleryHero = {
     coord: '26.23°N 91.98°E',
   },
 
-  /** Boarding pass — the route most of our guests are actually on. */
+  /** Boarding pass - the route most of our guests are actually on. */
   pass: {
     from: 'GAU',
     to: 'SHL',
@@ -102,7 +102,7 @@ export interface GalleryShot {
   album: AlbumKey
   caption: string
   place: string
-  /** Drives the tile height in the wall — the mix is what stops it reading as a grid. */
+  /** Drives the tile height in the wall - the mix is what stops it reading as a grid. */
   span: 'tall' | 'wide' | 'square'
 }
 
@@ -111,7 +111,7 @@ export const galleryShots: GalleryShot[] = [
   {
     id: 'photo-1709805619372-40de3f158e83',
     album: 'rooms',
-    caption: 'Top bunk, window side — the one everyone asks for',
+    caption: 'Top bunk, window side - the one everyone asks for',
     place: 'Six-bed mixed dorm',
     span: 'tall',
   },
@@ -132,7 +132,7 @@ export const galleryShots: GalleryShot[] = [
   {
     id: 'photo-1635321349302-f91724057317',
     album: 'rooms',
-    caption: 'Private twin — a desk, a window, and a door that locks',
+    caption: 'Private twin - a desk, a window, and a door that locks',
     place: 'Private room',
     span: 'square',
   },
@@ -176,7 +176,7 @@ export const galleryShots: GalleryShot[] = [
   {
     id: 'photo-1680965075873-64356db057fb',
     album: 'common',
-    caption: 'Work corner — fast wifi and a plug at every seat',
+    caption: 'Work corner - fast wifi and a plug at every seat',
     place: 'Co-work nook',
     span: 'square',
   },
@@ -192,14 +192,14 @@ export const galleryShots: GalleryShot[] = [
   {
     id: 'photo-1569149805609-bccd9d04b9da',
     album: 'rooftop',
-    caption: 'Sunset shift — the best seats go to whoever gets up first',
+    caption: 'Sunset shift - the best seats go to whoever gets up first',
     place: 'Rooftop terrace',
     span: 'wide',
   },
   {
     id: 'photo-1588644525273-f37b60d78512',
     album: 'rooftop',
-    caption: 'Assamese thali night — khar, masor tenga, rice, repeat',
+    caption: 'Assamese thali night - khar, masor tenga, rice, repeat',
     place: 'Kitchen',
     span: 'square',
   },
@@ -229,14 +229,14 @@ export const galleryShots: GalleryShot[] = [
   {
     id: 'photo-1568785919846-27fd1c8f8982',
     album: 'nights',
-    caption: 'Bonfire night — guitars, bad jokes, real stars',
+    caption: 'Bonfire night - guitars, bad jokes, real stars',
     place: 'Back courtyard',
     span: 'wide',
   },
   {
     id: 'photo-1629445039581-3b5fb6501e9a',
     album: 'nights',
-    caption: 'Open mic Thursday — three songs each, no auditions',
+    caption: 'Open mic Thursday - three songs each, no auditions',
     place: 'Common room',
     span: 'tall',
   },
@@ -280,7 +280,7 @@ export const galleryShots: GalleryShot[] = [
   {
     id: 'photo-1675296098616-53e3d4a1dd57',
     album: 'around',
-    caption: 'Pobitora — rhino country, and only an hour out of town',
+    caption: 'Pobitora - rhino country, and only an hour out of town',
     place: 'Pobitora Wildlife Sanctuary',
     span: 'tall',
   },
@@ -315,7 +315,7 @@ export const galleryShots: GalleryShot[] = [
   {
     id: 'photo-1609770836167-7a74ed99bfad',
     album: 'around',
-    caption: 'Kamakhya before the queues — go at dawn, thank us later',
+    caption: 'Kamakhya before the queues - go at dawn, thank us later',
     place: 'Nilachal Hill',
     span: 'square',
   },
@@ -335,7 +335,7 @@ export const galleryShots: GalleryShot[] = [
   },
 ]
 
-/** The strip under the wall — the house across one ordinary day. */
+/** The strip under the wall - the house across one ordinary day. */
 export const galleryDay = [
   {
     time: '06:40',

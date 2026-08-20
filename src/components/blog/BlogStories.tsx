@@ -8,7 +8,7 @@ import { cn, formatDate } from '@/lib/utils'
 
 /**
  * The contents of the issue. The lead story is deliberately left in the list as
- * well — someone arriving from a category chip should not find a hole where the
+ * well - someone arriving from a category chip should not find a hole where the
  * front page was.
  */
 export function BlogStories() {
@@ -36,7 +36,7 @@ export function BlogStories() {
               Filed from the
             </SectionTitle>
             <p className="mt-5 text-[1.0625rem] leading-relaxed text-pretty">
-              Guides written by the people who answer your questions at check-in — so the timings
+              Guides written by the people who answer your questions at check-in - so the timings
               are the real ones, and the shortcuts have actually been walked.
             </p>
           </div>

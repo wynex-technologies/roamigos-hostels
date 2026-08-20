@@ -52,7 +52,7 @@ export function ContactChannels() {
         <div ref={grid} className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {contactChannels.map((channel, i) => {
             const Icon = icons[channel.key]
-            // WhatsApp is the one place green is allowed to lead — it reads as the
+            // WhatsApp is the one place green is allowed to lead - it reads as the
             // product, not as brand colour.
             const isChat = channel.key === 'whatsapp'
             return (

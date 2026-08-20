@@ -8,8 +8,8 @@ import { site } from '@/data/site'
 
 export default function Gallery() {
   usePageMeta(
-    `Gallery — ${site.legalName}`,
-    'Rooms, common spaces, rooftop mornings and bonfire nights at Roamigos — plus everything worth seeing within a day of the front door.',
+    `Gallery - ${site.legalName}`,
+    'Rooms, common spaces, rooftop mornings and bonfire nights at Roamigos - plus everything worth seeing within a day of the front door.',
   )
 
   return (
@@ -27,7 +27,7 @@ export default function Gallery() {
             <span className="text-sheen">could be yours.</span>
           </>
         }
-        copy="Pick a bed, send one message, and the desk confirms within minutes. No prepayment, no forms — you pay when you walk in."
+        copy="Pick a bed, send one message, and the desk confirms within minutes. No prepayment, no forms - you pay when you walk in."
         chatPrompt="Hi Roamigos! I saw the gallery and I'd like to check availability."
       />
     </>

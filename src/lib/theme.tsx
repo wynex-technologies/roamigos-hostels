@@ -22,7 +22,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(STORAGE_KEY, theme)
     } catch {
-      // Private mode / storage disabled — the theme still applies for this session.
+      // Private mode / storage disabled - the theme still applies for this session.
     }
   }, [theme])
 

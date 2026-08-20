@@ -45,7 +45,7 @@ export function Lightbox({ shots, index, onClose, onStep }: LightboxProps) {
   if (!shot) return null
 
   // Portalled to the body on purpose: `<main>` carries `relative z-10`, which
-  // opens a stacking context the viewer could never climb out of — it would sit
+  // opens a stacking context the viewer could never climb out of - it would sit
   // under the sticky header no matter how high its own z-index went.
   return createPortal(
     <div

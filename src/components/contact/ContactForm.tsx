@@ -17,13 +17,13 @@ const label =
 const steps = [
   { title: 'Fill in the short version', note: 'Only the name, number and question are required.' },
   { title: 'Read what we will receive', note: 'The exact message is written out below as you type.' },
-  { title: 'Send it yourself', note: 'It opens in your own WhatsApp — nothing is sent behind your back.' },
+  { title: 'Send it yourself', note: 'It opens in your own WhatsApp - nothing is sent behind your back.' },
 ]
 
 /**
  * The enquiry composer. There is no inbox on the other side of this form, so
  * rather than pretending otherwise it builds the WhatsApp message in the open
- * and hands it to the visitor to send — which is also why the preview is not
+ * and hands it to the visitor to send - which is also why the preview is not
  * decorative: it is the payload, character for character.
  */
 export function ContactForm() {
@@ -64,7 +64,7 @@ export function ContactForm() {
 
             <p className="mt-6 text-[1.0625rem] leading-relaxed text-pretty">
               Most contact forms drop your message into an inbox nobody has opened since March. This
-              one builds a WhatsApp message, shows it to you, and lets you press send — so you know
+              one builds a WhatsApp message, shows it to you, and lets you press send - so you know
               exactly where it went and you have the thread on your own phone.
             </p>
 
@@ -184,7 +184,7 @@ export function ContactForm() {
                   rows={4}
                   value={draft.message}
                   onChange={(event) => set('message', event.target.value)}
-                  placeholder="Arriving on the night train from Jorhat — is a late check-in okay?"
+                  placeholder="Arriving on the night train from Jorhat - is a late check-in okay?"
                   className={`${field} resize-y placeholder:font-normal placeholder:text-muted/60`}
                 />
               </div>

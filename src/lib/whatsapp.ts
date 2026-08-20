@@ -22,7 +22,7 @@ export interface BookingTotals {
 export function bookingTotals(draft: BookingDraft): BookingTotals {
   const nights = nightsBetween(draft.checkIn, draft.checkOut)
   const rate = draft.room?.pricePerNight ?? 0
-  // Dorms are priced per bed, private rooms per room — guests only multiply dorms.
+  // Dorms are priced per bed, private rooms per room - guests only multiply dorms.
   const units = draft.room?.categories.includes('dorm') ? draft.guests : 1
   const subtotal = rate * Math.max(nights, 0) * units
   return { nights, subtotal, total: subtotal }
@@ -30,12 +30,12 @@ export function bookingTotals(draft: BookingDraft): BookingTotals {
 
 /**
  * Builds the message the hostel owner receives. Everything the front desk needs
- * to confirm a booking has to be in here — there is no payment step and no
+ * to confirm a booking has to be in here - there is no payment step and no
  * booking record on the site yet, this message *is* the booking request.
  */
 export function bookingMessage(draft: BookingDraft) {
   const { nights, total } = bookingTotals(draft)
-  const lines: string[] = ['*New Booking Request — Roamigos Hostel*', '']
+  const lines: string[] = ['*New Booking Request - Roamigos Hostel*', '']
 
   const isDorm = draft.room?.categories.includes('dorm')
 
@@ -86,12 +86,12 @@ export interface ContactDraft {
 
 /**
  * The contact form's output. Same principle as `bookingMessage`: there is no
- * inbox and no ticket queue, so this message *is* the enquiry — and because the
+ * inbox and no ticket queue, so this message *is* the enquiry - and because the
  * page previews it verbatim before sending, what is composed here is exactly
  * what the visitor has already read.
  */
 export function contactMessage(draft: ContactDraft) {
-  const lines: string[] = ['*New Enquiry — Roamigos Hostel*', '']
+  const lines: string[] = ['*New Enquiry - Roamigos Hostel*', '']
 
   lines.push(`*Topic:* ${draft.topic}`)
   if (draft.name) lines.push(`*Name:* ${draft.name}`)

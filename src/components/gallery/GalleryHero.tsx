@@ -14,7 +14,7 @@ import { galleryHero as g } from '@/data/gallery'
 const PIN = 'w-[15rem] shrink-0 snap-center xl:pointer-events-auto xl:absolute'
 
 /**
- * The stock itself. A fixed white rather than a semantic surface on purpose —
+ * The stock itself. A fixed white rather than a semantic surface on purpose -
  * these are physical prints pinned to a board, so they stay paper-coloured in
  * both themes and the dark canvas reads as the wall behind them.
  */

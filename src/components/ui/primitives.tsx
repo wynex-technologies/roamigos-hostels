@@ -3,8 +3,8 @@ import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 /**
- * Page measure. `wide` is the homepage measure — eight rem wider, set by the
- * destination deck — so every band on the home page lines up with it.
+ * Page measure. `wide` is the homepage measure - eight rem wider, set by the
+ * destination deck - so every band on the home page lines up with it.
  */
 export function Container({
   className,
@@ -110,7 +110,7 @@ export function Rating({
   )
 }
 
-/** Thin mustard rule with a diamond in the middle — the recurring section divider. */
+/** Thin mustard rule with a diamond in the middle - the recurring section divider. */
 export function Flourish({ className }: { className?: string }) {
   return (
     <div className={cn('flex items-center justify-center gap-3', className)} aria-hidden>

@@ -32,7 +32,7 @@ export function nightsBetween(checkIn: string, checkOut: string) {
   return Math.max(0, Math.round((end - start) / 86_400_000))
 }
 
-/** Today as `YYYY-MM-DD` in local time — used as the `min` for date inputs. */
+/** Today as `YYYY-MM-DD` in local time - used as the `min` for date inputs. */
 export function todayISO() {
   const now = new Date()
   const offset = now.getTimezoneOffset() * 60_000

@@ -6,7 +6,7 @@ import { ButtonAnchor } from '@/components/ui/Button'
 
 /**
  * Built on `<details>` rather than state, so every answer is present in the
- * document for search and for anyone printing the page — and so one can be
+ * document for search and for anyone printing the page - and so one can be
  * opened before React has hydrated anything.
  */
 export function ContactFaq() {
@@ -22,7 +22,7 @@ export function ContactFaq() {
               most
             </SectionTitle>
             <p className="mt-6 text-[1.0625rem] leading-relaxed text-pretty">
-              If the answer is not here, it is a two-tap message away — and it will probably end up
+              If the answer is not here, it is a two-tap message away - and it will probably end up
               on this list next month.
             </p>
 

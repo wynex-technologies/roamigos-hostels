@@ -17,7 +17,7 @@ const variants: Record<Variant, string> = {
   secondary:
     'border border-line-strong bg-surface text-heading hover:border-primary hover:text-primary',
   ghost: 'text-heading hover:bg-surface-2',
-  // The single place green is allowed to lead — it reads as "WhatsApp", not as brand colour.
+  // The single place green is allowed to lead - it reads as "WhatsApp", not as brand colour.
   whatsapp: 'bg-green-deep text-cream hover:bg-green shadow-[0_10px_24px_-12px] shadow-green-deep/70',
 }
 

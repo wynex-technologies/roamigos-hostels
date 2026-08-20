@@ -1,6 +1,6 @@
 /**
  * Contact page content. Phone, email and the WhatsApp number itself stay in
- * `site.ts` — this file only holds the copy that is unique to the page.
+ * `site.ts` - this file only holds the copy that is unique to the page.
  */
 
 /** Topics offered in the enquiry form; the label is what the owner receives. */
@@ -26,7 +26,7 @@ export const contactChannels = [
   {
     key: 'phone',
     title: 'Call the desk',
-    note: 'Someone is on the desk 24x7 — a real person, not a queue.',
+    note: 'Someone is on the desk 24x7 - a real person, not a queue.',
     action: 'Call now',
     meta: 'Open all day, every day',
   },
@@ -46,14 +46,14 @@ export const contactChannels = [
   },
 ] as const
 
-/** Practical arrival notes — distances are to the hostel door. */
+/** Practical arrival notes - distances are to the hostel door. */
 export const reachRoutes = [
   {
     key: 'air',
     title: 'By air',
     place: 'Lokpriya Gopinath Bordoloi International Airport (GAU)',
     distance: '≈ 23 km',
-    time: '45–60 min by cab',
+    time: '45-60 min by cab',
     note: 'Prepaid taxis run from the arrivals kerb. Tell us your flight and we will keep the desk expecting you.',
   },
   {
@@ -62,7 +62,7 @@ export const reachRoutes = [
     place: 'Guwahati Railway Station (GHY), Paltan Bazaar',
     distance: '≈ 6 km',
     time: '20 min by auto',
-    note: 'Autos are metered-ish — agree the fare at the rank before you get in.',
+    note: 'Autos are metered-ish - agree the fare at the rank before you get in.',
   },
   {
     key: 'bus',
@@ -76,8 +76,8 @@ export const reachRoutes = [
     key: 'onward',
     title: 'Heading onward',
     place: 'Shillong · Kaziranga · Jorhat for Majuli',
-    distance: '100–190 km',
-    time: '2.5–4 hrs',
+    distance: '100-190 km',
+    time: '2.5-4 hrs',
     note: 'We book shared cabs at the desk the night before. Cheaper than the counter, and it picks you up here.',
   },
 ] as const
@@ -86,29 +86,29 @@ export const deskFacts = [
   { label: 'Reception', value: 'Open 24 hours' },
   { label: 'Luggage drop', value: 'Free, before check-in and after check-out' },
   { label: 'Languages', value: 'Assamese, Hindi, Bengali, English' },
-  { label: 'Payment', value: 'UPI, cards and cash — at check-in' },
+  { label: 'Payment', value: 'UPI, cards and cash - at check-in' },
 ] as const
 
 export const contactFaqs = [
   {
-    q: 'How do I actually book — is there a payment page?',
+    q: 'How do I actually book - is there a payment page?',
     a: 'There is not, and that is deliberate. Pick a bed on the Rooms page, hit Book Now, and your dates land in our WhatsApp as a message you can read before you send it. We confirm availability, you pay at check-in. No card details, no prepayment, no third-party fee.',
   },
   {
     q: 'Can I check in late, or very early?',
-    a: 'Yes. Reception is staffed around the clock, so a 3 am train arrival is fine — just tell us it is coming. Standard check-in is 1:00 PM and check-out is 11:00 AM; early arrivals can drop bags free and use the showers and rooftop while the room is turned around.',
+    a: 'Yes. Reception is staffed around the clock, so a 3 am train arrival is fine - just tell us it is coming. Standard check-in is 1:00 PM and check-out is 11:00 AM; early arrivals can drop bags free and use the showers and rooftop while the room is turned around.',
   },
   {
     q: 'Do you take group bookings?',
-    a: 'We do — anything from six friends to a whole floor. Message us with your dates and headcount and we will quote a group rate, hold the beds together, and sort out an arrival plan so twelve people are not checking in one at a time.',
+    a: 'We do - anything from six friends to a whole floor. Message us with your dates and headcount and we will quote a group rate, hold the beds together, and sort out an arrival plan so twelve people are not checking in one at a time.',
   },
   {
     q: 'What is the cancellation policy?',
-    a: 'Free cancellation up to 24 hours before check-in. Since nothing is prepaid, cancelling is one message — but do send it, so the bed goes back on the board for someone else.',
+    a: 'Free cancellation up to 24 hours before check-in. Since nothing is prepaid, cancelling is one message - but do send it, so the bed goes back on the board for someone else.',
   },
   {
     q: 'Can you help plan the rest of the trip?',
-    a: 'That is half of what the desk does. Shared cabs to Shillong, the Nimati Ghat ferry for Majuli, Pobitora before lunch, safari slots at Kaziranga — we book them nightly for whoever is going, which usually works out cheaper than arranging it yourself.',
+    a: 'That is half of what the desk does. Shared cabs to Shillong, the Nimati Ghat ferry for Majuli, Pobitora before lunch, safari slots at Kaziranga - we book them nightly for whoever is going, which usually works out cheaper than arranging it yourself.',
   },
   {
     q: 'Is there an age limit, and are couples allowed?',
