@@ -69,80 +69,85 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
   const floating = overlay && !scrolled
 
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-50 transition-[background-color,box-shadow,border-color] duration-300',
-        // Pull the page up under the bar so the hero starts at the very top.
-        overlay && '-mb-18 sm:-mb-20',
-        scrolled
-          ? 'border-b border-line bg-canvas/85 shadow-warm backdrop-blur-xl'
-          : overlay
-            ? 'border-b border-transparent bg-transparent'
-            : 'border-b border-transparent bg-canvas/60 backdrop-blur-sm',
-      )}
-    >
-      <div className="container-page flex h-18 items-center justify-between gap-4 sm:h-20">
-        <Logo tone={floating ? 'light' : 'default'} />
+    <>
+      <header
+        className={cn(
+          'sticky top-0 z-50 transition-[background-color,box-shadow,border-color] duration-300',
+          // Pull the page up under the bar so the hero starts at the very top.
+          overlay && '-mb-18 sm:-mb-20',
+          scrolled
+            ? 'border-b border-line bg-canvas/85 shadow-warm backdrop-blur-xl'
+            : overlay
+              ? 'border-b border-transparent bg-transparent'
+              : 'border-b border-transparent bg-canvas/60 backdrop-blur-sm',
+        )}
+      >
+        <div className="container-page flex h-18 items-center justify-between gap-4 sm:h-20">
+          <Logo tone={floating ? 'light' : 'default'} />
 
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
-          {nav.map((item) => (
-            <Link
-              key={item.label}
-              to={item.to}
+          <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
+            {nav.map((item) => (
+              <Link
+                key={item.label}
+                to={item.to}
+                className={cn(
+                  'relative rounded-full px-4 py-2 text-sm font-medium transition-colors',
+                  floating
+                    ? isActive(item.to)
+                      ? 'text-mustard'
+                      : 'text-white hover:text-mustard'
+                    : isActive(item.to)
+                      ? 'text-primary'
+                      : 'text-body hover:text-heading dark:text-white',
+                )}
+              >
+                {item.label}
+                {isActive(item.to) && (
+                  <span className="absolute inset-x-4 -bottom-0.5 h-0.5 rounded-full bg-mustard" />
+                )}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <ButtonAnchor
+              href={`tel:${site.phoneDisplay.replace(/\s/g, '')}`}
+              variant="secondary"
+              size="sm"
               className={cn(
-                'relative rounded-full px-4 py-2 text-sm font-medium transition-colors',
-                floating
-                  ? isActive(item.to)
-                    ? 'text-mustard'
-                    : 'text-white hover:text-mustard'
-                  : isActive(item.to)
-                    ? 'text-primary'
-                    : 'text-body hover:text-heading dark:text-white',
+                'hidden xl:inline-flex',
+                floating && glassControl,
               )}
             >
-              {item.label}
-              {isActive(item.to) && (
-                <span className="absolute inset-x-4 -bottom-0.5 h-0.5 rounded-full bg-mustard" />
+              <Phone className="size-4" />
+              {site.phoneDisplay}
+            </ButtonAnchor>
+
+            <ThemeToggle className={cn(floating && glassControl)} />
+
+            <ButtonLink to="/rooms" size="sm" className="hidden sm:inline-flex">
+              Book Now
+            </ButtonLink>
+
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              aria-label="Open menu"
+              className={cn(
+                'grid size-10 place-items-center rounded-full border border-line bg-surface text-heading lg:hidden',
+                floating && glassControl,
               )}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-2 sm:gap-3">
-          <ButtonAnchor
-            href={`tel:${site.phoneDisplay.replace(/\s/g, '')}`}
-            variant="secondary"
-            size="sm"
-            className={cn(
-              'hidden xl:inline-flex',
-              floating && glassControl,
-            )}
-          >
-            <Phone className="size-4" />
-            {site.phoneDisplay}
-          </ButtonAnchor>
-
-          <ThemeToggle className={cn(floating && glassControl)} />
-
-          <ButtonLink to="/rooms" size="sm" className="hidden sm:inline-flex">
-            Book Now
-          </ButtonLink>
-
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            aria-label="Open menu"
-            className={cn(
-              'grid size-10 place-items-center rounded-full border border-line bg-surface text-heading lg:hidden',
-              floating && glassControl,
-            )}
-          >
-            <Menu className="size-[1.15rem]" />
-          </button>
+            >
+              <Menu className="size-[1.15rem]" />
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* Mobile drawer */}
+      {/* Mobile drawer. It has to sit outside <header>: the bar carries a
+          backdrop-filter, and that makes an element the containing block for its
+          fixed descendants - inside it `inset-0` resolves to the 4.5rem bar and
+          `overflow-hidden` clips the panel away. */}
       <div
         className={cn(
           // overflow-hidden matters: the closed panel is parked at translate-x-full,
@@ -211,6 +216,6 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
           </div>
         </div>
       </div>
-    </header>
+    </>
   )
 }
