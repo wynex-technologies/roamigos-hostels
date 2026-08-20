@@ -37,6 +37,23 @@ export const heroSlides = [
  * The homepage deck — a deliberate mix of what Guwahati gives you and what the
  * house itself does, so the row reads as one trip rather than a list of sights.
  */
+/**
+ * One card in the homepage showcase carousel. Promotional cards are the same
+ * shape as the place cards — they just carry an `offer` ribbon and their own
+ * link, so a running deal slides through the same deck as everything else.
+ */
+export type ShowcaseCard = {
+  key: string
+  title: string
+  tag: string
+  note: string
+  image: string
+  /** Present only on promotional cards — renders the mustard offer ribbon. */
+  offer?: string
+  /** Where the card leads. Defaults to the rooms listing. */
+  href?: string
+}
+
 export const showcase = [
   {
     key: 'brahmaputra',
@@ -160,4 +177,39 @@ export const bookingAssurances = [
   { title: 'Best Price Guarantee', note: 'Get the best rates, always.', icon: 'star' },
   { title: 'Trusted by 25K+ Travellers', note: 'Rated 4.8/5 by happy guests.', icon: 'users' },
   { title: 'Secure & Easy Booking', note: 'Your safety and convenience are our priority.', icon: 'shield' },
+]
+
+/**
+ * Running offers and promotions. These ride the same homepage carousel as the
+ * `showcase` places — add, edit or empty this list and the deck adjusts itself;
+ * nothing in the component needs touching.
+ */
+export const promos: ShowcaseCard[] = [
+  {
+    key: 'promo-long-stay',
+    title: 'Stay 7, Pay 5',
+    tag: 'Long stay',
+    note: 'Two nights free on every weekly booking.',
+    image: 'photo-1648960456182-00643d5d20eb',
+    offer: '28% off',
+    href: '/rooms',
+  },
+  {
+    key: 'promo-monsoon',
+    title: 'Monsoon Rates',
+    tag: 'Seasonal',
+    note: 'Green hills, empty trails, lower beds rates.',
+    image: 'photo-1758390285674-f1d55b9d1312',
+    offer: 'From ₹499',
+    href: '/rooms',
+  },
+  {
+    key: 'promo-group',
+    title: 'Book the Dorm',
+    tag: 'Groups',
+    note: 'Six beds or more, one price, whole room yours.',
+    image: 'photo-1568785919846-27fd1c8f8982',
+    offer: 'Group deal',
+    href: '/contact',
+  },
 ]
