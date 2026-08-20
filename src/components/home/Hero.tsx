@@ -159,8 +159,10 @@ export function Hero() {
 
       {/* Top padding carries the header's own height (h-18 / sm:h-20) on top of the
           section's spacing, since the bar is overlaid rather than stacked above. */}
-      <div className="container-wide grid items-center gap-10 pt-28 pb-16 sm:gap-12 sm:pt-40 sm:pb-20 lg:grid-cols-[1.15fr_auto] lg:items-start lg:gap-16 lg:pt-44 lg:pb-32">
-        <div className="order-2 max-w-3xl animate-rise lg:order-1">
+      <div className="container-wide grid items-center gap-x-10 gap-y-9 pt-28 pb-16 sm:gap-y-10 sm:pt-40 sm:pb-20 lg:grid-cols-[1.15fr_auto] lg:items-start lg:gap-x-16 lg:gap-y-0 lg:pt-44 lg:pb-32">
+        {/* Mobile order is headline, form, then copy and CTAs. On desktop the two copy
+            blocks stack in column one and the form sits beside them in column two. */}
+        <div className="max-w-3xl animate-rise lg:col-start-1 lg:row-start-1">
           <p className="text-[0.8125rem] font-bold tracking-[0.28em] text-mustard uppercase">
             {site.motto}
           </p>
@@ -173,13 +175,22 @@ export function Hero() {
 
           {/* The third line is the real logo lettering, not a font imitation. */}
           <Wordmark className="mt-4 h-[clamp(3.25rem,7.5vw,5.25rem)] w-[clamp(10.5rem,24vw,16.5rem)] text-mustard" />
+        </div>
 
-          <p className="mt-7 max-w-lg text-[1.1875rem] leading-relaxed text-gray-200 text-pretty">
+        {/* `lg:mt-10` puts the card's top edge on the "Travel More" baseline-top. */}
+        <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-10 lg:justify-self-end">
+          <AvailabilityCard />
+        </div>
+
+        <div className="max-w-lg animate-rise lg:col-start-1 lg:row-start-2 lg:mt-7">
+          <p className="text-[1.1875rem] leading-relaxed text-gray-200 text-pretty">
             Comfortable stays, great vibes and new friends. Your journey begins here.
           </p>
 
-          <div className="mt-9 flex flex-wrap gap-3">
-            <ButtonLink to="/rooms" size="lg">
+          {/* Both CTAs share one row on mobile - they only fall back to intrinsic
+              width once there is room for them side by side anyway. */}
+          <div className="mt-7 flex items-center gap-3 sm:mt-9">
+            <ButtonLink to="/rooms" size="lg" className="flex-1 px-4 sm:flex-none sm:px-8">
               Book Your Stay
             </ButtonLink>
             <ButtonAnchor
@@ -187,18 +198,11 @@ export function Hero() {
               target="_blank"
               rel="noreferrer"
               size="lg"
-              className="border border-cream/35 bg-cream/10 text-cream backdrop-blur-sm hover:bg-cream/20"
+              className="flex-1 border border-cream/35 bg-cream/10 px-4 text-cream backdrop-blur-sm hover:bg-cream/20 sm:flex-none sm:px-8"
             >
               Chat with us
             </ButtonAnchor>
           </div>
-        </div>
-
-        {/* Card leads on mobile - copy and CTAs follow underneath. On desktop it moves
-            back to the right, where `lg:mt-10` puts its top edge on the "Travel More"
-            baseline-top. */}
-        <div className="order-1 lg:order-2 lg:mt-10 lg:justify-self-end">
-          <AvailabilityCard />
         </div>
       </div>
     </section>
