@@ -5,10 +5,10 @@ import {
   ArrowUpRight,
   Bath,
   BedDouble,
-  Check,
   ChevronRight,
   Images,
   MessageCircle,
+  RotateCcw,
   SlidersHorizontal,
   Star,
   Users,
@@ -52,6 +52,23 @@ const marquee = [
   },
   { value: 'On arrival', label: 'Pay at check-in' },
 ]
+
+/**
+ * Reset, printed beside the Refine heading in both the rail and the drawer -
+ * the full-width Reset still closes the panel, but this one saves the scroll.
+ */
+function ResetButton({ count, onClick }: { count: number; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="group inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-[0.75rem] font-semibold text-body transition-colors duration-300 hover:border-primary hover:text-primary"
+    >
+      <RotateCcw className="size-3.5 transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:-rotate-180" />
+      Reset ({count})
+    </button>
+  )
+}
 
 export default function Rooms() {
   usePageMeta(
@@ -245,9 +262,10 @@ export default function Rooms() {
                     Refine
                   </h2>
                   {active > 0 && (
-                    <span className="grid size-5 place-items-center rounded-full bg-primary text-[0.6875rem] font-semibold text-on-primary">
-                      {active}
-                    </span>
+                    <ResetButton
+                      count={active}
+                      onClick={() => setFilters({ ...emptyFilters, sort: filters.sort })}
+                    />
                   )}
                 </div>
                 <span aria-hidden className="mt-4 mb-6 block h-px w-full bg-line" />
@@ -309,7 +327,7 @@ export default function Rooms() {
             </div>
 
             {visible.length > 0 ? (
-              <ul className="mt-7 space-y-6">
+              <ul className="mt-7 grid gap-6 xl:grid-cols-2">
                 {visible.map((room, i) => (
                   <li key={room.id}>
                     <RoomRow
@@ -415,16 +433,24 @@ export default function Rooms() {
                 aria-hidden
                 className="mx-auto mb-4 block h-1 w-10 rounded-full bg-line-strong"
               />
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-3">
                 <h2 className="font-display text-xl font-semibold">Refine</h2>
-                <button
-                  type="button"
-                  onClick={() => setDrawerOpen(false)}
-                  aria-label="Close filters"
-                  className="grid size-10 place-items-center rounded-full border border-line text-heading transition-colors hover:border-primary hover:text-primary"
-                >
-                  <X className="size-[1.15rem]" />
-                </button>
+                <div className="flex items-center gap-2">
+                  {active > 0 && (
+                    <ResetButton
+                      count={active}
+                      onClick={() => setFilters({ ...emptyFilters, sort: filters.sort })}
+                    />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setDrawerOpen(false)}
+                    aria-label="Close filters"
+                    className="grid size-10 place-items-center rounded-full border border-line text-heading transition-colors hover:border-primary hover:text-primary"
+                  >
+                    <X className="size-[1.15rem]" />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -455,10 +481,11 @@ export default function Rooms() {
 }
 
 /**
- * One room, printed as a plate: the photograph carries the whole band and the
- * facts sit on glass along its bottom edge. The panel holds the same four things
- * in the same order every time - name, what it sleeps, the rate, the way in -
- * so a column of these is still comparable at a glance.
+ * One room, printed straight onto its photograph. At rest the picture is left
+ * almost alone: the name, the rate and the way in, and nothing else. Everything
+ * that helps you compare - what it sleeps, the bathroom, the rating, the first
+ * two inclusions - rides up on hover, and the wash deepens to carry it. Below lg
+ * there is no hover to speak of, so the card stays at two columns: name, rate.
  */
 function RoomRow({
   room,
@@ -478,7 +505,7 @@ function RoomRow({
     <Link
       to={{ pathname: `/rooms/${room.slug}`, search }}
       style={style}
-      className="group relative isolate block h-[30rem] animate-rise overflow-hidden rounded-xl2 border border-line shadow-warm transition-[transform,box-shadow] duration-500 ease-[var(--ease-out-soft)] hover:-translate-y-1.5 hover:shadow-warm-lg sm:h-[26rem] lg:h-[24rem]"
+      className="group relative isolate block h-[19rem] animate-rise overflow-hidden rounded-xl2 border border-line shadow-warm transition-[transform,box-shadow] duration-500 ease-[var(--ease-out-soft)] hover:-translate-y-1.5 hover:shadow-warm-lg sm:h-[22rem] lg:h-[27rem]"
     >
       <Photo
         id={room.images[0]}
@@ -491,14 +518,20 @@ function RoomRow({
         className="absolute inset-0 -z-10 size-full object-cover transition-transform duration-[1400ms] ease-[var(--ease-out-soft)] group-hover:scale-[1.06]"
       />
 
-      {/* Resting scrim keeps the photograph; the second deepens under the panel. */}
+      {/* Two shallow scrims - one under the eyebrow, one under the type. Neither
+          reaches the middle of the frame, so the room itself stays visible. */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-gradient-to-t from-ink/90 via-ink/25 to-ink/10"
+        className="absolute inset-x-0 top-0 -z-10 h-28 bg-gradient-to-b from-ink/55 to-transparent"
       />
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-gradient-to-t from-ink/95 via-ink/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-gradient-to-t from-ink/90 via-ink/40 to-transparent"
+      />
+      {/* Hover brings more words, so it brings more shade with it. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-gradient-to-t from-ink/92 via-ink/55 to-ink/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
       />
 
       {/* Index and category, printed straight on the picture. */}
@@ -521,79 +554,79 @@ function RoomRow({
             {room.badge}
           </Badge>
         )}
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-cream/20 bg-ink/45 px-2.5 py-1 text-[0.6875rem] font-semibold text-cream backdrop-blur-md">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-cream/20 bg-ink/45 px-2.5 py-1 text-[0.6875rem] font-semibold text-cream backdrop-blur-md transition-opacity duration-500 lg:opacity-0 lg:group-hover:opacity-100">
           <Images className="size-3" />
           {room.totalPhotos} photos
         </span>
       </div>
 
-      {/* The plate. */}
-      <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-cream/12 bg-ink/45 p-5 backdrop-blur-lg transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:-translate-y-1 sm:inset-x-5 sm:bottom-5 sm:p-6">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
-          <div className="min-w-0">
-            <h2 className="font-display text-[1.5rem] leading-tight font-semibold text-white text-balance sm:text-[1.75rem]">
-              {room.name}
-            </h2>
+      {/* The type, straight on the photograph - no plate under it. Name against
+          rate on one line, so a narrow card in the two-up grid still reads. */}
+      <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 lg:p-7">
+        <div className="flex items-end justify-between gap-4 lg:items-baseline">
+          <h2 className="min-w-0 font-display text-[1.125rem] leading-tight font-semibold text-white sm:text-[1.375rem] lg:text-[1.5rem]">
+            {room.name}
+          </h2>
 
-            <p className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.875rem] text-gray-200/80">
+          {/* Below lg this is the rate. At lg it only holds the column open - the
+              pinned copy further down is the one that shows. */}
+          <div className="shrink-0 lg:invisible">
+            <Rate price={room.pricePerNight} unit={unit} />
+          </div>
+        </div>
+
+        {/* The amenities, desktop only. `0fr` to `1fr` so the strip opens between
+            the name and the button, lifting the name with it. It is capped short
+            of the rate column, so the two never crowd each other. */}
+        <div className="hidden transition-[grid-template-rows,opacity] duration-500 ease-[var(--ease-out-soft)] lg:grid lg:grid-rows-[0fr] lg:opacity-0 lg:group-hover:grid-rows-[1fr] lg:group-hover:opacity-100">
+          <div className="overflow-hidden">
+            <p className="mt-3 flex max-w-[70%] flex-wrap items-center gap-x-4 gap-y-1.5 text-[0.8125rem] text-gray-200/80">
               <span className="inline-flex items-center gap-1.5">
                 <CapacityIcon className="size-4 text-mustard" />
                 {room.capacityLabel}
               </span>
-              <span aria-hidden className="hidden size-1 rotate-45 bg-cream/40 sm:block" />
+              <span aria-hidden className="size-1 rotate-45 bg-cream/40" />
               <span className="inline-flex items-center gap-1.5">
                 <Bath className="size-4 text-mustard" />
                 {room.bathroom}
               </span>
-              <span aria-hidden className="hidden size-1 rotate-45 bg-cream/40 sm:block" />
+              <span aria-hidden className="size-1 rotate-45 bg-cream/40" />
               <span className="inline-flex items-center gap-1.5">
                 <Star className="size-3.5 fill-mustard text-mustard" aria-hidden />
                 <span className="font-semibold text-gray-200">{room.rating.toFixed(1)}</span>
                 <span className="text-gray-200/60">({room.reviewCount})</span>
               </span>
             </p>
-
-            <p className="mt-3 hidden max-w-lg text-[0.9375rem] leading-relaxed text-gray-200 text-pretty sm:block">
-              {room.shortDescription}
-            </p>
-
-            <ul className="mt-3 hidden flex-wrap gap-x-5 gap-y-1.5 lg:flex">
-              {room.inclusions.slice(0, 2).map((item) => (
-                <li
-                  key={item}
-                  className="inline-flex items-center gap-2 text-[0.8125rem] text-gray-200/70"
-                >
-                  <Check className="size-3.5 shrink-0 text-mustard" />
-                  {item}
-                </li>
-              ))}
-            </ul>
           </div>
+        </div>
 
-          {/* The rate corner - same place on every plate. */}
-          {/* The rate corner - same place on every plate. Phones stack it, since
-              the rate and the button together do not fit on one line there. */}
-          <div className="flex flex-col gap-4 border-t border-cream/12 pt-4 sm:flex-row sm:items-end sm:justify-between sm:gap-5 lg:shrink-0 lg:flex-col lg:items-end lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
-            <p className="lg:text-right">
-              <span className="block text-[0.625rem] font-bold tracking-[0.2em] text-gray-200/60 uppercase">
-                From
-              </span>
-              <span className="font-display text-[1.875rem] leading-none font-semibold text-white">
-                {formatINR(room.pricePerNight)}
-              </span>
-              <span className="text-[0.8125rem] whitespace-nowrap text-gray-200/70"> / {unit}</span>
-              <span className="mt-1.5 block text-[0.75rem] whitespace-nowrap text-gray-200/55">
-                Pay at check-in
-              </span>
-            </p>
+        {/* The way in, held at the bottom edge while the strip opens above it. Its
+            height is fixed, because the pinned rate is measured against it. */}
+        <span className="mt-4 hidden h-11 w-full items-center justify-center gap-2 rounded-full bg-cream px-6 text-[0.875rem] font-semibold text-ink transition-colors duration-300 group-hover:bg-mustard lg:inline-flex">
+          View room
+          <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" />
+        </span>
 
-            <span className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-cream px-6 py-3 text-[0.875rem] font-semibold text-ink transition-[background-color,transform] duration-300 group-hover:-translate-y-0.5 group-hover:bg-mustard">
-              View room
-              <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" />
-            </span>
-          </div>
+        {/* The rate stays still while the amenities open above it: pinned at the
+            height the name rests at - 1.75rem of padding, the 2.75rem button and
+            the 1rem gap over it. */}
+        <div className="absolute right-7 bottom-22 hidden lg:block">
+          <Rate price={room.pricePerNight} unit={unit} />
         </div>
       </div>
     </Link>
+  )
+}
+
+/** The rate, printed the same way in both copies a card carries. */
+function Rate({ price, unit }: { price: number; unit: string }) {
+  return (
+    <p className="relative font-display text-[1.5rem] leading-tight whitespace-nowrap text-right">
+      <span className="absolute -top-3 right-0 text-[0.625rem] leading-none font-bold tracking-[0.2em] text-gray-200/60 uppercase">
+        From
+      </span>
+      <span className="font-semibold text-white">{formatINR(price)}</span>
+      <span className="text-[0.8125rem] text-gray-200/70"> / {unit}</span>
+    </p>
   )
 }
