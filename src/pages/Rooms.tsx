@@ -539,9 +539,11 @@ function RoomRow({
         <span className="font-display text-[0.8125rem] font-semibold text-gray-200/70 tabular-nums">
           {String(index).padStart(2, '0')}
         </span>
+        {/* The rule grows by width, not by transform - a scaled rule keeps its
+            layout box and would run straight through the category label. */}
         <span
           aria-hidden
-          className="h-px w-7 origin-left bg-mustard transition-transform duration-600 ease-[var(--ease-out-soft)] group-hover:scale-x-[2.5]"
+          className="h-px w-7 shrink-0 bg-mustard transition-[width] duration-600 ease-[var(--ease-out-soft)] group-hover:w-16"
         />
         <span className="text-[0.6875rem] font-bold tracking-[0.16em] text-mustard uppercase">
           {categoryLabels[room.categories[0]]}
