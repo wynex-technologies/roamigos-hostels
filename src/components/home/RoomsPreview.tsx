@@ -288,25 +288,33 @@ export function RoomsPreview() {
                   The floor plan
                 </p>
 
-                <ul className="mt-2 flex flex-1 flex-col">
+                <ul className="mt-3 flex flex-1 flex-col gap-3">
                   {visible.map((room, i) => {
                     const isOn = i === index
                     const CapacityIcon = capacityIcon(room)
                     return (
-                      <li key={room.id} className="flex flex-1 items-stretch border-b border-line">
+                      <li key={room.id} className="flex flex-1 items-stretch">
                         <Link
                           to={`/rooms/${room.slug}`}
                           onMouseEnter={() => setCurrent(i)}
                           onFocus={() => setCurrent(i)}
                           aria-current={isOn ? 'true' : undefined}
-                          className="group relative flex w-full items-center gap-5 py-5"
+                          className={cn(
+                            'group relative flex w-full items-center gap-5 overflow-hidden rounded-xl2 border px-5 py-4',
+                            'transition-[background-color,border-color,box-shadow,transform] duration-400 ease-[var(--ease-out-soft)]',
+                            isOn
+                              ? 'border-line-strong bg-surface-2 shadow-raised'
+                              : 'border-line bg-surface hover:border-line-strong',
+                          )}
                         >
-                          {/* The line that fills as the room takes the stage. */}
+                          {/* Mustard edge down the box that currently holds the
+                              stage - the boxes are otherwise identical, so this
+                              is the only thing tying one to the photograph. */}
                           <span
                             aria-hidden
                             className={cn(
-                              'absolute bottom-[-1px] left-0 h-px w-full origin-left bg-accent-soft transition-transform duration-600 ease-[var(--ease-out-soft)]',
-                              isOn ? 'scale-x-100' : 'scale-x-0',
+                              'absolute inset-y-0 left-0 w-[3px] origin-top bg-accent-soft transition-transform duration-600 ease-[var(--ease-out-soft)]',
+                              isOn ? 'scale-y-100' : 'scale-y-0',
                             )}
                           />
 
