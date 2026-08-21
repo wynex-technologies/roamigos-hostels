@@ -1,7 +1,6 @@
-import { ArrowUpRight, MessageCircle } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { experiences } from '@/data/content'
 import { Photo } from '@/components/ui/Photo'
-import { enquiryUrl } from '@/lib/whatsapp'
 import { Container, Section } from '@/components/ui/primitives'
 import { Icon } from '@/components/ui/Icon'
 import { useReveal } from '@/lib/useReveal'
@@ -127,14 +126,14 @@ export function Experiences() {
                       {item.title}
                     </h3>
 
-                    <p
-                      className={cn(
-                        'mt-2 text-[0.9375rem] leading-relaxed text-gray-200 text-pretty',
-                        featured ? 'max-w-md' : 'line-clamp-2',
-                      )}
-                    >
-                      {item.note}
-                    </p>
+                    {/* Only the opening tile carries its description - the small
+                        tiles run title and CTA alone, so the photograph keeps the
+                        space instead of a caption nobody stops to read. */}
+                    {featured && (
+                      <p className="mt-2 max-w-md text-[0.9375rem] leading-relaxed text-gray-200 text-pretty">
+                        {item.note}
+                      </p>
+                    )}
 
                     <span className="mt-4 inline-flex items-center gap-2 text-[0.75rem] font-bold tracking-[0.16em] text-mustard uppercase">
                       Ask us about it
@@ -146,33 +145,6 @@ export function Experiences() {
             )
           })}
         </ul>
-
-        {/* Closing ticket - one line of reassurance and the way to book any of it. */}
-        <div className="card-raised mt-10 flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
-          <div className="flex items-center gap-4">
-            <span
-              aria-hidden
-              className="hidden size-11 shrink-0 place-items-center rounded-full border border-line-strong text-accent sm:grid"
-            >
-              <Icon name="compass" className="size-[1.15rem]" />
-            </span>
-            <p className="text-[0.9375rem] leading-relaxed text-pretty">
-              <span className="font-semibold text-heading">Nothing is booked in advance.</span> Tell
-              us what you feel like and the desk arranges it the same day.
-            </p>
-          </div>
-
-          <a
-            href={enquiryUrl("Hi Roamigos! I'd like to know about the activities and experiences.")}
-            target="_blank"
-            rel="noreferrer"
-            className="group inline-flex shrink-0 items-center justify-center gap-2.5 rounded-full bg-green-deep px-7 py-3.5 text-[0.9375rem] font-semibold text-cream shadow-[0_12px_26px_-14px] shadow-green-deep/80 transition-[background-color,transform] duration-300 hover:bg-green active:scale-[0.98]"
-          >
-            <MessageCircle className="size-4" />
-            Plan it on WhatsApp
-            <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" />
-          </a>
-        </div>
       </Container>
     </Section>
   )
