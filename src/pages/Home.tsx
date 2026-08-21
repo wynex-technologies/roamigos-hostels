@@ -4,7 +4,7 @@ import { Destinations } from '@/components/home/Destinations'
 import { RoomsPreview } from '@/components/home/RoomsPreview'
 import { MoreThanARoom } from '@/components/home/MoreThanARoom'
 import { Experiences } from '@/components/home/Experiences'
-import { TravelReads } from '@/components/home/TravelReads'
+import { WhyChooseUs } from '@/components/home/WhyChooseUs'
 import { ContactBand } from '@/components/home/ContactBand'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { site } from '@/data/site'
@@ -16,11 +16,11 @@ export default function Home() {
     <>
       <Hero />
       <ValueProps />
-      <Destinations />
       <RoomsPreview />
+      <Destinations />
       <MoreThanARoom />
       <Experiences />
-      <TravelReads />
+      <WhyChooseUs />
       <ContactBand />
     </>
   )

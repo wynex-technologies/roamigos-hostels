@@ -170,8 +170,49 @@ export const roomsPageAmenities = [
   { title: 'Daily Housekeeping', note: 'Because comfort matters', icon: 'clipboard' },
 ]
 
-/* The homepage "Travel Reads" section reads straight from `data/blog.ts` - there
-   is one set of stories on the site, not a homepage copy of them. */
+/**
+ * The homepage's "Why Roamigos" ledger. These are deliberately not the value
+ * props under the hero - that row answers "what do I get", this one answers
+ * "why here and not the hostel down the road", so nothing may repeat between
+ * them. Four is the count the ledger is laid out for.
+ */
+export const whyChooseUs = [
+  {
+    title: 'The desk price, direct',
+    note: 'Book on WhatsApp and you pay what the front desk charges - no platform fee, no dynamic markup, nothing added at check-in.',
+    proof: 'Up to 18% under listing sites',
+    icon: 'wallet',
+  },
+  {
+    title: 'A person, not a ticket queue',
+    note: 'One number reaches the desk, day or night. No forms, no reference codes, no waiting on a reply from a call centre in another state.',
+    proof: 'Most replies inside 10 minutes',
+    icon: 'headphones',
+  },
+  {
+    title: 'Routes we have actually walked',
+    note: 'Every ferry timing, trail and tea shop we send you to has been done by somebody on this staff, this season - so the plan holds up.',
+    proof: 'Rewritten every season',
+    icon: 'compass',
+  },
+  {
+    title: 'A calendar, not just a bed',
+    note: 'Bonfires, open mics and weekend runs are on the board before you arrive, so a solo check-in almost never stays solo past dinner.',
+    proof: 'Something on most nights',
+    icon: 'flame',
+  },
+]
+
+/**
+ * The score breakdown beside the ledger. Values are the per-category averages
+ * behind `site.stats.rating` - keep them consistent with it when they move.
+ */
+export const ratingBreakdown = [
+  { label: 'Cleanliness', value: 4.9 },
+  { label: 'Location', value: 4.8 },
+  { label: 'Staff', value: 5.0 },
+  { label: 'Value', value: 4.7 },
+]
 
 export const bookingAssurances = [
   { title: 'Best Price Guarantee', note: 'Get the best rates, always.', icon: 'star' },
