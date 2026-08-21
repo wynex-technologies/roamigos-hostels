@@ -47,13 +47,25 @@ export function WhyChooseUs() {
           </p>
 
           <div className="mt-6 flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between lg:gap-14">
-            <h2 className="max-w-2xl font-display text-[clamp(2rem,4.6vw,3.4rem)] leading-[1.08] font-semibold">
+            {/* The one heading on the page that is allowed to shout. Two lines
+                pulling against each other - the concession said quietly in muted
+                weight, the answer landing in heavy display type - so the size
+                reads as emphasis rather than as type set too large. */}
+            <h2 className="max-w-3xl font-display text-[clamp(2.4rem,5.4vw,4.25rem)] leading-[1.02] font-extrabold tracking-[-0.02em]">
               <span style={lag(0.14)} className="reveal-line">
-                <span>Plenty of beds in town.</span>
+                <span className="text-[0.72em] font-medium text-muted">
+                  Plenty of beds in town.
+                </span>
               </span>
               <span style={lag(0.26)} className="reveal-line">
                 <span>
-                  Here is why <em className="font-normal text-accent-soft italic">this</em> one.
+                  Here is why{' '}
+                  {/* Maroon word, mustard stroke - the two brand colours doing
+                      the emphasis so the size does not have to do all of it. */}
+                  <em className="font-semibold text-primary italic underline decoration-accent-soft decoration-[0.075em] underline-offset-[0.06em]">
+                    this
+                  </em>{' '}
+                  one.
                 </span>
               </span>
             </h2>
