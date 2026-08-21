@@ -82,7 +82,7 @@ export function AboutIntro() {
             {/* The mark, as a plaque over the plate. Frosted ink rather than a
                 solid fill: the lettering then reads against its own scrim
                 instead of fighting whatever the photograph is doing under it. */}
-            <div className="absolute right-4 bottom-4 left-4 rounded-2xl border border-cream/25 bg-ink/55 px-5 py-4 shadow-warm-lg backdrop-blur-md">
+            <div className="absolute right-4 bottom-4 left-4 rounded-2xl border border-cream/25 bg-ink/45 px-5 py-4 shadow-warm-lg backdrop-blur-md">
               <Wordmark className="h-7 w-auto text-cream" />
               <p className="mt-2.5 flex items-center gap-2 text-[0.5625rem] font-bold tracking-[0.2em] text-mustard uppercase">
                 <span aria-hidden className="size-1 shrink-0 rotate-45 bg-mustard" />

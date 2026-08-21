@@ -70,7 +70,7 @@ export function GalleryDay() {
                     />
                     <span
                       aria-hidden
-                      className="absolute inset-0 bg-gradient-to-t from-ink/35 to-transparent"
+                      className="absolute inset-0 bg-gradient-to-t from-ink/15 to-transparent"
                     />
                   </div>
 

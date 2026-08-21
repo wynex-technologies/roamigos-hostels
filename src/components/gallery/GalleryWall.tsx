@@ -92,21 +92,23 @@ export function GalleryWall() {
                   className="size-full object-cover transition-transform duration-[900ms] ease-[var(--ease-out-soft)] group-hover:scale-107"
                 />
 
-                {/* Resting scrim keeps the place label legible; it deepens for the caption. */}
+                {/* Resting scrim is the least ink the mustard place label can sit on - the
+                    photograph is the point of this wall, so it stays out of its way and
+                    only deepens once the caption needs a ground. */}
                 <span
                   aria-hidden
-                  className="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent transition-opacity duration-500 group-hover:opacity-0"
+                  className="absolute inset-0 bg-gradient-to-t from-ink/35 via-transparent to-transparent transition-opacity duration-500 group-hover:opacity-0"
                 />
                 <span
                   aria-hidden
-                  className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/35 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                  className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                 />
 
                 <span className="absolute top-3 right-3 grid size-8 place-items-center rounded-full bg-cream/90 text-ink opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                   <Expand className="size-3.5" />
                 </span>
 
-                <span className="absolute inset-x-3 bottom-3">
+                <span className="absolute inset-x-3 bottom-3 [text-shadow:0_1px_12px_rgb(9_9_11/0.6)]">
                   <span className="block text-[0.625rem] font-bold tracking-[0.16em] text-mustard uppercase">
                     {shot.place}
                   </span>
