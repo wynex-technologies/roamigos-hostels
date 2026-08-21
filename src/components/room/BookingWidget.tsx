@@ -75,8 +75,10 @@ export function BookingWidget({
     window.open(buildWhatsAppUrl(toDraft(room, state)), '_blank', 'noopener,noreferrer')
   }
 
+  // `scroll-mt` clears the header and the jump bar - #book has to land on the
+  // date fields, not behind two sticky rows.
   return (
-    <div id={id} className="space-y-4">
+    <div id={id} className="scroll-mt-36 space-y-4">
       <form onSubmit={submit} className="card-raised p-6 shadow-raised-lg sm:p-7">
         <p className="text-[0.6875rem] font-bold tracking-[0.22em] text-accent uppercase">
           Book direct

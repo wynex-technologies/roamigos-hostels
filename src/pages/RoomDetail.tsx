@@ -52,8 +52,8 @@ function SectionHead({ kicker, title }: { kicker: string; title: string }) {
  * One block of the page.
  *
  * Below lg it is a disclosure: the kicker and the heading stay, the body folds
- * away. Four of these open at once is roughly six phone screens of reading
- * before the booking widget, and nobody scrolls that far to find a date picker.
+ * away. Four of these open at once is roughly six phone screens of reading, and
+ * folded they let a visitor see what the page holds in one thumb-length.
  * From lg up the section is exactly what it always was - no button, no wrapper
  * around the children, so nothing clips the cards lifting on hover.
  */
@@ -488,8 +488,12 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
             </Block>
           </div>
 
-          {/* --------------------------- booking sidebar --------------------------- */}
-          <aside className="lg:sticky lg:top-36 lg:self-start">
+          {/* --------------------------- booking sidebar ---------------------------
+              From lg up it is the sticky column beside the body. Below that the
+              grid stacks, and the widget is ordered ahead of the sections: on a
+              phone the dates are the first thing asked for after the photographs,
+              not something to be found under four folded blocks. */}
+          <aside className="order-first lg:order-none lg:sticky lg:top-36 lg:self-start">
             <BookingWidget id="book" room={room} state={booking} setState={setBooking} />
           </aside>
         </div>
