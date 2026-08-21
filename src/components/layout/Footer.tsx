@@ -217,11 +217,25 @@ export function Footer() {
       </div>
 
       {/* ---------------------- the anchor ----------------------
-          The wordmark closes the page at size, sitting in the flow rather than
-          ghosting behind the columns, and the small print rules off under it. */}
+          The full lockup closes the page at size, sitting in the flow rather
+          than ghosting behind the columns, and the small print rules off under
+          it. Mark and wordmark are both sized by height, never by width, so the
+          flamingo always stands exactly as tall as the lettering beside it - and
+          the heights are a shade under what the wordmark used to take on its
+          own, so the band does not grow to hold the pair. */}
       <div className="border-t border-cream/10">
-        <div className="container-page pt-12 pb-2">
-          <Wordmark className="mx-auto h-auto w-full max-w-[17rem] text-cream/[0.14] sm:max-w-md lg:max-w-2xl" />
+        {/* Even padding top and bottom - the lockup sits in the middle of its
+            own band. The pair is the same total (`pt-12 pb-2` before), so the
+            band keeps the height it always had. */}
+        <div className="container-page flex items-center justify-center gap-3 py-7 sm:gap-5 lg:gap-7">
+          <img
+            src="/logo-mark.svg"
+            alt=""
+            width={130}
+            height={130}
+            className="h-16 w-auto shrink-0 sm:h-32 lg:h-48"
+          />
+          <Wordmark className="h-16 w-auto text-cream/[0.18] sm:h-32 lg:h-48" />
         </div>
 
         <div className="container-page flex flex-col items-center justify-between gap-4 border-t border-cream/10 py-6 text-[0.8125rem] sm:flex-row">
