@@ -53,7 +53,7 @@ export const site = {
 export const nav = [
   { label: 'Home', to: '/' },
   { label: 'Rooms & Beds', to: '/rooms' },
-  { label: 'Gallery', to: '/gallery' },
+  { label: 'About', to: '/about' },
   { label: 'Blog', to: '/blog' },
   { label: 'Contact', to: '/contact' },
 ]
@@ -69,7 +69,7 @@ export const footerLinks = {
   explore: [
     { label: 'Home', to: '/' },
     { label: 'Rooms & Beds', to: '/rooms' },
-    { label: 'Gallery', to: '/gallery' },
+    { label: 'About', to: '/about' },
     { label: 'Blog', to: '/blog' },
     { label: 'Contact Us', to: '/contact' },
   ],

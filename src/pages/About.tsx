@@ -1,4 +1,5 @@
 import { GalleryHero } from '@/components/gallery/GalleryHero'
+import { AboutIntro } from '@/components/gallery/AboutIntro'
 import { GalleryWall } from '@/components/gallery/GalleryWall'
 import { GalleryDay } from '@/components/gallery/GalleryDay'
 import { GuestWall } from '@/components/gallery/GuestWall'
@@ -6,15 +7,16 @@ import { CtaBand } from '@/components/common/CtaBand'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { site } from '@/data/site'
 
-export default function Gallery() {
+export default function About() {
   usePageMeta(
-    `Gallery - ${site.legalName}`,
-    'Rooms, common spaces, rooftop mornings and bonfire nights at Roamigos - plus everything worth seeing within a day of the front door.',
+    `About - ${site.legalName}`,
+    'Who we are, the house itself and the guests who filled it - rooms, common spaces, rooftop mornings and bonfire nights at Roamigos.',
   )
 
   return (
     <>
       <GalleryHero />
+      <AboutIntro />
       <GalleryWall />
       <GalleryDay />
       <GuestWall />
@@ -28,7 +30,7 @@ export default function Gallery() {
           </>
         }
         copy="Pick a bed, send one message, and the desk confirms within minutes. No prepayment, no forms - you pay when you walk in."
-        chatPrompt="Hi Roamigos! I saw the gallery and I'd like to check availability."
+        chatPrompt="Hi Roamigos! I was reading about the hostel and I'd like to check availability."
       />
     </>
   )
