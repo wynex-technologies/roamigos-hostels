@@ -42,6 +42,12 @@ const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProper
 
 const cheapest = Math.min(...allRooms.map((room) => room.pricePerNight))
 
+/** Both selects in the quick bar - room type on mobile, sort everywhere. */
+const selectClass =
+  'w-full cursor-pointer truncate rounded-full border border-line bg-surface px-3 py-2.5 ' +
+  'text-[0.8125rem] font-semibold text-heading transition-colors hover:border-line-strong ' +
+  'focus:border-primary focus:outline-none sm:w-auto sm:px-4 sm:text-sm'
+
 /** The four numbers worth printing under the masthead. */
 const marquee = [
   { value: String(allRooms.length), label: 'Rooms & dorms' },
@@ -94,8 +100,12 @@ export default function Rooms() {
 
   return (
     <>
+      {/* The masthead is hidden on phones, so this carries the page's heading
+          for screen readers and search engines when it is not on screen. */}
+      <h1 className="sr-only md:hidden">Rooms &amp; beds at {site.legalName}, Guwahati</h1>
+
       {/* ============================== masthead ============================== */}
-      <section className="relative isolate flex min-h-[38rem] flex-col justify-end overflow-hidden pt-32 pb-12 sm:min-h-[46rem] sm:pt-36 lg:min-h-svh lg:pb-20">
+      <section className="relative isolate hidden min-h-[38rem] flex-col justify-end overflow-hidden pt-32 pb-12 sm:min-h-[46rem] sm:pt-36 md:flex lg:min-h-svh lg:pb-20">
         <Photo
           id={heroSlides[1].image}
           width={2000}
@@ -185,7 +195,9 @@ export default function Rooms() {
       <div className="sticky top-18 z-30 border-b border-line bg-canvas/90 backdrop-blur-xl sm:top-20">
         <Container>
           <div className="flex flex-col gap-4 py-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="no-scrollbar -mx-5 flex gap-2.5 overflow-x-auto px-5 lg:mx-0 lg:flex-wrap lg:px-0">
+            {/* Chips from lg up, where the row has the width for eight of them.
+                Below that the same choice is a select in the control row. */}
+            <div className="hidden gap-2.5 lg:flex lg:flex-wrap">
               {categoryOptions.map((option) => {
                 const isActive = filters.category === option.key
                 return (
@@ -216,27 +228,51 @@ export default function Rooms() {
               })}
             </div>
 
-            <div className="flex items-center gap-3">
+            {/* Room type, filters and sort share one line on a phone: each
+                control takes an equal third of the row and stops shrinking once
+                there is width for all three to sit at their natural size. */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <label className="min-w-0 flex-1 sm:flex-none lg:hidden">
+                <span className="sr-only">Room type</span>
+                <select
+                  value={filters.category}
+                  onChange={(e) =>
+                    setFilters({ ...filters, category: e.target.value as FilterState['category'] })
+                  }
+                  className={selectClass}
+                >
+                  {categoryOptions.map((option) => (
+                    <option key={option.key} value={option.key}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              {/* Icon alone on the narrowest phones - three labelled controls do
+                  not fit one line at 340px, and the two selects need their words
+                  more than this button does. It picks the word back up at sm. */}
               <button
                 type="button"
                 onClick={() => setDrawerOpen(true)}
-                className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-heading transition-colors hover:border-line-strong lg:hidden"
+                aria-label="Filters"
+                className="relative inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-line bg-surface px-3 py-2.5 text-sm font-semibold text-heading transition-colors hover:border-line-strong sm:px-4 lg:hidden"
               >
-                <SlidersHorizontal className="size-4" />
-                Filters
+                <SlidersHorizontal className="size-4 shrink-0" />
+                <span className="hidden sm:inline">Filters</span>
                 {active > 0 && (
-                  <span className="grid size-5 place-items-center rounded-full bg-primary text-[0.6875rem] text-on-primary">
+                  <span className="absolute -top-1 -right-1 grid size-5 shrink-0 place-items-center rounded-full bg-primary text-[0.6875rem] text-on-primary sm:static sm:size-5">
                     {active}
                   </span>
                 )}
               </button>
 
-              <label className="flex items-center gap-2 text-sm text-muted">
+              <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-muted sm:flex-none">
                 <span className="hidden sm:inline">Sort by:</span>
                 <select
                   value={filters.sort}
                   onChange={(e) => setFilters({ ...filters, sort: e.target.value as SortKey })}
-                  className="cursor-pointer rounded-full border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-heading transition-colors hover:border-line-strong focus:border-primary focus:outline-none"
+                  className={selectClass}
                 >
                   {sortOptions.map((option) => (
                     <option key={option.key} value={option.key}>

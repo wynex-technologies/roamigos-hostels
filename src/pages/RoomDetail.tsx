@@ -1,5 +1,5 @@
-import { useEffect, type ReactNode } from 'react'
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { useEffect, useState, type ReactNode } from 'react'
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
 import {
   ArrowUpRight,
   Bath,
@@ -7,6 +7,7 @@ import {
   CalendarClock,
   Check,
   CheckCircle2,
+  ChevronDown,
   ChevronRight,
   Quote,
   ShieldCheck,
@@ -22,6 +23,7 @@ import { Photo } from '@/components/ui/Photo'
 import { Container } from '@/components/ui/primitives'
 import { buildWhatsAppUrl, bookingTotals } from '@/lib/whatsapp'
 import { usePageMeta } from '@/lib/usePageMeta'
+import { useMediaQuery } from '@/lib/useMediaQuery'
 import { useReveal } from '@/lib/useReveal'
 import { cn, formatINR } from '@/lib/utils'
 
@@ -46,20 +48,108 @@ function SectionHead({ kicker, title }: { kicker: string; title: string }) {
   )
 }
 
-/** One block of the page, revealed as it arrives. */
+/**
+ * One block of the page.
+ *
+ * Below lg it is a disclosure: the kicker and the heading stay, the body folds
+ * away. Four of these open at once is roughly six phone screens of reading
+ * before the booking widget, and nobody scrolls that far to find a date picker.
+ * From lg up the section is exactly what it always was - no button, no wrapper
+ * around the children, so nothing clips the cards lifting on hover.
+ */
 function Block({
-  children,
-  className,
   id,
+  kicker,
+  title,
+  children,
+  collapsible,
+  first,
 }: {
-  children: ReactNode
-  className?: string
   id?: string
+  kicker: string
+  title: string
+  children: ReactNode
+  /** True below lg, where the section folds. */
+  collapsible: boolean
+  /** The first block carries the list's opening rule instead of top margin. */
+  first?: boolean
 }) {
   const ref = useReveal<HTMLElement>(0.1)
+  const { hash } = useLocation()
+  const [open, setOpen] = useState(false)
+
+  // A jump link has to land on an open section, not on a closed heading.
+  useEffect(() => {
+    if (id && hash === `#${id}`) setOpen(true)
+  }, [hash, id])
+
+  const panelId = `${id ?? kicker}-panel`.toLowerCase().replace(/\W+/g, '-')
+
+  const head = (
+    <>
+      <p className="text-[0.6875rem] font-bold tracking-[0.22em] text-accent uppercase">{kicker}</p>
+      <h2 className="mt-3 font-display text-[clamp(1.5rem,2.6vw,2.125rem)] leading-tight font-semibold">
+        {title}
+      </h2>
+    </>
+  )
+
   return (
-    <section id={id} ref={ref} className={cn('reveal-rise scroll-mt-36', className)}>
-      {children}
+    <section
+      id={id}
+      ref={ref}
+      className={cn(
+        'reveal-rise scroll-mt-36',
+        collapsible ? cn('border-b border-line', first && 'border-t') : !first && 'mt-16',
+      )}
+    >
+      {collapsible ? (
+        <>
+          <button
+            type="button"
+            onClick={() => setOpen((was) => !was)}
+            aria-expanded={open}
+            aria-controls={panelId}
+            className="flex w-full items-start justify-between gap-5 py-6 text-left"
+          >
+            <span className="min-w-0">{head}</span>
+            <span
+              className={cn(
+                'mt-1 grid size-9 shrink-0 place-items-center rounded-full border border-line text-accent',
+                'transition-[transform,background-color,border-color,color] duration-400 ease-[var(--ease-out-soft)]',
+                open && 'rotate-180 border-transparent bg-mustard text-ink',
+              )}
+            >
+              <ChevronDown className="size-4" aria-hidden />
+            </span>
+          </button>
+
+          {/* `0fr` to `1fr` so the panel wipes open rather than snapping. `inert`
+              keeps the folded copy out of the tab order and off the reader. */}
+          <div
+            id={panelId}
+            className={cn(
+              'grid transition-[grid-template-rows] duration-500 ease-[var(--ease-out-soft)]',
+              open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+            )}
+          >
+            <div inert={!open} className="min-h-0 overflow-hidden">
+              {/* The closing space lives inside the clipped box - padding on the
+                  box itself survives `0fr` and leaves a gap under every folded
+                  heading. */}
+              <div className="pb-8">{children}</div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div>
+            {head}
+            <span aria-hidden className="mt-4 block h-px w-10 bg-accent-soft" />
+          </div>
+          {children}
+        </>
+      )}
     </section>
   )
 }
@@ -84,6 +174,9 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
   )
 
   const [booking, setBooking] = useBookingState(room)
+  // The body sections fold below lg, which is also where the page drops to one
+  // column and the sticky booking bar appears.
+  const folds = !useMediaQuery('(min-width: 64rem)')
   const isDorm = room.categories.includes('dorm')
   const CapacityIcon = isDorm ? BedDouble : Users
   const unit = isDorm ? 'bed' : 'night'
@@ -159,8 +252,11 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
             </p>
           </div>
 
-          {/* The rate, on glass - the one thing that should never need scrolling for. */}
-          <div className="rounded-2xl border border-cream/15 bg-ink/45 p-5 backdrop-blur-lg sm:p-6">
+          {/* The rate, on glass - the one thing that should never need scrolling
+              for. Off on phones: the sticky bar at the foot of the page already
+              pins the same rate and the same way in, so up here it would only be
+              covering the photograph twice over. */}
+          <div className="hidden rounded-2xl border border-cream/15 bg-ink/45 p-5 backdrop-blur-lg md:block sm:p-6">
             <p className="text-[0.625rem] font-bold tracking-[0.2em] text-gray-200/60 uppercase">
               From
             </p>
@@ -221,8 +317,7 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
         <div className="grid gap-12 lg:grid-cols-[1fr_23rem] lg:gap-14 xl:grid-cols-[1fr_25rem]">
           <div className="min-w-0">
             {/* Overview - the lead, then the spec sheet beside it. */}
-            <Block id="overview">
-              <SectionHead kicker="The room" title="What you are booking" />
+            <Block id="overview" kicker="The room" title="What you are booking" collapsible={folds} first>
 
               <p className="mt-6 max-w-2xl font-display text-[clamp(1.125rem,1.9vw,1.375rem)] leading-relaxed text-heading text-pretty">
                 {room.subtitle}
@@ -255,8 +350,12 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
             </Block>
 
             {/* What is in the room */}
-            <Block className="mt-16">
-              <SectionHead kicker="In the room" title="Everything that comes with it" />
+            <Block
+              id="inclusions"
+              kicker="In the room"
+              title="Everything that comes with it"
+              collapsible={folds}
+            >
 
               <ul className="mt-7 grid gap-x-8 gap-y-1 sm:grid-cols-2">
                 {room.inclusions.map((item) => (
@@ -288,8 +387,12 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
             </Block>
 
             {/* House amenities - a spec table, not tiles. */}
-            <Block id="amenities" className="mt-16">
-              <SectionHead kicker="The house" title="Included with every stay" />
+            <Block
+              id="amenities"
+              kicker="The house"
+              title="Included with every stay"
+              collapsible={folds}
+            >
 
               <ul className="mt-7 grid gap-3 sm:grid-cols-2">
                 {hostelAmenities.map((amenity) => (
@@ -320,8 +423,12 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
             </Block>
 
             {/* Reviews - the score, then the words. */}
-            <Block id="reviews" className="mt-16">
-              <SectionHead kicker="From the guest book" title="What guests are saying" />
+            <Block
+              id="reviews"
+              kicker="From the guest book"
+              title="What guests are saying"
+              collapsible={folds}
+            >
 
               <div className="mt-7 grid gap-6 lg:grid-cols-[15rem_1fr] lg:gap-8">
                 <div className="card-raised flex flex-col items-center justify-center p-7 text-center">
