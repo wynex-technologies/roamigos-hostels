@@ -27,7 +27,7 @@ const promises = [
 ]
 
 /**
- * Closing band shared by the journal, gallery and contact pages.
+ * Closing band shared by the journal, about and contact pages.
  *
  * The ask at the bottom of a page is the same every time, so the band cannot
  * lean on new copy to stay interesting - it has to be an object worth arriving
@@ -102,6 +102,7 @@ export function CtaBand({
                   href={enquiryUrl(chatPrompt)}
                   target="_blank"
                   rel="noreferrer"
+                  variant="ghost"
                   size="lg"
                   className="gloss-sweep group/chat border border-cream/25 bg-cream/10 text-cream hover:-translate-y-0.5 hover:border-mustard/70 hover:bg-cream/15"
                 >
@@ -153,8 +154,9 @@ export function CtaBand({
  * The boarding pass.
  *
  * The notches are punched with a mask rather than drawn with two circles, so
- * the slab's own gradient shows through the holes - which is the whole reason
- * it reads as a torn ticket instead of a card with dots on it.
+ * the slab shows through the holes rather than a colour painted to match it -
+ * which is the whole reason it reads as a torn ticket instead of a card with
+ * dots on it.
  */
 function BoardingPass() {
   // `useId` hands back colons, which are legal in a fragment but a nuisance

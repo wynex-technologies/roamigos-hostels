@@ -93,21 +93,15 @@
    theme - it is dark on cream and dark on ink - so its palette lives outside
    both blocks.
 
-   The rule it is built on is warm light, cool shadow. Two lit corners only:
-   maroon breaking over the top-left and a gold lamp pooling at the bottom-
-   right, both properly saturated. Everything they do not reach falls to a cool
-   near-black. Three half-strength warm washes over a warm grey is what turns a
-   dark panel into brown mud; two strong ones over a cold ground reads as
-   lacquer.
+   It is one flat colour and nothing more. Lit panels - washes, blooms, a
+   vignette closing the corners down - pull the eye to the lighting instead of
+   to the ask sitting on top of it, so the ground here stays plain and the
+   headline, the buttons and the ticket do the work.
 --------------------------------------------------------------------------- */
 :root {
-  /* Colder and deeper than `--color-ink`, so the accents have somewhere to
-     glow out of and the unlit half of the panel is genuinely dark. */
-  --slab-ground: #09090b;
-  --slab-lit: #dc2626;
-  --slab-lamp: #ffb300;
-  /* Depth of the vignette that closes the panel's edges down. */
-  --slab-vignette: 0.6;
+  /* A step above the footer's near-black, so the panel reads as an object
+     resting on the page in light and lifts off the canvas in dark. */
+  --slab-ground: #18181b;
 
   /* The footer is the one place on the site that goes almost black. Legibility
      is the whole job down here - four columns of small type - and small text is

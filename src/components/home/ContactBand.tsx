@@ -46,7 +46,11 @@ export function ContactBand() {
                 style={lag(0.08)}
                 className="reveal-rise mt-5 font-display text-[clamp(2rem,4.5vw,3.25rem)] leading-[1.06] font-semibold text-white text-balance"
               >
-                Pick a bed. Send one message.
+                {/* Maroon opens, white carries, mustard closes - the brand's three
+                    colours in the order the sentence needs them. Kept to the first
+                    three words so the red never has to hold a whole line on a
+                    near-black ground. */}
+                <span className="text-maroon">Pick a bed.</span> Send one message.
                 <br />
                 <span className="text-sheen">That&apos;s the whole booking.</span>
               </h2>
@@ -73,6 +77,7 @@ export function ContactBand() {
                   href={enquiryUrl()}
                   target="_blank"
                   rel="noreferrer"
+                  variant="ghost"
                   size="lg"
                   className="gloss-sweep group/chat border border-cream/25 bg-cream/10 text-cream hover:-translate-y-0.5 hover:border-mustard/70 hover:bg-cream/15"
                 >
