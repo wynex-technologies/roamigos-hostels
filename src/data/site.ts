@@ -43,10 +43,22 @@ export const site = {
     reviews: 1487,
   },
 
+  // `handle` is what the header's social menu prints under each name - the
+  // account as a guest would type it, not a second description.
   socials: [
-    { label: 'Instagram', href: 'https://instagram.com/', icon: 'instagram' },
-    { label: 'Facebook', href: 'https://facebook.com/', icon: 'facebook' },
-    { label: 'YouTube', href: 'https://youtube.com/', icon: 'youtube' },
+    {
+      label: 'Instagram',
+      href: 'https://instagram.com/',
+      icon: 'instagram',
+      handle: '@roamigoshostel',
+    },
+    { label: 'Facebook', href: 'https://facebook.com/', icon: 'facebook', handle: '/roamigos' },
+    {
+      label: 'YouTube',
+      href: 'https://youtube.com/',
+      icon: 'youtube',
+      handle: 'Roamigos Travellers',
+    },
   ],
 } as const
 

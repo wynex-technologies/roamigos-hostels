@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Menu, Moon, Phone, Sun, X } from 'lucide-react'
 import { Logo } from '@/components/brand/Logo'
 import { ButtonAnchor, ButtonLink } from '@/components/ui/Button'
+import { SocialMenu, SocialRow } from './SocialMenu'
 import { nav, site } from '@/data/site'
 import { enquiryUrl } from '@/lib/whatsapp'
 import { useTheme } from '@/lib/theme'
@@ -76,10 +77,10 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
           // Pull the page up under the bar so the hero starts at the very top.
           overlay && '-mb-18 sm:-mb-20',
           scrolled
-            ? 'border-b border-line bg-canvas/85 shadow-warm backdrop-blur-xl'
+            ? 'border-b border-line bg-header/85 shadow-warm backdrop-blur-xl'
             : overlay
               ? 'border-b border-transparent bg-transparent'
-              : 'border-b border-transparent bg-canvas/60 backdrop-blur-sm',
+              : 'border-b border-transparent bg-header/60 backdrop-blur-sm',
         )}
       >
         <div className="container-page flex h-18 items-center justify-between gap-4 sm:h-20">
@@ -122,6 +123,11 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
               <Phone className="size-4" />
               {site.phoneDisplay}
             </ButtonAnchor>
+
+            <SocialMenu
+              className="hidden sm:block"
+              buttonClassName={cn(floating && glassControl)}
+            />
 
             <ThemeToggle className={cn(floating && glassControl)} />
 
@@ -213,6 +219,15 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
             >
               Chat on WhatsApp
             </ButtonAnchor>
+
+            {/* The bar's social menu is hidden at this width, so the accounts
+                ride the drawer instead. */}
+            <div className="flex items-center justify-between gap-4 pt-3">
+              <p className="text-[0.625rem] font-bold tracking-[0.22em] text-muted uppercase">
+                Follow us
+              </p>
+              <SocialRow />
+            </div>
           </div>
         </div>
       </div>

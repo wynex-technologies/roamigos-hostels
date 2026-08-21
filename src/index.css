@@ -24,6 +24,7 @@
   /* Semantic aliases resolved from the CSS variables below, so every utility
      (bg-surface, text-muted, border-line …) is theme-aware automatically. */
   --color-canvas: var(--canvas);
+  --color-header: var(--header-ground);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-line: var(--line);
@@ -78,6 +79,10 @@
   --accent: #ffb300;
   --accent-soft: #ffb300;
 
+  /* The bar is the one light surface that is not paper white - a whisper of
+     beige, so it reads as a fixture over the page rather than as more page. */
+  --header-ground: #faf7f2;
+
   --surface-hi: #ffffff;
   --surface-lo: #ffffff;
   --edge-hi: rgb(255 255 255 / 0.9);
@@ -125,6 +130,9 @@
   --on-primary: #ffffff;
   --accent: #ffb300;
   --accent-soft: #ffb300;
+
+  /* Dark keeps the canvas colour - a beige cast on near-black reads as dirt. */
+  --header-ground: #09090b;
 
   --surface-hi: #27272a;
   --surface-lo: #18181b;

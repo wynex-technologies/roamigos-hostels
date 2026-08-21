@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Header } from './Header'
 import { Footer } from './Footer'
-import { ContactDock } from './ContactDock'
 import { OfferModal } from '@/components/offer/OfferModal'
 import { useMediaQuery } from '@/lib/useMediaQuery'
 
@@ -26,8 +25,6 @@ function ScrollManager() {
 
 export function Layout() {
   const { pathname } = useLocation()
-  // Room detail pages carry a sticky booking bar on mobile - lift the button clear of it.
-  const hasMobileBookingBar = /^\/rooms\/.+/.test(pathname)
   // Home and every room detail page open with a full-bleed photo hero, so the
   // header floats transparently over it. The rooms listing only has that hero
   // from md up - below that the bar would be laying cream type on white paper,
@@ -50,10 +47,6 @@ export function Layout() {
       {/* The offer popup mounts here, not in a page - it belongs to the visit,
           and mounting it once means route changes never re-trigger it. */}
       <OfferModal />
-
-      {/* Contact dock - collapsed it is the WhatsApp shortcut, tapped it unfurls
-          the rest of the channels. */}
-      <ContactDock lifted={hasMobileBookingBar} />
     </div>
   )
 }
