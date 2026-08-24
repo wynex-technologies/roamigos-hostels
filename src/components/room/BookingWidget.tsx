@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { CalendarDays, ChevronDown, Minus, Plus, ShieldCheck } from 'lucide-react'
+import { CalendarDays, Minus, Plus, ShieldCheck, Tag, X } from 'lucide-react'
 import type { Room } from '@/data/rooms'
 import { site } from '@/data/site'
 import { bookingAssurances } from '@/data/content'
-import { bookingTotals, buildWhatsAppUrl, type BookingDraft } from '@/lib/whatsapp'
-import { addDaysISO, cn, formatINR, todayISO } from '@/lib/utils'
+import { couponValue } from '@/data/offer'
+import { useOffer } from '@/lib/useOffer'
+import { bookingTotals, type AppliedCoupon, type BookingDraft } from '@/lib/whatsapp'
+import { addDaysISO, formatINR, todayISO } from '@/lib/utils'
 import { Icon } from '@/components/ui/Icon'
 
 export interface BookingState {
@@ -14,7 +16,10 @@ export interface BookingState {
   guests: number
   name: string
   phone: string
+  email: string
   note: string
+  /** Resolved against the live campaign the moment the guest applies it. */
+  coupon: AppliedCoupon | null
 }
 
 /** Seeds the widget from the dates picked on the homepage, when present. */
@@ -26,7 +31,9 @@ export function useBookingState(room: Room) {
     guests: Math.min(Number(params.get('guests')) || 1, room.capacity),
     name: '',
     phone: '',
+    email: '',
     note: '',
+    coupon: null,
   }))
   return [state, setState] as const
 }
@@ -39,7 +46,9 @@ export function toDraft(room: Room, state: BookingState): BookingDraft {
     guests: state.guests,
     guestName: state.name.trim() || undefined,
     guestPhone: state.phone.trim() || undefined,
+    guestEmail: state.email.trim() || undefined,
     note: state.note.trim() || undefined,
+    coupon: state.coupon,
   }
 }
 
@@ -47,18 +56,26 @@ export function BookingWidget({
   room,
   state,
   setState,
+  onBook,
   id,
 }: {
   room: Room
   state: BookingState
   setState: (next: BookingState) => void
+  /** Opens the confirm dialog - the chat is never opened straight from here. */
+  onBook: () => void
   id?: string
 }) {
-  const [detailsOpen, setDetailsOpen] = useState(false)
+  const [codeInput, setCodeInput] = useState('')
+  const [codeError, setCodeError] = useState('')
   const today = todayISO()
   const isDorm = room.categories.includes('dorm')
 
-  const { nights, total } = bookingTotals(toDraft(room, state))
+  // The same campaign the welcome popup shows - one code, one percent, one source.
+  const offer = useOffer()
+  const liveCode = offer?.code && couponValue(offer, offer.code) ? offer.code : ''
+
+  const { nights, subtotal, discount, total } = bookingTotals(toDraft(room, state))
   const ready = Boolean(state.checkIn && state.checkOut && nights > 0)
 
   const field =
@@ -68,11 +85,26 @@ export function BookingWidget({
   const label =
     'pointer-events-none absolute top-2.5 left-4 text-[0.625rem] font-bold tracking-[0.14em] text-muted uppercase'
 
+  function applyCode(raw: string) {
+    const code = raw.trim()
+    if (!code) return
+    const percent = couponValue(offer, code)
+    if (!percent) {
+      setCodeError('That code is not valid right now.')
+      return
+    }
+    setCodeError('')
+    setCodeInput('')
+    setState({ ...state, coupon: { code: code.toUpperCase(), percent } })
+  }
+
   function submit(event: React.FormEvent) {
     event.preventDefault()
     if (!ready) return
-    // No payment step and no booking record yet - this message *is* the booking.
-    window.open(buildWhatsAppUrl(toDraft(room, state)), '_blank', 'noopener,noreferrer')
+    // No payment step and no booking record yet - the WhatsApp message *is* the
+    // booking, so the desk needs a name, a phone and an email on it. The dialog
+    // collects those before anything opens.
+    onBook()
   }
 
   // `scroll-mt` clears the header and the jump bar - #book has to land on the
@@ -157,55 +189,82 @@ export function BookingWidget({
           </span>
         </div>
 
-        {/* Optional guest details */}
-        <button
-          type="button"
-          onClick={() => setDetailsOpen((v) => !v)}
-          aria-expanded={detailsOpen}
-          className="mt-3 flex w-full items-center justify-between rounded-xl px-1 py-2 text-[0.875rem] font-semibold text-heading transition-colors duration-300 hover:text-primary"
-        >
-          Add your details <span className="font-normal text-muted">(optional)</span>
-          <ChevronDown
-            className={cn('size-4 text-muted transition-transform', detailsOpen && 'rotate-180')}
-          />
-        </button>
+        {/* Coupon - the same campaign the welcome popup runs, resolved through
+            `useOffer` so the code and the percent can only ever come from
+            `src/data/offer.ts` (or whatever the admin panel serves over it). */}
+        <div className="mt-3">
+          {state.coupon ? (
+            <div className="flex items-center gap-3 rounded-xl border border-green-deep/30 bg-green-deep/8 px-4 py-3 animate-rise dark:border-green/35 dark:bg-green/12">
+              <Tag className="size-4 shrink-0 text-green-deep dark:text-green" />
+              <span className="min-w-0 flex-1">
+                <span className="block text-[0.625rem] font-bold tracking-[0.14em] text-muted uppercase">
+                  Coupon applied
+                </span>
+                <span className="block font-display text-[0.9375rem] font-bold tracking-[0.1em] text-heading">
+                  {state.coupon.code}
+                  <span className="ml-2 font-sans text-[0.8125rem] font-semibold tracking-normal text-green-deep dark:text-green">
+                    -{state.coupon.percent}%
+                  </span>
+                </span>
+              </span>
+              <button
+                type="button"
+                onClick={() => setState({ ...state, coupon: null })}
+                aria-label="Remove coupon"
+                className="grid size-8 shrink-0 place-items-center rounded-full text-muted transition-colors duration-300 hover:bg-surface-2 hover:text-heading"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-stretch gap-2">
+                <div className="relative flex-1">
+                  <span className={label}>Coupon code</span>
+                  <input
+                    type="text"
+                    value={codeInput}
+                    onChange={(e) => {
+                      setCodeInput(e.target.value)
+                      setCodeError('')
+                    }}
+                    onKeyDown={(e) => {
+                      // Enter inside the form would fire Book Now, not apply.
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        applyCode(codeInput)
+                      }
+                    }}
+                    className={`${field} uppercase`}
+                    aria-label="Coupon code"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => applyCode(codeInput)}
+                  disabled={!codeInput.trim()}
+                  className="shrink-0 rounded-xl border border-line-strong px-5 text-[0.875rem] font-semibold text-heading transition-colors duration-300 hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-40"
+                >
+                  Apply
+                </button>
+              </div>
 
-        {detailsOpen && (
-          <div className="grid gap-3 pt-1">
-            <div className="relative">
-              <span className={label}>Your name</span>
-              <input
-                type="text"
-                autoComplete="name"
-                value={state.name}
-                onChange={(e) => setState({ ...state, name: e.target.value })}
-                className={field}
-                aria-label="Your name"
-              />
-            </div>
-            <div className="relative">
-              <span className={label}>Phone</span>
-              <input
-                type="tel"
-                autoComplete="tel"
-                value={state.phone}
-                onChange={(e) => setState({ ...state, phone: e.target.value })}
-                className={field}
-                aria-label="Your phone number"
-              />
-            </div>
-            <div className="relative">
-              <span className={label}>Special request</span>
-              <textarea
-                rows={2}
-                value={state.note}
-                onChange={(e) => setState({ ...state, note: e.target.value })}
-                className={`${field} resize-none`}
-                aria-label="Special request"
-              />
-            </div>
-          </div>
-        )}
+              {codeError ? (
+                <p className="mt-2 text-[0.8125rem] font-medium text-primary">{codeError}</p>
+              ) : liveCode ? (
+                <button
+                  type="button"
+                  onClick={() => applyCode(liveCode)}
+                  className="mt-2 inline-flex items-center gap-2 text-[0.8125rem] text-muted transition-colors duration-300 hover:text-primary"
+                >
+                  <Tag className="size-3.5 text-accent" />
+                  Use <span className="font-semibold text-heading">{liveCode}</span> for{' '}
+                  {offer?.discountPercent}% off
+                </button>
+              ) : null}
+            </>
+          )}
+        </div>
 
         {/* Price */}
         <div className="mt-6 border-t border-line pt-5">
@@ -224,8 +283,18 @@ export function BookingWidget({
                   {formatINR(room.pricePerNight)} × {nights} {nights === 1 ? 'night' : 'nights'}
                   {isDorm && state.guests > 1 ? ` × ${state.guests} beds` : ''}
                 </dt>
-                <dd className="font-medium text-heading tabular-nums">{formatINR(total)}</dd>
+                <dd className="font-medium text-heading tabular-nums">{formatINR(subtotal)}</dd>
               </div>
+              {discount > 0 && state.coupon && (
+                <div className="flex justify-between">
+                  <dt className="text-green-deep dark:text-green">
+                    Coupon {state.coupon.code} (-{state.coupon.percent}%)
+                  </dt>
+                  <dd className="font-medium text-green-deep tabular-nums dark:text-green">
+                    -{formatINR(discount)}
+                  </dd>
+                </div>
+              )}
               <div className="flex justify-between border-t border-line pt-2">
                 <dt className="font-semibold text-heading">Estimated total</dt>
                 <dd className="font-display text-lg font-semibold text-heading tabular-nums">

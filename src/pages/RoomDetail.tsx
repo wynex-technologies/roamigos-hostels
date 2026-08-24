@@ -19,9 +19,10 @@ import { categoryLabels, getRoom, hostelAmenities, reviews, rooms } from '@/data
 import { site } from '@/data/site'
 import { Gallery } from '@/components/room/Gallery'
 import { BookingWidget, toDraft, useBookingState } from '@/components/room/BookingWidget'
+import { GuestDetailsModal } from '@/components/room/GuestDetailsModal'
 import { Photo } from '@/components/ui/Photo'
 import { Container } from '@/components/ui/primitives'
-import { buildWhatsAppUrl, bookingTotals } from '@/lib/whatsapp'
+import { bookingTotals } from '@/lib/whatsapp'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { useMediaQuery } from '@/lib/useMediaQuery'
 import { useReveal } from '@/lib/useReveal'
@@ -174,6 +175,8 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
   )
 
   const [booking, setBooking] = useBookingState(room)
+  // Both Book Now buttons - the widget's and the sticky bar's - land here first.
+  const [confirmOpen, setConfirmOpen] = useState(false)
   // The body sections fold below lg, which is also where the page drops to one
   // column and the sticky booking bar appears.
   const folds = !useMediaQuery('(min-width: 64rem)')
@@ -494,7 +497,13 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
               phone the dates are the first thing asked for after the photographs,
               not something to be found under four folded blocks. */}
           <aside className="order-first lg:order-none lg:sticky lg:top-36 lg:self-start">
-            <BookingWidget id="book" room={room} state={booking} setState={setBooking} />
+            <BookingWidget
+              id="book"
+              room={room}
+              state={booking}
+              setState={setBooking}
+              onBook={() => setConfirmOpen(true)}
+            />
           </aside>
         </div>
       </Container>
@@ -589,14 +598,13 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
           </div>
 
           {ready ? (
-            <a
-              href={buildWhatsAppUrl(toDraft(room, booking))}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              type="button"
+              onClick={() => setConfirmOpen(true)}
               className="gloss-sweep inline-flex h-12 items-center justify-center rounded-full bg-primary px-7 text-sm font-semibold text-on-primary shadow-[0_14px_30px_-16px] shadow-maroon/80 transition-transform duration-200 active:scale-[0.98]"
             >
               Book Now
-            </a>
+            </button>
           ) : (
             <a
               href="#book"
@@ -607,6 +615,14 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
           )}
         </div>
       </div>
+
+      <GuestDetailsModal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        room={room}
+        state={booking}
+        setState={setBooking}
+      />
     </>
   )
 }

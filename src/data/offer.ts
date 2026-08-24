@@ -22,6 +22,12 @@ export interface Offer {
   description: string
   /** Coupon the guest quotes when booking. Omit to hide the code chip. */
   code?: string
+  /**
+   * What the coupon is actually worth, as a whole percent. This is the number
+   * the booking form subtracts - the `%` inside the copy below is only text.
+   * Omit (or `0`) and the code still shows but applies nothing.
+   */
+  discountPercent?: number
   /** Unsplash photo id, or a full URL / `/uploads/...` path from the panel. */
   image: string
   imageAlt: string
@@ -42,20 +48,29 @@ export interface Offer {
   delayMs: number
 }
 
+/**
+ * The two things a campaign is actually made of. Change them here and the
+ * popup, the booking form, the price breakdown and the WhatsApp message all
+ * follow - the copy below interpolates the percent rather than repeating it.
+ */
+const CODE = 'ROAM10'
+const DISCOUNT_PERCENT = 10
+
 export const offer: Offer = {
   active: true,
   eyebrow: 'Direct booking offer',
   headline: 'Book direct and',
-  headlineAccent: 'save 10%.',
-  badgeValue: '10%',
+  headlineAccent: `save ${DISCOUNT_PERCENT}%.`,
+  badgeValue: `${DISCOUNT_PERCENT}%`,
   badgeLabel: 'OFF',
   description:
-    'Skip the booking sites. Reserve any dorm bed or private room straight with us and take 10% off your stay - plus early check-in whenever the room is ready.',
-  code: 'ROAM10',
+    `Skip the booking sites. Reserve any dorm bed or private room straight with us and take ${DISCOUNT_PERCENT}% off your stay - plus early check-in whenever the room is ready.`,
+  code: CODE,
+  discountPercent: DISCOUNT_PERCENT,
   image: 'photo-1648960456182-00643d5d20eb',
   imageAlt: 'The Roamigos common room, lamps on',
   perks: ['Free cancellation up to 24h', 'Best rate, guaranteed', 'Confirmed on WhatsApp in minutes'],
-  ctaLabel: 'Claim 10% off',
+  ctaLabel: `Claim ${DISCOUNT_PERCENT}% off`,
   ctaHref: '/rooms',
   note: 'Valid on direct bookings only. Subject to availability.',
   expiresOn: '2026-12-31',
@@ -92,4 +107,22 @@ export async function fetchOffer(signal?: AbortSignal): Promise<Offer> {
   } catch {
     return offer
   }
+}
+
+/**
+ * One fetch per page load, shared by everything that shows the campaign - the
+ * popup and the booking form must never disagree about the code or the percent.
+ */
+let inFlight: Promise<Offer> | null = null
+
+export function loadOffer(): Promise<Offer> {
+  inFlight ??= fetchOffer()
+  return inFlight
+}
+
+/** The discount a code is worth on this campaign, or 0 if it is not the code. */
+export function couponValue(current: Offer | null, input: string): number {
+  if (!current?.code || !offerIsLive(current)) return 0
+  if (input.trim().toUpperCase() !== current.code.trim().toUpperCase()) return 0
+  return Math.min(Math.max(current.discountPercent ?? 0, 0), 100)
 }

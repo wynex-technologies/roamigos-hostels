@@ -2,27 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, Check, Copy, Sparkles, X } from 'lucide-react'
 import { Photo } from '@/components/ui/Photo'
-import { fetchOffer, offerIsLive, type Offer } from '@/data/offer'
+import { useOffer } from '@/lib/useOffer'
 import { enquiryUrl } from '@/lib/whatsapp'
 import { formatDate } from '@/lib/utils'
-
-/**
- * Loads the live campaign once per page load and reports whether it should run.
- * Kept out of the component body so the modal itself stays presentational.
- */
-function useOffer() {
-  const [current, setCurrent] = useState<Offer | null>(null)
-
-  useEffect(() => {
-    const controller = new AbortController()
-    fetchOffer(controller.signal).then((next) => {
-      if (!controller.signal.aborted && offerIsLive(next)) setCurrent(next)
-    })
-    return () => controller.abort()
-  }, [])
-
-  return current
-}
 
 /**
  * The welcome offer popup - one photograph, one number, one thing to do.

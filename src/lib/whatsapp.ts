@@ -2,20 +2,34 @@ import { site } from '@/data/site'
 import type { Room } from '@/data/rooms'
 import { formatDate, formatINR, nightsBetween } from './utils'
 
+/**
+ * A coupon the guest has applied. The percent is carried alongside the code so
+ * the total never has to re-look-up the campaign - it is resolved once, against
+ * the live offer, at the moment the guest applies it.
+ */
+export interface AppliedCoupon {
+  code: string
+  percent: number
+}
+
 export interface BookingDraft {
   room?: Room
   checkIn: string
   checkOut: string
   guests: number
-  /** Filled in once the site has real accounts; today it stays undefined. */
+  /** Collected by the confirm dialog before the chat opens - all three required. */
   guestName?: string
   guestPhone?: string
+  guestEmail?: string
   note?: string
+  coupon?: AppliedCoupon | null
 }
 
 export interface BookingTotals {
   nights: number
   subtotal: number
+  /** Rupees taken off by the coupon - 0 when none is applied. */
+  discount: number
   total: number
 }
 
@@ -25,7 +39,9 @@ export function bookingTotals(draft: BookingDraft): BookingTotals {
   // Dorms are priced per bed, private rooms per room - guests only multiply dorms.
   const units = draft.room?.categories.includes('dorm') ? draft.guests : 1
   const subtotal = rate * Math.max(nights, 0) * units
-  return { nights, subtotal, total: subtotal }
+  const percent = Math.min(Math.max(draft.coupon?.percent ?? 0, 0), 100)
+  const discount = Math.round((subtotal * percent) / 100)
+  return { nights, subtotal, discount, total: subtotal - discount }
 }
 
 /**
@@ -34,7 +50,7 @@ export function bookingTotals(draft: BookingDraft): BookingTotals {
  * booking record on the site yet, this message *is* the booking request.
  */
 export function bookingMessage(draft: BookingDraft) {
-  const { nights, total } = bookingTotals(draft)
+  const { nights, subtotal, discount, total } = bookingTotals(draft)
   const lines: string[] = ['*New Booking Request - Roamigos Hostel*', '']
 
   const isDorm = draft.room?.categories.includes('dorm')
@@ -48,12 +64,17 @@ export function bookingMessage(draft: BookingDraft) {
   lines.push(`*Check-out:* ${formatDate(draft.checkOut) || 'To be confirmed'}`)
   if (nights > 0) lines.push(`*Nights:* ${nights}`)
   lines.push(`*${isDorm ? 'Beds' : 'Guests'}:* ${draft.guests}`)
+  if (discount > 0 && draft.coupon) {
+    lines.push(`*Subtotal:* ${formatINR(subtotal)}`)
+    lines.push(`*Coupon:* ${draft.coupon.code} (-${draft.coupon.percent}%) -${formatINR(discount)}`)
+  }
   if (total > 0) lines.push(`*Estimated total:* ${formatINR(total)}`)
 
-  if (draft.guestName || draft.guestPhone) {
+  if (draft.guestName || draft.guestPhone || draft.guestEmail) {
     lines.push('')
     if (draft.guestName) lines.push(`*Name:* ${draft.guestName}`)
     if (draft.guestPhone) lines.push(`*Phone:* ${draft.guestPhone}`)
+    if (draft.guestEmail) lines.push(`*Email:* ${draft.guestEmail}`)
   }
 
   if (draft.note) {
