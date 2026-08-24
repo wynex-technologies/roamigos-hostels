@@ -13,9 +13,9 @@ import {
   Tag,
   Youtube,
 } from 'lucide-react'
-import { footerLinks, properties, site, trustBar } from '@/data/site'
+import { footerLinks, site, trustBar } from '@/data/site'
 import { enquiryUrl } from '@/lib/whatsapp'
-import { Wordmark } from '@/components/brand/Wordmark'
+import { LogoRow } from '@/components/brand/Logo'
 import { paymentMarks } from '@/components/ui/PaymentMarks'
 
 const socialIcons = { instagram: Instagram, facebook: Facebook, youtube: Youtube }
@@ -47,23 +47,12 @@ const socialButton =
 
 export function Footer() {
   return (
-    <footer
-      className="mt-24 border-t border-cream/10 text-gray-200/70"
-      style={{ backgroundColor: 'var(--footer-ground)' }}
-    >
+    <footer className="panel-footer mt-24 border-t border-cream/10 text-gray-200/70">
       {/* ---------------------- the columns ---------------------- */}
       <div className="container-page grid gap-12 py-16 lg:grid-cols-[1.6fr_1fr_1.1fr_1.15fr] lg:gap-10 lg:py-20">
         {/* brand */}
         <div>
-          <div className="flex items-center gap-3">
-            <img src="/logo-mark.svg" alt="" width={56} height={56} className="size-14" />
-            <span className="flex flex-col">
-              <Wordmark className="h-8 w-24 text-cream" />
-              <span className="text-[0.5625rem] font-semibold tracking-[0.28em] text-mustard uppercase">
-                {site.tagline}
-              </span>
-            </span>
-          </div>
+          <LogoRow />
 
           <p className="mt-6 max-w-sm text-[0.9375rem] leading-relaxed text-gray-200/85">
             {site.description}
@@ -109,23 +98,7 @@ export function Footer() {
           </ul>
         </nav>
 
-        {/* properties */}
-        <div>
-          <ColumnTitle>Properties</ColumnTitle>
-          <ul className="space-y-4">
-            {properties.map((property) => (
-              <li key={property.name} className="flex gap-3">
-                <MapPin className="mt-0.5 size-4 shrink-0 text-mustard" />
-                <span>
-                  <span className="block text-[0.9375rem] text-gray-200/85">{property.name}</span>
-                  <span className="text-[0.8125rem] text-gray-200/50">{property.area}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* support, with the two numbers people actually come here for */}
+        {/* support */}
         <div>
           <ColumnTitle>Support</ColumnTitle>
           <ul className="space-y-3.5 text-[0.9375rem]">
@@ -135,36 +108,46 @@ export function Footer() {
               </li>
             ))}
           </ul>
+        </div>
 
-          <div className="mt-7 space-y-3.5 border-t border-cream/10 pt-6 text-[0.9375rem]">
-            <a
-              href={`tel:${site.phoneDisplay.replace(/\s/g, '')}`}
-              className="flex items-center gap-3 text-gray-200/85 transition-colors duration-200 hover:text-mustard"
-            >
-              <PhoneCall className="size-4 shrink-0 text-mustard" />
-              {site.phoneDisplay}
-            </a>
-            <a
-              href={`mailto:${site.email}`}
-              className="flex items-center gap-3 text-gray-200/85 transition-colors duration-200 hover:text-mustard"
-            >
-              <Mail className="size-4 shrink-0 text-mustard" />
-              <span className="truncate">{site.email}</span>
-            </a>
-            <a
-              href={site.address.mapUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="flex gap-3 text-gray-200/85 transition-colors duration-200 hover:text-mustard"
-            >
-              <MapPin className="mt-0.5 size-4 shrink-0 text-mustard" />
-              <span>
-                {site.address.line1}, {site.address.line2}
-                <br />
-                {site.address.line3}
-              </span>
-            </a>
-          </div>
+        {/* contact - the two numbers people actually come down here for */}
+        <div>
+          <ColumnTitle>Contact</ColumnTitle>
+          <ul className="space-y-3.5 text-[0.9375rem]">
+            <li>
+              <a
+                href={`tel:${site.phoneDisplay.replace(/\s/g, '')}`}
+                className="flex items-center gap-3 text-gray-200/85 transition-colors duration-200 hover:text-mustard"
+              >
+                <PhoneCall className="size-4 shrink-0 text-mustard" />
+                {site.phoneDisplay}
+              </a>
+            </li>
+            <li>
+              <a
+                href={`mailto:${site.email}`}
+                className="flex items-center gap-3 text-gray-200/85 transition-colors duration-200 hover:text-mustard"
+              >
+                <Mail className="size-4 shrink-0 text-mustard" />
+                <span className="truncate">{site.email}</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href={site.address.mapUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex gap-3 text-gray-200/85 transition-colors duration-200 hover:text-mustard"
+              >
+                <MapPin className="mt-0.5 size-4 shrink-0 text-mustard" />
+                <span>
+                  {site.address.line1}, {site.address.line2}
+                  <br />
+                  {site.address.line3}
+                </span>
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -203,7 +186,7 @@ export function Footer() {
               {paymentMarks.map((method) => (
                 <li
                   key={method.label}
-                  className="flex h-8 min-w-14 items-center justify-center rounded-md bg-cream px-2.5"
+                  className="flex h-8 min-w-14 items-center justify-center rounded-md bg-white px-2.5"
                 >
                   {method.mark}
                   <span className="sr-only">{method.label}</span>
@@ -227,15 +210,8 @@ export function Footer() {
         {/* Even padding top and bottom - the lockup sits in the middle of its
             own band. The pair is the same total (`pt-12 pb-2` before), so the
             band keeps the height it always had. */}
-        <div className="container-page flex items-center justify-center gap-3 py-7 sm:gap-5 lg:gap-7">
-          <img
-            src="/logo-mark.svg"
-            alt=""
-            width={130}
-            height={130}
-            className="h-16 w-auto shrink-0 sm:h-32 lg:h-48"
-          />
-          <Wordmark className="h-16 w-auto text-cream/[0.18] sm:h-32 lg:h-48" />
+        <div className="container-page flex items-center justify-center py-7">
+          <LogoRow size="large" />
         </div>
 
         <div className="container-page flex flex-col items-center justify-between gap-4 border-t border-cream/10 py-6 text-[0.8125rem] sm:flex-row">

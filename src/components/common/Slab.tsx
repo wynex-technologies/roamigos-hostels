@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 /**
- * The dark panel every page closes on.
+ * The panel every page closes on - off white in light, charcoal in dark.
  *
  * One solid colour, one hairline border, one shadow - nothing else. The band
  * used to be built from stacked radial washes and a bloom that followed the
@@ -18,15 +18,10 @@ export function Slab({ className, children }: { className?: string; children: Re
   return (
     <div
       className={cn(
-        'relative isolate overflow-hidden rounded-xl2 border border-cream/12 text-gray-200',
+        'panel-slab relative isolate overflow-hidden rounded-xl2 border border-cream/12 text-gray-200',
         className,
       )}
-      style={{
-        backgroundColor: 'var(--slab-ground)',
-        boxShadow:
-          'inset 0 1px 0 rgb(255 255 255 / 0.07), inset 0 -1px 0 rgb(0 0 0 / 0.45),' +
-          '0 2px 4px rgb(9 9 11 / 0.06), 0 28px 56px -34px rgb(9 9 11 / 0.45)',
-      }}
+      style={{ boxShadow: 'var(--slab-shadow)' }}
     >
       {children}
     </div>

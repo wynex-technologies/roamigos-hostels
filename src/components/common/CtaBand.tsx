@@ -76,7 +76,7 @@ export function CtaBand({
 
               <h2
                 style={lag(0.08)}
-                className="reveal-rise mt-5 font-display text-[clamp(2rem,4.4vw,3.25rem)] leading-[1.06] font-semibold text-white text-balance"
+                className="reveal-rise mt-5 font-display text-[clamp(2rem,4.4vw,3.25rem)] leading-[1.06] font-semibold text-cream text-balance"
               >
                 {title}
               </h2>
@@ -195,7 +195,7 @@ function BoardingPass() {
             <span className="block text-[0.58rem] tracking-[0.2em] text-gray-200/45 uppercase">
               From
             </span>
-            <span className="mt-1 block font-display text-2xl leading-none font-semibold text-white">
+            <span className="mt-1 block font-display text-2xl leading-none font-semibold text-cream">
               You
             </span>
           </span>
@@ -240,7 +240,7 @@ function BoardingPass() {
               <dt className="text-[0.56rem] font-bold tracking-[0.18em] text-gray-200/45 uppercase">
                 {cell.k}
               </dt>
-              <dd className="mt-1 font-display text-[1.0625rem] leading-none font-semibold text-white">
+              <dd className="mt-1 font-display text-[1.0625rem] leading-none font-semibold text-cream">
                 {cell.v}
               </dd>
             </div>

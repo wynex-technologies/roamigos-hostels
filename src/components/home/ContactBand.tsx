@@ -44,7 +44,7 @@ export function ContactBand() {
 
               <h2
                 style={lag(0.08)}
-                className="reveal-rise mt-5 font-display text-[clamp(2rem,4.5vw,3.25rem)] leading-[1.06] font-semibold text-white text-balance"
+                className="reveal-rise mt-5 font-display text-[clamp(2rem,4.5vw,3.25rem)] leading-[1.06] font-semibold text-cream text-balance"
               >
                 {/* Maroon opens, white carries, mustard closes - the brand's three
                     colours in the order the sentence needs them. Kept to the first
@@ -127,7 +127,7 @@ export function ContactBand() {
                       <span
                         className={
                           channel.display
-                            ? 'font-display text-lg text-white'
+                            ? 'font-display text-lg text-cream'
                             : 'block truncate text-[0.9375rem] text-gray-200'
                         }
                       >

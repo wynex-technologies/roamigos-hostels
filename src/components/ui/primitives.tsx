@@ -69,13 +69,13 @@ export function Badge({
   className,
 }: {
   children: ReactNode
-  tone?: 'accent' | 'primary' | 'coral' | 'muted' | 'success'
+  tone?: 'accent' | 'primary' | 'terracotta' | 'muted' | 'success'
   className?: string
 }) {
   const tones = {
     accent: 'bg-mustard text-ink',
     primary: 'bg-primary text-on-primary',
-    coral: 'bg-coral text-ink',
+    terracotta: 'bg-terracotta text-cream',
     muted: 'bg-surface-2 text-muted border border-line',
     success: 'bg-green-deep/10 text-green-deep dark:bg-green/20 dark:text-cream',
   }

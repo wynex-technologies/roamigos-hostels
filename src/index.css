@@ -3,23 +3,29 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ---------------------------------------------------------------------------
-   Roamigos brand palette. The hues come from the logo source PDF, but every
-   value here is the saturated, high-contrast version of it - the muted
-   Illustrator fills read matte on screen. Mustard and ink are pinned to the
-   agreed values (#ffb300 / zinc-950) and everything else is tuned to sit at
-   the same brightness.
+   Roamigos brand palette - the seven colours off the brand sheet, used exactly
+   as printed. The `-deep` values are the pressed/hover steps of their parent
+   and gold is the deep end of mustard, so gradients stay tonal.
+
+   Off White    #f8f5ee      Adventure Red  #b3313a
+   Mustard Gold #d9a328      Forest Green   #355e3b
+   Terracotta   #c96b4a      Charcoal       #262626
+   Sand         #e8ddcb
+
+   The page canvas stays pure white - it is the one surface the sheet does not
+   govern.
 --------------------------------------------------------------------------- */
 @theme {
-  --color-maroon-deep: #b91c1c;
-  --color-maroon: #dc2626;
-  --color-mustard: #ffb300;
-  --color-gold: #ff9800;
-  --color-cream: #fafafa;
-  --color-sand: #e4e4e7;
-  --color-coral: #ff6f61;
-  --color-green-deep: #15803d;
-  --color-green: #16a34a;
-  --color-ink: #09090b;
+  --color-maroon-deep: #8e272e;
+  --color-maroon: #b3313a;
+  --color-mustard: #d9a328;
+  --color-gold: #b8871f;
+  --color-cream: #f8f5ee;
+  --color-sand: #e8ddcb;
+  --color-terracotta: #c96b4a;
+  --color-green-deep: #274630;
+  --color-green: #355e3b;
+  --color-ink: #262626;
 
   /* Semantic aliases resolved from the CSS variables below, so every utility
      (bg-surface, text-muted, border-line …) is theme-aware automatically. */
@@ -38,9 +44,15 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
 
-  /* One family across the whole site. `font-display` stays as a hook for
-     headline type, but it resolves to the same Poppins stack as the body. */
-  --font-display: 'Poppins', 'Poppins Fallback', ui-sans-serif, system-ui, sans-serif;
+  /* The two panels that carry their own ground - see `.panel-slab` /
+     `.panel-footer` below. */
+  --color-slab: var(--slab-ground);
+  --color-footer: var(--footer-ground);
+
+  /* Two families, the way the brand sheet has it: Playfair Display carries the
+     headlines, Poppins carries sub-headings, body and UI. `font-display` is the
+     hook for headline type and `h1`-`h4` pick it up automatically. */
+  --font-display: 'Playfair Display', 'Poppins', Georgia, 'Times New Roman', serif;
   --font-sans: 'Poppins', 'Poppins Fallback', ui-sans-serif, system-ui, sans-serif;
 
   --radius-xl2: 1.25rem;
@@ -68,76 +80,109 @@
   --canvas: #ffffff;
   --surface: #ffffff;
   --surface-2: #ffffff;
-  --line: #e4e4e7;
-  --line-strong: #d4d4d8;
-  --body: #52525b;
-  --muted: #71717a;
-  --heading: #18181b;
-  --primary: #dc2626;
-  --primary-hover: #b91c1c;
+  --line: #e8ddcb;
+  --line-strong: #d6c7ae;
+  --body: #4f4b45;
+  --muted: #7a736a;
+  --heading: #262626;
+  --primary: #b3313a;
+  --primary-hover: #8e272e;
   --on-primary: #ffffff;
-  --accent: #ffb300;
-  --accent-soft: #ffb300;
+  --accent: #d9a328;
+  --accent-soft: #d9a328;
 
-  /* The bar is the one light surface that is not paper white - a whisper of
-     beige, so it reads as a fixture over the page rather than as more page. */
-  --header-ground: #faf7f2;
+  /* The bar is the one light surface that is not paper white - brand off white,
+     so it reads as a fixture over the page rather than as more page. */
+  --header-ground: #f8f5ee;
 
   --surface-hi: #ffffff;
   --surface-lo: #ffffff;
   --edge-hi: rgb(255 255 255 / 0.9);
-  --edge-lo: rgb(9 9 11 / 0.05);
+  --edge-lo: rgb(38 38 38 / 0.05);
 
   /* The paper grain is what gives a surface its matte cast - off in both themes. */
   --grain-opacity: 0;
   color-scheme: light;
 }
 
-/* ---------------------------- the closing slab ----------------------------
-   The band above the footer is the one surface that does not flip with the
-   theme - it is dark on cream and dark on ink - so its palette lives outside
-   both blocks.
+/* ------------------------ the closing slab + footer ------------------------
+   Two panels bring their own ground, so they carry their own ink with it. Both
+   used to be near-black in either theme; on the brand sheet they are light -
+   off white for the slab, sand for the footer - and they flip with the theme
+   like everything else.
 
-   It is one flat colour and nothing more. Lit panels - washes, blooms, a
+   Each is one flat colour and nothing more. Lit panels - washes, blooms, a
    vignette closing the corners down - pull the eye to the lighting instead of
-   to the ask sitting on top of it, so the ground here stays plain and the
-   headline, the buttons and the ticket do the work.
+   to the ask sitting on top of it, so the ground stays plain and the headline,
+   the buttons and the ticket do the work.
+
+   `-ink` is the colour of type on that ground and `-ink-2` its dimmer step;
+   `.panel-slab` / `.panel-footer` bind them to `cream` and `gray-200`, which
+   is what every child inside these panels already asks for.
 --------------------------------------------------------------------------- */
 :root {
-  /* A step above the footer's near-black, so the panel reads as an object
-     resting on the page in light and lifts off the canvas in dark. */
-  --slab-ground: #18181b;
+  --slab-ground: #f8f5ee;
+  --slab-ink: #262626;
+  --slab-ink-2: #3d3a36;
+  --slab-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.85), inset 0 -1px 0 rgb(38 38 38 / 0.07),
+    0 2px 4px rgb(38 38 38 / 0.05), 0 28px 56px -34px rgb(38 38 38 / 0.3);
 
-  /* The footer is the one place on the site that goes almost black. Legibility
-     is the whole job down here - four columns of small type - and small text is
-     clearest on a flat, unlit ground, so it stays one solid colour: hairlines
-     divide the bands and gold carries the accent. */
-  --footer-ground: #09090b;
+  /* Legibility is the whole job in the footer - four columns of small type -
+     and small text is clearest on a flat, unlit ground, so it stays one solid
+     colour: hairlines divide the bands and gold carries the accent. */
+  --footer-ground: #f8f5ee;
+  --footer-ink: #262626;
+  --footer-ink-2: #3d3a36;
+}
+
+.panel-slab {
+  background-color: var(--slab-ground);
+  --color-cream: var(--slab-ink);
+  --color-gray-200: var(--slab-ink-2);
+}
+
+.panel-footer {
+  background-color: var(--footer-ground);
+  --color-cream: var(--footer-ink);
+  --color-gray-200: var(--footer-ink-2);
 }
 
 /* ----------------------------------- dark --------------------------------- */
 .dark {
-  --canvas: #09090b;
-  --surface: #18181b;
-  --surface-2: #27272a;
-  --line: #27272a;
-  --line-strong: #3f3f46;
-  --body: #e5e7eb;
-  --muted: #a1a1aa;
-  --heading: #ffffff;
-  --primary: #ef4444;
-  --primary-hover: #f87171;
+  --canvas: #1c1b1a;
+  --surface: #262626;
+  --surface-2: #333130;
+  --line: #3a3836;
+  --line-strong: #4e4b47;
+  --body: #e3ded4;
+  --muted: #a69f96;
+  --heading: #f8f5ee;
+  --primary: #c9434b;
+  --primary-hover: #d9666d;
   --on-primary: #ffffff;
-  --accent: #ffb300;
-  --accent-soft: #ffb300;
+  --accent: #d9a328;
+  --accent-soft: #d9a328;
 
-  /* Dark keeps the canvas colour - a beige cast on near-black reads as dirt. */
-  --header-ground: #09090b;
+  /* Dark keeps the canvas colour - a beige cast on charcoal reads as dirt. */
+  --header-ground: #1c1b1a;
 
-  --surface-hi: #27272a;
-  --surface-lo: #18181b;
+  --surface-hi: #333130;
+  --surface-lo: #262626;
   --edge-hi: rgb(255 255 255 / 0.08);
   --edge-lo: rgb(0 0 0 / 0.4);
+
+  /* The panels stay a step apart from the canvas, the way they do in light. */
+  --slab-ground: #2e2c29;
+  --slab-ink: #f8f5ee;
+  --slab-ink-2: #e3ded4;
+  --slab-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.07), inset 0 -1px 0 rgb(0 0 0 / 0.45),
+    0 2px 4px rgb(0 0 0 / 0.2), 0 28px 56px -34px rgb(0 0 0 / 0.55);
+
+  --footer-ground: #211f1e;
+  --footer-ink: #f8f5ee;
+  --footer-ink-2: #e3ded4;
 
   --grain-opacity: 0;
   color-scheme: dark;
@@ -169,6 +214,19 @@
     font-family: var(--font-display);
     color: var(--heading);
     letter-spacing: -0.015em;
+  }
+
+  /* Playfair ships old-style figures by default, which drop 4 and 9 below the
+     baseline and shrink the zero - fine in running prose, wrong for a price, a
+     coupon code or a numbered row. Every place the display face is used asks
+     for lining figures instead. */
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
+    font-variant-numeric: lining-nums;
+    font-feature-settings: 'lnum' 1;
   }
 
   ::selection {
