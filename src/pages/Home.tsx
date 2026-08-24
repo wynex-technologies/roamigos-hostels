@@ -1,4 +1,5 @@
 import { Hero } from '@/components/home/Hero'
+import { PromoBanner } from '@/components/home/PromoBanner'
 import { ValueProps } from '@/components/home/ValueProps'
 import { Destinations } from '@/components/home/Destinations'
 import { RoomsPreview } from '@/components/home/RoomsPreview'
@@ -16,6 +17,7 @@ export default function Home() {
     <>
       <Hero />
       <ValueProps />
+      <PromoBanner />
       <RoomsPreview />
       <Destinations />
       <MoreThanARoom />

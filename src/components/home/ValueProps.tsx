@@ -5,10 +5,14 @@ import { Icon } from '@/components/ui/Icon'
  * One elevated panel that straddles the hero's bottom edge, split into segments by
  * hairline rules - the row reads as a single object sitting on the photograph
  * rather than five cards floating on the canvas.
+ *
+ * Phones do not get it. Five stacked segments is most of a screen of scrolling
+ * before the first real section, and the panel only reads as one object once it
+ * can sit in a row - so below `sm` the hero hands straight over to the offers.
  */
 export function ValueProps() {
   return (
-    <section className="relative z-20 -mt-14 pb-12 lg:-mt-20 lg:pb-16">
+    <section className="relative z-20 -mt-14 hidden pb-12 sm:block lg:-mt-20 lg:pb-16">
       <div className="container-wide">
         <ul className="card-raised grid overflow-hidden shadow-raised-lg divide-y divide-line sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-5">
           {valueProps.map((prop, i) => (

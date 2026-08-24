@@ -254,3 +254,48 @@ export const promos: ShowcaseCard[] = [
     href: '/contact',
   },
 ]
+
+/* ---------------------------------------------------------------------------
+   The promo banner under the hero.
+
+   One piece of finished artwork - whatever the offer is, it is painted into the
+   image, so nothing here needs a headline, a button or a colour. Drop the file
+   in `public/banners/` and point `image` at it.
+--------------------------------------------------------------------------- */
+export type Banner = {
+  /** Switch the banner off without deleting the artwork. */
+  active: boolean
+  /**
+   * Wide artwork, used from `sm` up. A file in `public/` (`/banners/diwali.jpg`),
+   * a full URL, or an Unsplash id - all three work.
+   */
+  image: string
+  /**
+   * A separate crop for phones. A 3:1 desktop banner shrinks to unreadable at
+   * 375px, so give the phone its own artwork whenever the banner carries type.
+   * Falls back to `image` when unset.
+   */
+  imageMobile?: string
+  /** What the banner says, for anyone who cannot see it. Never leave this empty. */
+  alt: string
+  /**
+   * Where it leads. A path (`/rooms`) routes inside the site, anything else opens
+   * in a new tab. Omit it and the banner is not clickable.
+   */
+  href?: string
+  /** Proportions of `image`. Space is reserved from this, so the page never jumps. */
+  ratio?: string
+  /** Proportions of `imageMobile`. */
+  ratioMobile?: string
+}
+
+export const homeBanner: Banner = {
+  active: true,
+  // Placeholder artwork - replace both with the real banner files.
+  image: 'photo-1648960456182-00643d5d20eb',
+  imageMobile: 'photo-1648960456182-00643d5d20eb',
+  alt: 'Book direct and save 10% on every dorm bed and private room',
+  href: '/rooms',
+  ratio: '1600 / 500',
+  ratioMobile: '4 / 3',
+}
