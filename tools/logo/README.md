@@ -1,43 +1,58 @@
 # Logo pipeline
 
-The brand assets in `public/` and `src/components/brand/Wordmark.tsx` are **generated**
-from the source artwork `Roamigos 9.pdf` (Adobe Illustrator, pure vector — no raster layers).
-Do not hand-edit the generated files; re-run the pipeline instead.
-
-## What comes out
-
-| File | Contents |
-| --- | --- |
-| `public/logo-badge.svg` | The complete circular badge: disc, ring, flamingo scene, script wordmark, mustard rules, "Travellers Hostel" tagline |
-| `public/logo-mark.svg` | Flamingo scene inside a tightened ring — the compact header mark |
-| `public/logo-wordmark.svg` | The script "Roamigos" lettering only, `fill="currentColor"` |
-| `public/favicon.svg` | Flamingo only on a maroon disc (the mountains and trees turn to mush at 16px) |
-| `src/components/brand/Wordmark.tsx` | The wordmark inlined as a React component, so `currentColor` actually inherits (an `<img>`-loaded SVG cannot) |
-
-## Running it
-
-Requires Python 3 and `fonttools` (`pip install fonttools`).
+`Roamigos final.ai` is the brand master - one 160x160 Illustrator artboard, five
+layers, PDF-1.6 compatible. `ai2logo.py` reads it directly (no Illustrator, no
+Ghostscript, no Inkscape) and writes every logo variant out.
 
 ```sh
-python pdf2svg.py logo-raw.svg   # PDF content streams -> one flat SVG (56 paths)
-python textpaths.py > tagline.svgfrag   # "Travellers Hostel" -> glyph outlines
-python assemble.py               # slices logo-raw.svg into the four public/ assets
-python gen_wordmark.py           # emits src/components/brand/Wordmark.tsx
+python tools/logo/ai2logo.py <outdir>              # <outdir>/svg, <outdir>/png, <outdir>/manifest.txt
+python tools/logo/ai2logo.py <outdir> <file.ai>    # both arguments optional
 ```
 
-`pdf2svg.py` interprets the PDF page's content streams directly: `q/Q`, `cm`, the path
-operators, `rg/k/g` colour operators, `gs` alpha and `Do` form XObjects. It skips text —
-`textpaths.py` handles the one text run by pulling the embedded Playfair Display subset out
-of the PDF and converting its glyphs to outlines, so the tagline renders identically without
-depending on a webfont having loaded.
+Needs `pymupdf` and `fonttools`.
 
-`assemble.py` splits `logo-raw.svg` by path index (established once by inspecting each
-path's bounding box and fill). If the source artwork ever changes, those index ranges are
-the first thing to re-check.
+With no arguments it writes to `logo/` at the repo root. That folder is **scratch,
+not something the repo keeps** - only the handful of files copied into `public/`
+ship. The last full run was moved out to `C:\Customers\logo`; delete or move the
+folder again after any rebuild.
 
-## Colours found in the source
+## How it works
 
-`#951A16` `#A92727` `#D9A328` `#D78A26` `#FBF1E6` `#E4C8AC` `#F47F72` `#364733` `#3F5B3C` `#252522`
+The page content stream is five `/OC ... BDC ... EMC` blocks, one per layer, so the
+script walks the operators itself (`q/Q`, `cm`, the path operators, `cs/scn` colour,
+`gs` alpha) and tags every shape with the layer it came from. The serif
+"Travellers Hostel" in the script lockup is live Playfair Display text, not
+outlines - `fontTools` pulls the embedded subset and converts those glyphs, run
+through `Qu2CuPen(all_cubic=True)` so quadratics become cubics and one M/L/C/Z
+grammar covers everything.
 
-These are the exact fills Illustrator wrote — they are the authority for the palette in
-`src/index.css`. See `CLAUDE.md` for how each one is used.
+Each variant is then written twice from that single shape list: as SVG, and as a
+rebuilt PDF content stream that PyMuPDF rasterises to PNG. Same data both ways, so
+the SVG and the PNG cannot drift apart.
+
+## What ships
+
+`ai2logo.py` output is a build directory. The files the site loads are copied into
+`public/` by hand:
+
+| `public/` | from |
+| --- | --- |
+| `logo.svg`, `logo-512/1024/2048.png` | `roamigos-logo-stacked` - the official stacked lockup |
+| `logo-mark.svg` | `roamigos-mark-flamingo` - the flamingo on its own |
+| `logo-wordmark.svg` | `roamigos-wordmark-script` - script, rules and serif tagline |
+| `logo-light.svg`, `logo-wordmark-light.svg` | the two above with `#951A16` swapped for `#FBF1E6` |
+
+Stacked, the wordmark is unreadable inside an 80px header bar, so the header and
+the footer set `logo-mark.svg` beside `logo-wordmark.svg` instead - the same
+artwork, laid out horizontally. `logo.svg` is used where there is room for the
+full lockup, like the 404 page.
+
+The `-light` copies exist because the maroon script disappears on the footer
+ground and on the hero photo. Only the script changes colour; the flamingo, the
+mustard rules and the tagline are untouched.
+
+`logo-wordmark.svg`, `favicon.svg` and `src/components/brand/Wordmark.tsx` still
+come from the older `Roamigos 9.pdf` artwork via `pdf2svg.py`, `textpaths.py`,
+`assemble.py` and `gen_wordmark.py`. That PDF is no longer in the repo, so those
+four scripts cannot be re-run as they stand - they are kept for reference until
+those three assets are regenerated from the `.ai`.

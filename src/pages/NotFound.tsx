@@ -1,6 +1,6 @@
 import { ButtonLink } from '@/components/ui/Button'
 import { Container } from '@/components/ui/primitives'
-import { LogoBadge } from '@/components/brand/Logo'
+import { LogoStacked } from '@/components/brand/Logo'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { site } from '@/data/site'
 
@@ -9,7 +9,7 @@ export default function NotFound() {
 
   return (
     <Container className="flex min-h-[60vh] flex-col items-center justify-center py-24 text-center">
-      <LogoBadge className="size-28 opacity-70" />
+      <LogoStacked className="h-32 w-auto" />
       <p className="mt-8 eyebrow">Error 404</p>
       <h1 className="mt-4 font-display text-[clamp(2rem,5vw,3rem)] font-semibold">
         This trail leads nowhere
