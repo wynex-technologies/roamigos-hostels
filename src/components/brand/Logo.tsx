@@ -5,16 +5,24 @@ import { site } from '@/data/site'
 const ALT = `${site.name} - ${site.tagline}`
 
 /**
- * The official artwork, straight out of `tools/logo/Roamigos final.ai` - never a
- * lockup rebuilt from web type.
+ * The official artwork - never a lockup rebuilt from web type. The files in
+ * `public/` are the whole of it as far as the site is concerned.
  *
  * Stacked, the wordmark shrinks to nothing inside a 80px header bar, so the two
  * halves of the logo sit side by side here: the flamingo from `logo-mark.svg`,
  * the script + rules + serif tagline from `logo-wordmark.svg`. `logo.svg` keeps
  * the stacked original for places that have room for it.
  *
- * The `-light` copies are the same paths with the maroon script knocked out to
- * cream - it is unreadable on the footer ground and on the hero photo.
+ * Both halves have a dark-ground cut, and both are the artwork's own, not a
+ * filter over the light one:
+ *
+ * - `logo-mark-dark.svg` is the dark-ground cut: the flamingo's charcoal
+ *   silhouette picks up a Sand hairline and the shapes knocked out of it
+ *   (between the legs, two notches at the throat) go charcoal instead of cream.
+ *   Without it the beak's front and the bird's outline dissolve into a dark bar
+ *   and the gap between the legs flares up as a cream triangle.
+ * - `logo-wordmark-light.svg` is the same script with the maroon knocked out to
+ *   cream, which is unreadable on a dark ground.
  */
 function LogoLockup({
   className,
@@ -23,7 +31,7 @@ function LogoLockup({
 }: {
   className?: string
   size?: 'default' | 'compact' | 'large'
-  /** `light` is for a permanently dark ground - the footer, the transparent hero header. */
+  /** `light` is for a dark ground - the closing band, the 404 on a dark canvas. */
   tone?: 'default' | 'light'
 }) {
   const mark = {
@@ -37,9 +45,24 @@ function LogoLockup({
     large: 'h-12 sm:h-18 lg:h-24',
   }[size]
 
+  const markSize = cn('w-auto shrink-0', mark)
+
   return (
     <span className={cn('inline-flex items-center gap-2.5 sm:gap-3', className)}>
-      <img src="/logo-mark.svg" alt="" width={44} height={81} className={cn('w-auto shrink-0', mark)} />
+      {tone === 'light' ? (
+        <img src="/logo-mark-dark.svg" alt="" width={44} height={81} className={markSize} />
+      ) : (
+        <>
+          <img src="/logo-mark.svg" alt="" width={44} height={81} className={cn('dark:hidden', markSize)} />
+          <img
+            src="/logo-mark-dark.svg"
+            alt=""
+            width={44}
+            height={81}
+            className={cn('hidden dark:block', markSize)}
+          />
+        </>
+      )}
       {tone === 'light' ? (
         <img
           src="/logo-wordmark-light.svg"
@@ -71,20 +94,14 @@ function LogoLockup({
   )
 }
 
-/** Header and drawer lockup - the logo, linked home. */
-export function Logo({
-  className,
-  compact = false,
-  tone = 'default',
-}: {
-  className?: string
-  compact?: boolean
-  tone?: 'default' | 'light'
-}) {
+/**
+ * Header and drawer lockup - the logo, linked home. No `tone` here: the bar is a
+ * solid ground in both themes now, so the lockup's own light/dark swap covers it.
+ */
+export function Logo({ className, compact = false }: { className?: string; compact?: boolean }) {
   return (
     <Link to="/" aria-label={ALT} className={cn('group inline-flex', className)}>
       <LogoLockup
-        tone={tone}
         size={compact ? 'compact' : 'default'}
         className="transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:-rotate-3"
       />
