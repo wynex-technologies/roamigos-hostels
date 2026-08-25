@@ -63,11 +63,13 @@ export function ContactHero() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
+              {/* Mustard, not the green WhatsApp variant - this page keeps one
+                  CTA colour, and green stays on the icons and the status dot. */}
               <ButtonAnchor
                 href={enquiryUrl()}
                 target="_blank"
                 rel="noreferrer"
-                variant="whatsapp"
+                variant="accent"
                 size="lg"
               >
                 <MessageCircle className="size-4" />
@@ -84,9 +86,17 @@ export function ContactHero() {
             </div>
           </div>
 
-          {/* --------------------------- the desk --------------------------- */}
-          <div className="relative isolate overflow-hidden rounded-[1.75rem] border border-line bg-ink text-gray-200 shadow-lift">
-            <div className="relative h-40 sm:h-48">
+          {/* --------------------------- the desk ---------------------------
+              The card brings its own ground, so it takes `panel-slab` and flips
+              with the theme like the closing slab does - off white in light,
+              charcoal in dark. Everything inside asks for `cream` / `gray-200`
+              and the class rebinds both to the panel's own ink, so no child has
+              to know which ground it is sitting on. */}
+          <div className="panel-slab relative isolate overflow-hidden rounded-[1.75rem] border border-line text-gray-200 shadow-lift">
+            {/* Nothing is laid over the photograph - no scrim, no wash, in
+                either theme. The caption it used to carry sits under it now,
+                which is also the only way it stays readable on both grounds. */}
+            <div className="h-40 sm:h-48">
               <Photo
                 id="photo-1648960456182-00643d5d20eb"
                 width={900}
@@ -95,16 +105,13 @@ export function ContactHero() {
                 alt="The Roamigos common room, just past reception"
                 className="size-full object-cover"
               />
-              <span
-                aria-hidden
-                className="absolute inset-0 bg-gradient-to-t from-ink via-ink/45 to-ink/10"
-              />
-              <p className="absolute bottom-4 left-6 text-[0.6875rem] font-bold tracking-[0.24em] text-mustard uppercase">
-                Reception · Ground floor
-              </p>
             </div>
 
             <div className="p-6 sm:p-8">
+              <p className="mb-5 text-[0.6875rem] font-bold tracking-[0.24em] text-mustard uppercase">
+                Reception · Ground floor
+              </p>
+
               <div className="flex gap-3">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-mustard" />
                 <address className="text-[0.9375rem] leading-relaxed text-gray-200 not-italic">
@@ -138,14 +145,14 @@ export function ContactHero() {
                 <span className="text-[0.625rem] font-bold tracking-[0.2em] text-mustard uppercase">
                   Check-in
                 </span>
-                <span className="font-display text-lg text-white">{site.checkIn}</span>
+                <span className="font-display text-lg text-cream">{site.checkIn}</span>
                 <span aria-hidden className="text-gray-200/30">
                   /
                 </span>
                 <span className="text-[0.625rem] font-bold tracking-[0.2em] text-mustard uppercase">
                   Check-out
                 </span>
-                <span className="font-display text-lg text-white">{site.checkOut}</span>
+                <span className="font-display text-lg text-cream">{site.checkOut}</span>
               </p>
             </div>
           </div>

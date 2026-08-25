@@ -189,7 +189,8 @@ export function ContactForm() {
                 />
               </div>
 
-              <Button type="submit" variant="whatsapp" size="lg" className="!mt-5 w-full">
+              {/* Mustard like the hero's - one CTA colour on this page. */}
+              <Button type="submit" variant="accent" size="lg" className="!mt-5 w-full">
                 <MessageCircle className="size-4" />
                 Send on WhatsApp
               </Button>
