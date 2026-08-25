@@ -35,9 +35,10 @@ pushes a booking into the existing admin panel.
 
 ## Brand
 
-Colours and the logo are derived from the source artwork, not eyeballed - see
-`tools/logo/README.md` for the pipeline and `CLAUDE.md` for the palette and the rules on
-how each colour may be used (in particular: green is deliberately rare).
+Colours come off the brand sheet and the logo off the finished artwork in
+`public/` - neither is eyeballed, and the lockup is never rebuilt from web type.
+`CLAUDE.md` has the palette and the rules on how each colour may be used (in
+particular: green is deliberately rare).
 
 Typography is Playfair Display (the logo's own font) for headings and Inter for UI.
 Light and dark themes are both supported; every component reads semantic tokens from
