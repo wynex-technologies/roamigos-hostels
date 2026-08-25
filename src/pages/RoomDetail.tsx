@@ -226,60 +226,35 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
           </nav>
         }
       >
-        <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-7">
-          <div className="max-w-2xl">
-            <p className="text-[0.6875rem] font-bold tracking-[0.22em] text-mustard uppercase">
-              {categoryLabels[room.categories[0]]}
-            </p>
+        {/* No rate on the photograph: the jump-link bar carries it from sm up and
+            the sticky bar carries it below that, so a third copy up here only
+            covers the room it is selling. */}
+        <div className="max-w-2xl">
+          <p className="text-[0.6875rem] font-bold tracking-[0.22em] text-mustard uppercase">
+            {categoryLabels[room.categories[0]]}
+          </p>
 
-            <h1 className="mt-4 font-display text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.05] font-semibold text-white text-balance">
-              {room.name}
-            </h1>
+          <h1 className="mt-4 font-display text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.05] font-semibold text-white text-balance">
+            {room.name}
+          </h1>
 
-            <p className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.9375rem] text-gray-200/80">
-              <span className="inline-flex items-center gap-2">
-                <CapacityIcon className="size-4 text-mustard" />
-                {room.capacityLabel}
-              </span>
-              <span aria-hidden className="size-1 rotate-45 bg-cream/40" />
-              <span className="inline-flex items-center gap-2">
-                <Bath className="size-4 text-mustard" />
-                {room.bathroom}
-              </span>
-              <span aria-hidden className="size-1 rotate-45 bg-cream/40" />
-              <span className="inline-flex items-center gap-2">
-                <Star className="size-4 fill-mustard text-mustard" aria-hidden />
-                <span className="font-semibold text-gray-200">{room.rating.toFixed(1)}</span>
-                <span className="text-gray-200/60">({room.reviewCount})</span>
-              </span>
-            </p>
-          </div>
-
-          {/* The rate, on glass - the one thing that should never need scrolling
-              for. Off on phones: the sticky bar at the foot of the page already
-              pins the same rate and the same way in, so up here it would only be
-              covering the photograph twice over. */}
-          <div className="hidden rounded-2xl border border-cream/15 bg-ink/45 p-5 backdrop-blur-lg md:block sm:p-6">
-            <p className="text-[0.625rem] font-bold tracking-[0.2em] text-gray-200/60 uppercase">
-              From
-            </p>
-            <p className="mt-2">
-              <span className="font-display text-[2.25rem] leading-none font-semibold text-white">
-                {formatINR(room.pricePerNight)}
-              </span>
-              <span className="text-[0.875rem] text-gray-200/70"> / {unit}</span>
-            </p>
-            <a
-              href="#book"
-              className="gloss-sweep mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-cream px-7 text-[0.875rem] font-semibold text-ink transition-[background-color,transform] duration-300 hover:bg-mustard active:scale-[0.98]"
-            >
-              Check dates
-              <ArrowUpRight className="size-4" />
-            </a>
-            <p className="mt-3 text-center text-[0.75rem] text-gray-200/60">
-              Confirmed on WhatsApp in minutes
-            </p>
-          </div>
+          <p className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.9375rem] text-gray-200/80">
+            <span className="inline-flex items-center gap-2">
+              <CapacityIcon className="size-4 text-mustard" />
+              {room.capacityLabel}
+            </span>
+            <span aria-hidden className="size-1 rotate-45 bg-cream/40" />
+            <span className="inline-flex items-center gap-2">
+              <Bath className="size-4 text-mustard" />
+              {room.bathroom}
+            </span>
+            <span aria-hidden className="size-1 rotate-45 bg-cream/40" />
+            <span className="inline-flex items-center gap-2">
+              <Star className="size-4 fill-mustard text-mustard" aria-hidden />
+              <span className="font-semibold text-gray-200">{room.rating.toFixed(1)}</span>
+              <span className="text-gray-200/60">({room.reviewCount})</span>
+            </span>
+          </p>
         </div>
       </Gallery>
 
