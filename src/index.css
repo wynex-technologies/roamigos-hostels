@@ -91,9 +91,9 @@
   --accent: #d9a328;
   --accent-soft: #d9a328;
 
-  /* The bar is the one light surface that is not paper white - brand off white,
-     so it reads as a fixture over the page rather than as more page. */
-  --header-ground: #f8f5ee;
+  /* The bar carries the ground the logo artwork is drawn on, so the flamingo
+     sits in the header with no square edge showing around the mark. */
+  --header-ground: #e8ddcb;
 
   --surface-hi: #ffffff;
   --surface-lo: #ffffff;
@@ -164,8 +164,9 @@
   --accent: #d9a328;
   --accent-soft: #d9a328;
 
-  /* Dark keeps the canvas colour - a beige cast on charcoal reads as dirt. */
-  --header-ground: #1c1b1a;
+  /* Dark takes the ground of the logo's charcoal cut - Charcoal off the sheet.
+     Sand here would read as a light slab dropped on a dark page. */
+  --header-ground: #262626;
 
   --surface-hi: #333130;
   --surface-lo: #262626;

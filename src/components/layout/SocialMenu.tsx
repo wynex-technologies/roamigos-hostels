@@ -62,13 +62,7 @@ export function SocialRow({ className }: { className?: string }) {
  * WhatsApp leads the list and keeps its green - it is the booking channel, and
  * the one place the brand rules hand that colour to.
  */
-export function SocialMenu({
-  className,
-  buttonClassName,
-}: {
-  className?: string
-  buttonClassName?: string
-}) {
+export function SocialMenu({ className }: { className?: string }) {
   const [open, setOpen] = useState(false)
   const wrap = useRef<HTMLDivElement>(null)
 
@@ -124,7 +118,6 @@ export function SocialMenu({
           'grid size-10 place-items-center rounded-full border border-line bg-surface text-heading',
           'transition-colors hover:border-primary hover:text-primary',
           open && 'border-primary text-primary',
-          buttonClassName,
         )}
       >
         {open ? <X className="size-[1.15rem]" /> : <AtSign className="size-[1.15rem]" />}

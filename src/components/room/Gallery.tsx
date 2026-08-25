@@ -59,8 +59,12 @@ export function Gallery({
 
   return (
     <>
-      {/* ------------------------------ the frame ------------------------------ */}
-      <section className="group/stage relative isolate flex min-h-[34rem] flex-col justify-between gap-10 overflow-hidden pt-26 pb-12 sm:min-h-[40rem] sm:pt-30 lg:min-h-[45rem] lg:pb-16">
+      {/* ------------------------------ the frame ------------------------------
+          The heights are the old 34 / 40 / 45rem less the header's own (4.5rem,
+          5rem from sm): the bar used to be laid over the top of this stage and
+          now stacks above it, so keeping the old numbers would push everything
+          below the fold by exactly one bar. */}
+      <section className="group/stage relative isolate flex min-h-[29.5rem] flex-col justify-between gap-10 overflow-hidden pt-8 pb-12 sm:min-h-[35rem] sm:pt-10 lg:min-h-[40rem] lg:pb-16">
         {images.map((image, i) => (
           <Photo
             key={image}

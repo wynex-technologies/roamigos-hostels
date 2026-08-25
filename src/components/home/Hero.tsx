@@ -150,16 +150,17 @@ export function Hero() {
         aria-hidden
         className="absolute inset-0 -z-10 bg-gradient-to-r from-black/62 from-0% via-black/38 via-45% to-black/18"
       />
-      {/* Vertical weighting: the transparent header floats over the top edge, and the
-          value panel below overlaps the bottom one. */}
+      {/* Vertical weighting: the bar sits above the photo now, so the top wash is
+          only there to seat the section under it; the value panel below overlaps
+          the bottom one. */}
       <div
         aria-hidden
         className="absolute inset-0 -z-10 bg-gradient-to-b from-black/40 via-transparent via-38% to-black/45"
       />
 
-      {/* Top padding carries the header's own height (h-18 / sm:h-20) on top of the
-          section's spacing, since the bar is overlaid rather than stacked above. */}
-      <div className="container-wide grid items-center gap-x-10 gap-y-9 pt-28 pb-16 sm:gap-y-10 sm:pt-40 sm:pb-20 lg:grid-cols-[1.15fr_auto] lg:items-start lg:gap-x-16 lg:gap-y-0 lg:pt-44 lg:pb-32">
+      {/* The bar is stacked above this section, not overlaid on it, so the padding
+          is the section's own spacing - the header's height is no longer in it. */}
+      <div className="container-wide grid items-center gap-x-10 gap-y-9 pt-10 pb-16 sm:gap-y-10 sm:pt-20 sm:pb-20 lg:grid-cols-[1.15fr_auto] lg:items-start lg:gap-x-16 lg:gap-y-0 lg:pt-24 lg:pb-32">
         {/* Mobile order is headline, form, then copy and CTAs. On desktop the two copy
             blocks stack in column one and the form sits beside them in column two. */}
         <div className="max-w-3xl animate-rise lg:col-start-1 lg:row-start-1">

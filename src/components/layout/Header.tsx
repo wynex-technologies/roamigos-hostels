@@ -9,10 +9,6 @@ import { enquiryUrl } from '@/lib/whatsapp'
 import { useTheme } from '@/lib/theme'
 import { cn } from '@/lib/utils'
 
-/** Frosted treatment for the round controls while the bar floats over the hero. */
-const glassControl =
-  'border-cream/30 bg-cream/10 text-cream backdrop-blur-sm hover:border-cream/60 hover:text-cream'
-
 function ThemeToggle({ className }: { className?: string }) {
   const { theme, toggle } = useTheme()
   return (
@@ -32,11 +28,12 @@ function ThemeToggle({ className }: { className?: string }) {
 }
 
 /**
- * `overlay` lets the bar sit transparently on top of a photographic hero until the
- * page scrolls. Only pages that open with a full-bleed hero should turn it on —
- * everywhere else the header keeps its normal cream surface.
+ * One bar, one ground, everywhere. The header used to float transparently over the
+ * photographic heroes; it does not any more - it is always the solid `header`
+ * surface, which is the logo tile's own colour (Sand in light, Charcoal in dark),
+ * so the flamingo sits in the bar with no edge around it.
  */
-export function Header({ overlay = false }: { overlay?: boolean }) {
+export function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const { pathname, hash } = useLocation()
@@ -65,41 +62,30 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
     return pathname === to || pathname.startsWith(`${to}/`)
   }
 
-  // Transparent only while the hero is still behind the bar; once scrolled it
-  // always falls back to the solid surface so links stay readable.
-  const floating = overlay && !scrolled
-
   return (
     <>
       <header
         className={cn(
-          'sticky top-0 z-50 transition-[background-color,box-shadow,border-color] duration-300',
-          // Pull the page up under the bar so the hero starts at the very top.
-          overlay && '-mb-18 sm:-mb-20',
-          scrolled
-            ? 'border-b border-line bg-header/85 shadow-warm backdrop-blur-xl'
-            : overlay
-              ? 'border-b border-transparent bg-transparent'
-              : 'border-b border-transparent bg-header/60 backdrop-blur-sm',
+          'sticky top-0 z-50 border-b bg-header transition-[box-shadow,border-color] duration-300',
+          // The ground never changes - scrolling only lifts the bar off the page.
+          scrolled ? 'border-line shadow-warm' : 'border-transparent',
         )}
       >
         <div className="container-page flex h-18 items-center justify-between gap-4 sm:h-20">
-          <Logo tone={floating ? 'light' : 'default'} />
+          <Logo />
 
-          <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
+          {/* The links open up as the bar gets room - at lg they are nearly
+              touching the controls, by xl there is width to spread them out. */}
+          <nav className="hidden items-center gap-2 lg:flex xl:gap-4 2xl:gap-6" aria-label="Main">
             {nav.map((item) => (
               <Link
                 key={item.label}
                 to={item.to}
                 className={cn(
                   'relative rounded-full px-4 py-2 text-sm font-medium transition-colors',
-                  floating
-                    ? isActive(item.to)
-                      ? 'text-mustard'
-                      : 'text-white hover:text-mustard'
-                    : isActive(item.to)
-                      ? 'text-primary'
-                      : 'text-body hover:text-heading dark:text-white',
+                  isActive(item.to)
+                    ? 'text-primary'
+                    : 'text-body hover:text-heading dark:text-white',
                 )}
               >
                 {item.label}
@@ -115,21 +101,15 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
               href={`tel:${site.phoneDisplay.replace(/\s/g, '')}`}
               variant="secondary"
               size="sm"
-              className={cn(
-                'hidden xl:inline-flex',
-                floating && glassControl,
-              )}
+              className="hidden xl:inline-flex"
             >
               <Phone className="size-4" />
               {site.phoneDisplay}
             </ButtonAnchor>
 
-            <SocialMenu
-              className="hidden sm:block"
-              buttonClassName={cn(floating && glassControl)}
-            />
+            <SocialMenu className="hidden sm:block" />
 
-            <ThemeToggle className={cn(floating && glassControl)} />
+            <ThemeToggle />
 
             <ButtonLink to="/rooms" size="sm" className="hidden sm:inline-flex">
               Book Now
@@ -139,10 +119,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
               type="button"
               onClick={() => setOpen(true)}
               aria-label="Open menu"
-              className={cn(
-                'grid size-10 place-items-center rounded-full border border-line bg-surface text-heading lg:hidden',
-                floating && glassControl,
-              )}
+              className="grid size-10 place-items-center rounded-full border border-line bg-surface text-heading lg:hidden"
             >
               <Menu className="size-[1.15rem]" />
             </button>
@@ -150,10 +127,9 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
         </div>
       </header>
 
-      {/* Mobile drawer. It has to sit outside <header>: the bar carries a
-          backdrop-filter, and that makes an element the containing block for its
-          fixed descendants - inside it `inset-0` resolves to the 4.5rem bar and
-          `overflow-hidden` clips the panel away. */}
+      {/* Mobile drawer. It has to sit outside <header>: the bar is sticky and
+          clips, so inside it `inset-0` resolves to the 4.5rem bar rather than to
+          the viewport and the panel gets cut away. */}
       <div
         className={cn(
           // overflow-hidden matters: the closed panel is parked at translate-x-full,

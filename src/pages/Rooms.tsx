@@ -105,7 +105,7 @@ export default function Rooms() {
       <h1 className="sr-only md:hidden">Rooms &amp; beds at {site.legalName}, Guwahati</h1>
 
       {/* ============================== masthead ============================== */}
-      <section className="relative isolate hidden min-h-[38rem] flex-col justify-end overflow-hidden pt-32 pb-12 sm:min-h-[46rem] sm:pt-36 md:flex lg:min-h-svh lg:pb-20">
+      <section className="relative isolate hidden min-h-[38rem] flex-col justify-end overflow-hidden pt-14 pb-12 sm:min-h-[46rem] sm:pt-16 md:flex lg:min-h-[calc(100svh-5rem)] lg:pb-20">
         <Photo
           id={heroSlides[1].image}
           width={2000}
