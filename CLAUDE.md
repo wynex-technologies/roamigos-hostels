@@ -31,13 +31,36 @@ values on the site.
 | `--color-green` | `#355E3B` | Forest Green | **accent** - secondary CTAs, icons, tags |
 | `--color-green-deep` | `#274630` | - | pressed green, WhatsApp CTA |
 | `--color-terracotta` | `#C96B4A` | Terracotta | **support** - illustrations, badges, small highlights |
-| `--color-cream` | `#F8F5EE` | Off White | header ground, slab ground, light fills |
-| `--color-sand` | `#E8DDCB` | Sand | footer ground, borders, muted surfaces |
+| `--color-cream` | `#F8F5EE` | Off White | slab ground, light fills |
+| `--color-sand` | `#E8DDCB` | Sand | header ground, footer ground, borders, muted surfaces |
 | `--color-ink` | `#262626` | Charcoal | **text** - body copy, and type on mustard |
 
 Page canvas stays pure white in light - it is the one surface the sheet does not
 govern, and it does not change. Dark theme sits on `#1C1B1A` with charcoal
 surfaces. No paper grain: anything that gives a matte cast is out.
+
+### The header
+One bar, one ground, on every page. It is **never** transparent - it used to float
+over the photographic heroes and it does not any more, so nothing sets an `overlay`
+flag and no hero pads for a bar sitting on top of it.
+
+`--header-ground` is the ground the logo artwork itself is drawn on, so the
+flamingo sits in the bar with no square edge around it: `#E8DDCB` Sand in light,
+`#262626` Charcoal in dark.
+
+### The mark has two cuts, and dark needs its own
+The flamingo is a charcoal silhouette with pink, green and cream shapes on top,
+so on a dark ground the silhouette - the bird's whole outline, and the front of
+the beak with it - disappears into the page. The dark cut answers that: the
+silhouette carries a Sand hairline, and the shapes knocked out of it (between the
+legs, two notches at the throat) are charcoal instead of cream.
+
+So dark grounds take their own files, never a filtered copy of the light ones:
+`logo-mark-dark.svg` for the mark (`Logo.tsx` swaps to it under `dark:`, the way
+it already does for `logo-wordmark-light.svg`) and `logo-light.svg` for the
+stacked lockup on the 404. Put `logo-mark.svg` or `logo.svg` on a dark ground and
+the beak loses its front while the gap between the legs flares up as a cream
+triangle.
 
 ### The two panels
 The closing slab and the footer bring their own ground, so they carry their own
@@ -61,6 +84,12 @@ WhatsApp CTA.
 
 Still never green for headings, primary CTAs, large backgrounds or section fills -
 red leads, mustard supports, green accents.
+
+One exception the other way: the **contact page** keeps a single CTA colour, so its
+two WhatsApp buttons are mustard (`variant="accent"`), not the green `whatsapp`
+variant. Green still carries the channel icon, the "front desk online" dot and the
+confirmations on that page. Everywhere else the WhatsApp CTA is green - the rooms
+listing still uses the variant.
 
 ## Punctuation (STRICT)
 
@@ -139,4 +168,4 @@ The admin panel already exists separately - only the website is in scope.
 - `src/data/offer.ts` - the welcome-offer popup (copy, image, coupon, dates) plus
   `fetchOffer()`, which lets the admin panel serve the same shape as JSON from
   `VITE_OFFER_ENDPOINT` and override the shipped defaults without a deploy
-- `src/components/brand/Logo.tsx` - logo, converted from the source PDF to vector paths
+- `src/components/brand/Logo.tsx` - the logo lockups, as vector paths
