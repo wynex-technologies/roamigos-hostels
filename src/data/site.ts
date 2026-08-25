@@ -70,13 +70,6 @@ export const nav = [
   { label: 'Contact', to: '/contact' },
 ]
 
-export const properties = [
-  { name: 'Roamigos, Goa', area: 'Calangute, North Goa' },
-  { name: 'Roamigos, Jaipur', area: 'MI Road, Jaipur' },
-  { name: 'Roamigos, Manali', area: 'Old Manali' },
-  { name: 'Roamigos, Rishikesh', area: 'Laxman Jhula' },
-]
-
 export const footerLinks = {
   explore: [
     { label: 'Home', to: '/' },

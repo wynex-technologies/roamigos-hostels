@@ -95,7 +95,7 @@ export const showcase = [
 export const valueProps = [
   { title: 'Affordable Stays', note: 'Best prices for backpackers', icon: 'wallet' },
   { title: 'Meet & Connect', note: 'Community spaces to vibe and connect', icon: 'users' },
-  { title: 'Prime Locations', note: 'Explore the city with easy access', icon: 'map-pin' },
+  { title: 'Prime Location', note: 'Explore the city with easy access', icon: 'map-pin' },
   { title: 'Safe & Secure', note: '24x7 security for a worry-free stay', icon: 'shield' },
   { title: 'Fast Wi-Fi', note: 'Stay connected, always', icon: 'wifi' },
 ]

@@ -1,5 +1,5 @@
 import { ArrowRight, Mail, MapPin, MessageCircle, Phone } from 'lucide-react'
-import { properties, site } from '@/data/site'
+import { site } from '@/data/site'
 import { enquiryUrl } from '@/lib/whatsapp'
 import { ButtonAnchor, ButtonLink } from '@/components/ui/Button'
 import { Container, Section } from '@/components/ui/primitives'
@@ -87,8 +87,11 @@ export function ContactBand() {
               </div>
             </div>
 
-            {/* ======================= the details ======================= */}
-            <div className="space-y-8">
+            {/* ======================= the details =======================
+                Two channels and one address is a short column beside the ask, so
+                it sits on the middle of the headline rather than stranding a gap
+                under itself. */}
+            <div className="space-y-8 lg:self-center">
               <div className="space-y-3">
                 {[
                   {
@@ -143,20 +146,22 @@ export function ContactBand() {
                 <p className="text-[0.6875rem] font-bold tracking-[0.22em] text-mustard uppercase">
                   Find us in
                 </p>
-                <ul className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-                  {properties.map((property) => (
-                    <li
-                      key={property.name}
-                      className="group/pin flex gap-2.5 text-[0.875rem] transition-transform duration-500 hover:translate-x-1"
-                    >
-                      <MapPin className="mt-0.5 size-4 shrink-0 text-mustard transition-transform duration-500 group-hover/pin:-translate-y-0.5" />
-                      <span>
-                        <span className="block text-gray-200">{property.name}</span>
-                        <span className="text-gray-200/55">{property.area}</span>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                {/* One house, and this is it. The address links the Maps pin the
+                    footer uses, so a tap lands on the door, not on a search. */}
+                <a
+                  href={site.address.mapUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group/pin mt-4 flex gap-2.5 text-[0.875rem] transition-transform duration-500 hover:translate-x-1"
+                >
+                  <MapPin className="mt-0.5 size-4 shrink-0 text-mustard transition-transform duration-500 group-hover/pin:-translate-y-0.5" />
+                  <span>
+                    <span className="block text-gray-200">{site.address.line1}</span>
+                    <span className="text-gray-200/55">
+                      {site.address.line2}, {site.address.line3}
+                    </span>
+                  </span>
+                </a>
               </div>
             </div>
           </div>
