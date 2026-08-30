@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { ArrowUpRight, X } from 'lucide-react'
 import type { Room } from '@/data/rooms'
 import { bookingTotals, buildWhatsAppUrl } from '@/lib/whatsapp'
+import { recordBooking } from '@/lib/intake'
 import { formatDate, formatINR } from '@/lib/utils'
 import { toDraft, type BookingState } from './BookingWidget'
 
@@ -34,22 +35,35 @@ export function GuestDetailsModal({
   const nameRef = useRef<HTMLInputElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
 
-  // Escape closes, the page behind stays put, and focus starts in the first
-  // field so a keyboard lands where the typing has to happen.
+  // The guest's answers live in the room page, so every keystroke in here
+  // re-renders the parent and hands this component a fresh `onClose`. Anything
+  // that depends on it therefore re-runs on every letter typed - which is why
+  // the focus below is on an effect of its own, keyed to `open` alone. Sharing
+  // one effect moved the cursor back to the name field mid-word.
+  useEffect(() => {
+    if (!open) return
+    nameRef.current?.focus()
+  }, [open])
+
+  // Escape closes and the page behind stays put. `onClose` is read through a
+  // ref so a new identity does not tear the listener down and re-add it, or
+  // release the scroll lock, between two characters.
+  const closeHandler = useRef(onClose)
+  closeHandler.current = onClose
+
   useEffect(() => {
     if (!open) return
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
+      if (event.key === 'Escape') closeHandler.current()
     }
     const previous = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     document.addEventListener('keydown', onKey)
-    nameRef.current?.focus()
     return () => {
       document.body.style.overflow = previous
       document.removeEventListener('keydown', onKey)
     }
-  }, [open, onClose])
+  }, [open])
 
   // A fresh open should not carry the last attempt's red text back with it.
   useEffect(() => {
@@ -80,7 +94,14 @@ export function GuestDetailsModal({
       document.getElementById(`guest-${first}`)?.focus()
       return
     }
-    window.open(buildWhatsAppUrl(toDraft(room, state)), '_blank', 'noopener,noreferrer')
+    const draft = toDraft(room, state)
+
+    // The desk's carbon copy, so a request that never gets sent in WhatsApp is
+    // still on the board. It cannot fail loudly and it cannot delay the line
+    // below - see `src/lib/intake.ts`.
+    recordBooking(room, draft)
+
+    window.open(buildWhatsAppUrl(draft), '_blank', 'noopener,noreferrer')
     onClose()
   }
 

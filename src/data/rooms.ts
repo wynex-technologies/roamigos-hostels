@@ -9,6 +9,8 @@ import {
   Wifi,
 } from 'lucide-react'
 
+import { content } from './generated'
+
 export type RoomCategory = 'dorm' | 'private' | 'deluxe' | 'long-stay'
 
 export type AmenityKey = 'ac' | 'ensuite' | 'locker' | 'balcony' | 'desk' | 'mountain-view'
@@ -79,7 +81,7 @@ export const hostelAmenities = [
   { label: 'Rooftop Café', icon: Coffee },
 ]
 
-export const rooms: Room[] = [
+const shippedRooms: Room[] = [
   {
     id: 1,
     slug: '8-bed-mixed-dorm',
@@ -365,7 +367,18 @@ export const rooms: Room[] = [
   },
 ]
 
-export const reviews: Review[] = [
+/**
+ * Every room the site sells.
+ *
+ * Supabase owns this list once the panel has rooms in it; the array above is
+ * what ships when it does not - no credentials, an empty table, a build with no
+ * network. The swap happens at build time, so this stays a plain synchronous
+ * import either way and nothing downstream - the listing, the filters, the
+ * detail page, the sitemap - has to know the difference.
+ */
+export const rooms: Room[] = content.rooms ?? shippedRooms
+
+const shippedReviews: Review[] = [
   {
     name: 'Rohit Sharma',
     date: 'March 2024',
@@ -391,6 +404,9 @@ export const reviews: Review[] = [
     text: 'Loved the stay! Everything was well-managed and very clean.',
   },
 ]
+
+/** The guest wall. Same arrangement as `rooms` above. */
+export const reviews: Review[] = content.reviews ?? shippedReviews
 
 export function getRoomBySlug(slug: string) {
   return rooms.find((room) => room.slug === slug)

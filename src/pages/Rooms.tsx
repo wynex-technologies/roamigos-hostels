@@ -34,6 +34,8 @@ import { heroSlides, roomsPageAmenities, roomsPageAssurances } from '@/data/cont
 import { site } from '@/data/site'
 import { enquiryUrl } from '@/lib/whatsapp'
 import { usePageMeta } from '@/lib/usePageMeta'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { breadcrumbs, roomListSchema } from '@/lib/structuredData'
 import { useReveal } from '@/lib/useReveal'
 import { cn, formatDate, formatINR } from '@/lib/utils'
 
@@ -80,6 +82,7 @@ export default function Rooms() {
   usePageMeta(
     `Rooms & Beds - ${site.legalName}`,
     'Cozy dorms, private rooms and deluxe stays at Roamigos. Compare beds, prices and amenities, then book on WhatsApp.',
+    { image: heroSlides[1].image },
   )
 
   const [params] = useSearchParams()
@@ -100,6 +103,9 @@ export default function Rooms() {
 
   return (
     <>
+      <JsonLd id="rooms" data={roomListSchema(allRooms)} />
+      <JsonLd id="rooms-crumbs" data={breadcrumbs([{ name: 'Rooms & Beds', path: '/rooms' }])} />
+
       {/* The masthead is hidden on phones, so this carries the page's heading
           for screen readers and search engines when it is not on screen. */}
       <h1 className="sr-only md:hidden">Rooms &amp; beds at {site.legalName}, Guwahati</h1>

@@ -2,6 +2,7 @@
  * Contact page content. Phone, email and the WhatsApp number itself stay in
  * `site.ts` - this file only holds the copy that is unique to the page.
  */
+import { content } from './generated'
 
 /** Topics offered in the enquiry form; the label is what the owner receives. */
 export const enquiryTopics = [
@@ -89,7 +90,7 @@ export const deskFacts = [
   { label: 'Payment', value: 'UPI, cards and cash - at check-in' },
 ] as const
 
-export const contactFaqs = [
+const shippedFaqs: { q: string; a: string }[] = [
   {
     q: 'How do I actually book - is there a payment page?',
     a: 'There is not, and that is deliberate. Pick a bed on the Rooms page, hit Book Now, and your dates land in our WhatsApp as a message you can read before you send it. We confirm availability, you pay at check-in. No card details, no prepayment, no third-party fee.',
@@ -114,4 +115,14 @@ export const contactFaqs = [
     q: 'Is there an age limit, and are couples allowed?',
     a: 'Guests must be 18 or over to book a dorm bed unless accompanied by a parent. Couples are welcome in private rooms; valid photo ID is required from every guest at check-in, as it is at every property in India.',
   },
-] as const
+]
+
+/**
+ * The questions the desk answers most.
+ *
+ * These are also the FAQ rich result - `faqSchema()` marks up this exact array,
+ * and Google only shows the result when the question and the answer are on the
+ * page as written. So whatever the panel publishes here is what gets marked up:
+ * the two can never drift, because there is only one list.
+ */
+export const contactFaqs: { q: string; a: string }[] = content.faqs ?? shippedFaqs

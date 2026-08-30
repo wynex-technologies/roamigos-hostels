@@ -1,0 +1,83 @@
+# ============================================================================
+# Roamigos on Hostinger: the site at /, the panel at /admin, on one account.
+#
+# Both are single-page apps, which means the server has to answer a URL like
+# /rooms/deluxe-private or /admin/bookings with an index.html rather than a 404
+# - no such file exists on disk, the router in the browser draws that page.
+#
+# Order is load-bearing throughout this file. The HTTPS redirect has to come
+# before the rewrites, because those end with [L] and nothing after them runs.
+# And /admin has to be matched before the catch-all, or a panel URL gets handed
+# the marketing site's index.html.
+# ============================================================================
+
+Options -Indexes
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # --------------------------------------------------------------- https ---
+  # First, because everything below terminates the rewrite chain.
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # Some PHP setups drop the Authorization header before the script sees it,
+  # which would make every publish look unauthenticated. This carries it through.
+  RewriteCond %{HTTP:Authorization} .
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+  # ----------------------------------------------------------- real files ---
+  # Anything that exists on disk is served as it is. This is what lets
+  # /assets/..., /content.json, /api/publish.php, /sitemap.xml and every image
+  # through before either rewrite below can swallow it.
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # ------------------------------------------------------------- the apps ---
+  RewriteRule ^admin(/.*)?$ /admin/index.html [L]
+  RewriteRule ^ /index.html [L]
+</IfModule>
+
+# ---------------------------------------------------------------- caching ---
+<IfModule mod_headers.c>
+  # Hashed filenames, so these can never go stale.
+  <FilesMatch "\.(js|css|woff2?)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # The published content. Revalidated rather than cached, so a publish shows up
+  # on the next page load - Apache answers 304 with no body when it has not
+  # moved, which costs a header and nothing else.
+  <Files "content.json">
+    Header set Cache-Control "no-cache"
+  </Files>
+
+  # The entry point must never be cached, or an upload leaves people on the old
+  # bundle asking for asset files that are no longer there.
+  <FilesMatch "^index\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# ------------------------------------------------------------- protection ---
+# The backup publish.php keeps, and any temp file a failed write leaves behind.
+<FilesMatch "\.(bak|tmp)$">
+  Require all denied
+</FilesMatch>
+
+# The panel's settings. Nothing secret is in it, but it is not browsable either.
+<Files "config.php">
+  Require all denied
+</Files>
+
+# --------------------------------------------------------------- encoding ---
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>

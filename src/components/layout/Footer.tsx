@@ -12,13 +12,20 @@ import {
   ShieldCheck,
   Tag,
   Youtube,
+  type LucideIcon,
 } from 'lucide-react'
 import { footerLinks, site, trustBar } from '@/data/site'
 import { enquiryUrl } from '@/lib/whatsapp'
 import { LogoRow } from '@/components/brand/Logo'
 import { paymentMarks } from '@/components/ui/PaymentMarks'
 
-const socialIcons = { instagram: Instagram, facebook: Facebook, youtube: Youtube }
+/** Keyed by the `icon` string on each account, which the admin panel writes -
+    so an unrecognised name has to fall through rather than index into nothing. */
+const socialIcons: Record<string, LucideIcon> = {
+  instagram: Instagram,
+  facebook: Facebook,
+  youtube: Youtube,
+}
 
 /** One mark per trust line, in the order `trustBar` lists them. */
 const trustIcons = [ShieldCheck, Tag, CalendarCheck, Headset]
@@ -61,6 +68,7 @@ export function Footer() {
           <div className="mt-8 flex gap-3">
             {site.socials.map((social) => {
               const Icon = socialIcons[social.icon]
+              if (!Icon) return null
               return (
                 <a
                   key={social.label}

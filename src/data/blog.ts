@@ -3,6 +3,7 @@
  * magazine - a masthead, a lead story, then the contents - so the hero copy
  * and the chapter index live here alongside the posts themselves.
  */
+import { content } from './generated'
 
 /**
  * Masthead. `fill` is the photograph that shows through the two display words,
@@ -69,7 +70,7 @@ export interface BlogPost {
   facts?: { label: string; value: string }[]
 }
 
-export const blogPosts: BlogPost[] = [
+const shippedPosts: BlogPost[] = [
   {
     slug: 'guwahati-in-48-hours',
     title: 'Guwahati in 48 Hours: Kamakhya, Umananda and a Sunset You Should Not Skip',
@@ -145,6 +146,10 @@ export const blogPosts: BlogPost[] = [
 ]
 
 /** Sidebar list - ordered by what the front desk gets asked about most. */
+/** The journal. Supabase owns it once the panel has posts; the array above
+    is the shipped fallback, resolved at build like the rest of the content. */
+export const blogPosts: BlogPost[] = content.blogPosts ?? shippedPosts
+
 export const mostAsked = [
   { slug: 'guwahati-to-shillong', title: 'Guwahati to Shillong: buses, sumos and costs', note: 'Asked 3x a day' },
   { slug: 'majuli-ferry-guide', title: 'The Nimati Ghat ferry timings, honestly', note: 'Asked every ferry season' },

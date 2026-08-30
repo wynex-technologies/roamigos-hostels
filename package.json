@@ -4,9 +4,15 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/dev.ts",
+    "dev:site": "vite",
+    "dev:admin": "npm --prefix admin run dev",
+    "sync:content": "node --env-file-if-exists=.env.local scripts/sync-content.ts",
+    "seed:supabase": "node --env-file-if-exists=.env.local scripts/seed-supabase.mjs",
+    "prebuild": "node --env-file-if-exists=.env.local scripts/sync-content.ts",
     "build": "tsc -b && vite build",
-    "preview": "vite preview",
+    "build:hostinger": "node --env-file-if-exists=.env.local scripts/build-hostinger.ts",
+    "preview:hostinger": "node scripts/preview-hostinger.ts",
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {

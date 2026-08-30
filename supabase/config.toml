@@ -1,0 +1,20 @@
+project_id = "roamigos"
+
+# ---------------------------------------------------------------------------
+# Edge functions.
+#
+# `offer` and `intake` are called by the public site, which has no session and
+# ships no key, so JWT verification is off and each one guards itself: `offer`
+# only ever reads the single active campaign, `intake` validates its payload,
+# caps every field and drops a repeat submission inside two minutes.
+#
+# There is no `publish` function. On Hostinger there is no build to trigger:
+# the panel writes the content file directly through `hostinger/api/publish.php`,
+# which checks the caller is an admin before writing.
+# ---------------------------------------------------------------------------
+
+[functions.offer]
+verify_jwt = false
+
+[functions.intake]
+verify_jwt = false

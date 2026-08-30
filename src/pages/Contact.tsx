@@ -5,6 +5,8 @@ import { ContactVisit } from '@/components/contact/ContactVisit'
 import { ContactFaq } from '@/components/contact/ContactFaq'
 import { CtaBand } from '@/components/common/CtaBand'
 import { usePageMeta } from '@/lib/usePageMeta'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { breadcrumbs, faqSchema } from '@/lib/structuredData'
 import { site } from '@/data/site'
 
 export default function Contact() {
@@ -15,6 +17,11 @@ export default function Contact() {
 
   return (
     <>
+      {/* The desk answers these six questions more than anything else, so they
+          are marked up to be answerable straight from a search result. */}
+      <JsonLd id="contact-faq" data={faqSchema()} />
+      <JsonLd id="contact-crumbs" data={breadcrumbs([{ name: 'Contact', path: '/contact' }])} />
+
       <ContactHero />
       <ContactChannels />
       <ContactForm />

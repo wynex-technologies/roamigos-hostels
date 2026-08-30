@@ -5,6 +5,7 @@ dist-ssr
 .env
 .env.*
 !.env.example
+!.env.local.example
 
 .DS_Store
 Thumbs.db
@@ -15,3 +16,18 @@ Thumbs.db
 
 *.log
 npm-debug.log*
+
+# The admin panel is its own app with its own lockfile and build.
+admin/node_modules
+admin/dist
+
+# NOT ignored, on purpose: src/data/generated/content.json is committed empty so
+# a fresh clone builds with no database. `npm run sync:content` overwrites it
+# during a build; that copy is a build artefact and should not be committed back.
+
+# The assembled upload folder, and the server config that carries your settings.
+deploy
+hostinger/api/config.php
+
+# Local state the Supabase CLI writes. Not the project's.
+supabase/.temp

@@ -5,6 +5,8 @@ import { GalleryDay } from '@/components/gallery/GalleryDay'
 import { GuestWall } from '@/components/gallery/GuestWall'
 import { CtaBand } from '@/components/common/CtaBand'
 import { usePageMeta } from '@/lib/usePageMeta'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { breadcrumbs } from '@/lib/structuredData'
 import { site } from '@/data/site'
 
 export default function About() {
@@ -15,6 +17,8 @@ export default function About() {
 
   return (
     <>
+      <JsonLd id="about-crumbs" data={breadcrumbs([{ name: 'About', path: '/about' }])} />
+
       <GalleryHero />
       <AboutIntro />
       <GalleryWall />

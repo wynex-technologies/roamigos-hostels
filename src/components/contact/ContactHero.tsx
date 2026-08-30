@@ -141,19 +141,25 @@ export function ContactHero() {
                 ))}
               </dl>
 
-              <p className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t border-cream/15 pt-5 text-[0.875rem] text-gray-200/70">
-                <span className="text-[0.625rem] font-bold tracking-[0.2em] text-mustard uppercase">
-                  Check-in
-                </span>
-                <span className="font-display text-lg text-cream">{site.checkIn}</span>
-                <span aria-hidden className="text-gray-200/30">
-                  /
-                </span>
-                <span className="text-[0.625rem] font-bold tracking-[0.2em] text-mustard uppercase">
-                  Check-out
-                </span>
-                <span className="font-display text-lg text-cream">{site.checkOut}</span>
-              </p>
+              {/* The same label-over-value pairs as the facts above, rather
+                  than one wrapping line. Side by side these read as a pair; on
+                  a phone the old row broke wherever it ran out of width and
+                  left a stranded "/" between two half-lines. Each pair now
+                  keeps its own label and the separator is gone - two columns
+                  where there is room, stacked where there is not. */}
+              <dl className="mt-7 grid gap-x-6 gap-y-4 border-t border-cream/15 pt-5 sm:grid-cols-2">
+                {[
+                  { label: 'Check-in', value: site.checkIn },
+                  { label: 'Check-out', value: site.checkOut },
+                ].map((time) => (
+                  <div key={time.label}>
+                    <dt className="text-[0.625rem] font-bold tracking-[0.2em] text-mustard uppercase">
+                      {time.label}
+                    </dt>
+                    <dd className="mt-1 font-display text-lg text-cream">{time.value}</dd>
+                  </div>
+                ))}
+              </dl>
             </div>
           </div>
         </div>

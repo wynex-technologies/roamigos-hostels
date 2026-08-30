@@ -1,0 +1,131 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   The same brand sheet as the site, because the desk should recognise the
+   thing it is editing. The palette rules carry over: red leads, mustard
+   supports, green is an accent and never a heading, a primary CTA or a fill.
+
+   The panel is a working tool rather than a page, so it sits on the sand
+   ground the site's header uses and prints denser type than the site does.
+--------------------------------------------------------------------------- */
+@theme {
+  --color-maroon-deep: #8e272e;
+  --color-maroon: #b3313a;
+  --color-mustard: #d9a328;
+  --color-gold: #b8871f;
+  --color-cream: #f8f5ee;
+  --color-sand: #e8ddcb;
+  --color-terracotta: #c96b4a;
+  --color-green-deep: #274630;
+  --color-green: #355e3b;
+  --color-ink: #262626;
+
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-body: var(--body);
+  --color-muted: var(--muted);
+  --color-heading: var(--heading);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+
+  --shadow-warm: 0 1px 2px rgb(9 9 11 / 0.04), 0 8px 24px -8px rgb(9 9 11 / 0.1);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root {
+  --canvas: #f4f1ea;
+  --surface: #ffffff;
+  --surface-2: #faf8f4;
+  --line: #e2d9c9;
+  --line-strong: #cdbfa6;
+  --body: #4f4b45;
+  --muted: #7a736a;
+  --heading: #262626;
+  --primary: #b3313a;
+  --primary-hover: #8e272e;
+  --on-primary: #ffffff;
+  color-scheme: light;
+}
+
+.dark {
+  --canvas: #1c1b1a;
+  --surface: #262626;
+  --surface-2: #2e2c29;
+  --line: #3a3836;
+  --line-strong: #4e4b47;
+  --body: #e3ded4;
+  --muted: #a69f96;
+  --heading: #f8f5ee;
+  --primary: #c9434b;
+  --primary-hover: #d9666d;
+  --on-primary: #ffffff;
+  color-scheme: dark;
+}
+
+@layer base {
+  body {
+    background-color: var(--canvas);
+    color: var(--body);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: var(--heading);
+    font-weight: 600;
+  }
+
+  /* Playfair ships old-style figures, which drop 4 and 9 below the baseline -
+     a price would read with the digits bouncing. Same guard as the site. */
+  .font-display {
+    font-variant-numeric: lining-nums;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .card {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-warm);
+  }
+
+  /* One input treatment, used by every field in the panel. */
+  .field {
+    width: 100%;
+    border-radius: 0.625rem;
+    border: 1px solid var(--line);
+    background-color: var(--surface-2);
+    padding: 0.55rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--heading);
+    transition: border-color 200ms, box-shadow 200ms;
+  }
+
+  .field:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 14%, transparent);
+    outline: none;
+  }
+
+  .field::placeholder {
+    color: color-mix(in oklab, var(--muted) 70%, transparent);
+  }
+}

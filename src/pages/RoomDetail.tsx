@@ -24,6 +24,8 @@ import { Photo } from '@/components/ui/Photo'
 import { Container } from '@/components/ui/primitives'
 import { bookingTotals } from '@/lib/whatsapp'
 import { usePageMeta } from '@/lib/usePageMeta'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { breadcrumbs, roomSchema } from '@/lib/structuredData'
 import { useMediaQuery } from '@/lib/useMediaQuery'
 import { useReveal } from '@/lib/useReveal'
 import { cn, formatINR } from '@/lib/utils'
@@ -172,6 +174,8 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
   usePageMeta(
     `${room.name} - ${site.legalName}`,
     `${room.shortDescription} From ${formatINR(room.pricePerNight)} per night at ${site.legalName}.`,
+    // A shared room link has to show that room, not the site's default photo.
+    { image: room.images[0] },
   )
 
   const [booking, setBooking] = useBookingState(room)
@@ -203,6 +207,17 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
 
   return (
     <>
+      {/* The page already prints this trail as a nav - the markup below is the
+          same walk, said in the form a search result can print above the link. */}
+      <JsonLd id="room" data={roomSchema(room)} />
+      <JsonLd
+        id="room-crumbs"
+        data={breadcrumbs([
+          { name: 'Rooms & Beds', path: '/rooms' },
+          { name: room.name, path: `/rooms/${room.slug}` },
+        ])}
+      />
+
       {/* ============================ cinematic frame =========================== */}
       <Gallery
         images={room.images}

@@ -5,14 +5,19 @@ import { Container, Eyebrow, SectionTitle } from '@/components/ui/primitives'
 import { enquiryTopics } from '@/data/contact'
 import { site } from '@/data/site'
 import { buildContactUrl, contactMessage, type ContactDraft } from '@/lib/whatsapp'
+import { recordEnquiry } from '@/lib/intake'
 import { addDaysISO, todayISO } from '@/lib/utils'
 
+/* The label sits inside the field, so the top padding is what makes room for
+   it and the bottom padding is what the typed value gets. Both are generous
+   here on purpose: this is the form a guest fills in on a phone, at a station,
+   one-handed. */
 const field =
-  'w-full rounded-xl border border-line bg-surface-2 px-4 pt-6 pb-2.5 text-[0.9375rem] font-medium text-heading ' +
+  'w-full rounded-xl border border-line bg-surface-2 px-4 pt-7 pb-3.5 text-base font-medium text-heading ' +
   'transition-colors focus:border-primary focus:outline-none [color-scheme:light] dark:[color-scheme:dark]'
 
 const label =
-  'pointer-events-none absolute top-2.5 left-4 text-[0.625rem] font-bold tracking-[0.14em] text-muted uppercase'
+  'pointer-events-none absolute top-3 left-4 text-[0.6875rem] font-bold tracking-[0.14em] text-muted uppercase'
 
 const steps = [
   { title: 'Fill in the short version', note: 'Only the name, number and question are required.' },
@@ -46,6 +51,11 @@ export function ContactForm() {
 
   function send(event: React.FormEvent) {
     event.preventDefault()
+
+    // Same carbon copy as a booking: recorded for the desk, never allowed to
+    // get between the visitor and the WhatsApp thread they were promised.
+    recordEnquiry(draft)
+
     window.open(buildContactUrl(draft), '_blank', 'noopener,noreferrer')
   }
 
@@ -138,11 +148,15 @@ export function ContactForm() {
                 </select>
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute right-4 bottom-4 size-2 rotate-135 border-t border-r border-muted"
+                  className="pointer-events-none absolute right-4 bottom-[1.35rem] size-2 rotate-135 border-t border-r border-muted"
                 />
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
+              {/* The two dates read as a sequence, so they are stacked rather
+                  than sat side by side - check-out is the answer to check-in,
+                  and a date field squeezed into a third of a row is the one
+                  control on this form that is genuinely awkward to tap. */}
+              <div className="grid gap-3">
                 <div className="relative">
                   <span className={label}>Check-in</span>
                   <input
