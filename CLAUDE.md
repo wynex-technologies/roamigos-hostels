@@ -153,9 +153,24 @@ changes the popup, the booking form's hint, the price breakdown and the WhatsApp
 together. The admin panel can override the same fields over HTTP.
 
 Never hardcode a code or a percent in a component. Read the campaign through
-`useOffer()` (`src/lib/useOffer.ts`), which shares one fetch across the page, and check a
-typed code with `couponValue(offer, input)`. The resolved `{ code, percent }` rides on
-`BookingDraft.coupon`, so `bookingTotals()` and `bookingMessage()` both see it.
+`useOffer()` (`src/lib/useOffer.ts`), which shares one fetch across the page. The resolved
+`{ code, percent }` rides on `BookingDraft.coupon`, so `bookingTotals()` and
+`bookingMessage()` both see it.
+
+### Every other coupon lives in the database and is checked server-side
+The campaign has one code. The `coupons` table has the rest - a partner code, a
+returning-guest code - and they work whether or not a campaign is running.
+
+**Check a typed code with `checkCoupon(offer, input)`, which is async.**
+`couponValue(offer, input)` still exists and still only knows the campaign's own code;
+it is the fast path `checkCoupon` tries first, and the right thing for asking "is this
+*the* campaign code" (which is what fills the form's suggestion in).
+
+The coupon list is **never sent to the browser**. `anon` cannot read the table, and the
+`offer` edge function answers `?code=XXXX` with a percent or a 204 - a wrong code, an
+expired one and a code that has not started all read identically, so the table cannot be
+walked by guessing. Do not "optimise" this by shipping the list with the campaign: that
+would put every code the hostel has issued in the network tab of every visitor.
 
 Later (not now): user profile dashboard with booking status, and admin-panel sync on booking.
 The admin panel already exists separately - only the website is in scope.
@@ -240,10 +255,22 @@ The queries are used **verbatim**, including `published=is.true` and every
 `order`. Rebuilding them through a query builder is how hidden rooms end up live.
 
 ### What must never happen
-- **No photographs in Supabase Storage.** Image fields hold an Unsplash id or a
-  URL on somebody else's CDN. One hero image served from Storage would spend the
-  free monthly egress in about 17,000 page views. The panel has no upload button
-  for this reason.
+- **Uploads go to Supabase Storage, and the cost is engineered down.** This was
+  once a flat ban, because a photograph served from Storage is billed egress on
+  every page view. Uploads are now wanted, so three things keep the bill small
+  and **all three are load-bearing** - remove one and the ban should come back:
+  1. `admin/src/lib/media.ts` re-encodes in the browser before uploading:
+     downscaled to a 2000px long edge, WebP at q0.82. A 4MB phone photograph
+     leaves at roughly 200KB. Nothing reaches the bucket at camera size.
+  2. Objects are named by the SHA-256 of their own bytes and uploaded with
+     `cacheControl: 31536000`. A repeat view costs nothing; the same file
+     uploaded twice is stored once.
+  3. Removing or replacing an image deletes the object, so nothing is paid for
+     to store what nothing points at. `useMediaCleanup` settles that on Save,
+     never on the keystroke - Back has to stay a real option.
+  Unsplash-hosted images still cost nothing and are still perfectly good; the
+  panel says so rather than nagging anybody to re-upload one. `src/lib/images.ts`
+  already passes a direct URL through untouched via `isDirectSrc`.
 - **No `VITE_` prefix on `SUPABASE_SERVICE_ROLE_KEY`.** A `VITE_` variable is
   inlined into the browser bundle. The sync script reads it unprefixed, at build.
 - **No public read policy on any table.** `anon` is granted nothing, and the

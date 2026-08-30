@@ -138,8 +138,8 @@ export function headTags() {
   return tags.join('\n    ')
 }
 
-/** Every route the sitemap lists, room pages included. */
-export function sitemap(roomSlugs: string[]) {
+/** Every route the sitemap lists - room pages and journal articles included. */
+export function sitemap(roomSlugs: string[], postSlugs: string[] = []) {
   const urls = [
     { path: '/', priority: '1.0', changefreq: 'weekly' },
     { path: '/rooms', priority: '0.9', changefreq: 'weekly' },
@@ -149,6 +149,12 @@ export function sitemap(roomSlugs: string[]) {
     ...roomSlugs.map((slug) => ({
       path: `/rooms/${slug}`,
       priority: '0.8',
+      changefreq: 'monthly',
+    })),
+    // Only posts with a body are listed: the rest have no page to crawl.
+    ...postSlugs.map((slug) => ({
+      path: `/blog/${slug}`,
+      priority: '0.6',
       changefreq: 'monthly',
     })),
   ]

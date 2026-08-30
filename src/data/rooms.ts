@@ -9,11 +9,22 @@ import {
   Wifi,
 } from 'lucide-react'
 
+// Relative, not `@shared`: `vite.config.ts` imports this module for the
+// sitemap, and a config file is loaded before its own aliases exist.
+import { toLabel } from '../../shared/amenity-icons'
 import { content } from './generated'
 
-export type RoomCategory = 'dorm' | 'private' | 'deluxe' | 'long-stay'
+/**
+ * Categories and amenities are open sets, not fixed unions.
+ *
+ * They used to be string unions, which made adding one a code change - and the
+ * panel can now add one, so a union would mean a room carrying a category the
+ * site refuses to type. They are plain keys instead: kebab-case, stored as
+ * written, and given a label by `categoryLabel` / `amenityLabel` below.
+ */
+export type RoomCategory = string
 
-export type AmenityKey = 'ac' | 'ensuite' | 'locker' | 'balcony' | 'desk' | 'mountain-view'
+export type AmenityKey = string
 
 export interface Review {
   name: string
@@ -50,14 +61,23 @@ export interface Room {
   maxGuestsNote: string
 }
 
-export const categoryLabels: Record<RoomCategory, string> = {
+/**
+ * The curated labels, for the keys the site was built around.
+ *
+ * Anything the panel adds is not in here and does not need to be: `dorm` was
+ * only ever written as "Dorms" because the plural is not derivable, and a key
+ * like `rooftop-suite` reads perfectly well title-cased. So this is an override
+ * list, not a registry - a key missing from it is not an error.
+ */
+export const categoryLabels: Record<string, string> = {
   dorm: 'Dorms',
   private: 'Private Rooms',
   deluxe: 'Deluxe Rooms',
   'long-stay': 'Long Stay',
 }
 
-export const amenityLabels: Record<AmenityKey, string> = {
+/** The same, for amenities. See the note on `categoryLabels`. */
+export const amenityLabels: Record<string, string> = {
   ac: 'AC',
   ensuite: 'Ensuite Bathroom',
   locker: 'Locker',
@@ -65,6 +85,10 @@ export const amenityLabels: Record<AmenityKey, string> = {
   desk: 'Work Desk',
   'mountain-view': 'Mountain View',
 }
+
+export const categoryLabel = (key: string) => categoryLabels[key] ?? toLabel(key)
+
+export const amenityLabel = (key: string) => amenityLabels[key] ?? toLabel(key)
 
 /**
  * Perks that apply to every booking, listed on each room's detail page. Each one

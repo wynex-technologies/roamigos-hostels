@@ -1,10 +1,30 @@
 import { useMemo, useState } from 'react'
-import { Clock, MessageCircle } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { ArrowUpRight, Clock, MessageCircle } from 'lucide-react'
 import { Photo } from '@/components/ui/Photo'
 import { Container, Eyebrow, SectionTitle } from '@/components/ui/primitives'
-import { blogCategories, blogPosts, mostAsked, type PostCategory } from '@/data/blog'
+import { blogCategories, blogPosts, getPost, hasArticle, mostAsked, type PostCategory } from '@/data/blog'
 import { enquiryUrl } from '@/lib/whatsapp'
 import { cn, formatDate } from '@/lib/utils'
+
+/**
+ * A card is a link when there is an article behind it, and a plain card when
+ * there is not - a post can be published as a headline and a standfirst alone,
+ * and a link that lands on nothing is worse than no link.
+ */
+function CardShell({ slug, children }: { slug: string | null; children: React.ReactNode }) {
+  const className =
+    'group card-surface flex h-full flex-col overflow-hidden transition-[transform,box-shadow] ' +
+    'duration-400 ease-[var(--ease-out-soft)] hover:-translate-y-1.5 hover:shadow-warm-lg'
+
+  if (!slug) return <article className={className}>{children}</article>
+
+  return (
+    <Link to={`/blog/${slug}`} className={className}>
+      {children}
+    </Link>
+  )
+}
 
 /**
  * The contents of the issue. The lead story is deliberately left in the list as
@@ -72,7 +92,7 @@ export function BlogStories() {
           <ul className="grid gap-6 sm:grid-cols-2">
             {posts.map((post) => (
               <li key={post.slug}>
-                <article className="group card-surface flex h-full flex-col overflow-hidden transition-[transform,box-shadow] duration-400 ease-[var(--ease-out-soft)] hover:-translate-y-1.5 hover:shadow-warm-lg">
+                <CardShell slug={hasArticle(post) ? post.slug : null}>
                   <div className="relative aspect-16/10 overflow-hidden bg-surface-2">
                     <Photo
                       id={post.image}
@@ -105,8 +125,17 @@ export function BlogStories() {
                       <span className="font-semibold text-heading">{post.author}</span>
                       <span className="text-muted">{formatDate(post.date)}</span>
                     </div>
+
+                    {/* Said on every card, because a card that is a link should
+                        look like one before the cursor is anywhere near it. */}
+                    {hasArticle(post) && (
+                      <span className="mt-4 inline-flex items-center gap-1.5 text-[0.875rem] font-semibold text-primary">
+                        Read article
+                        <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" />
+                      </span>
+                    )}
                   </div>
-                </article>
+                </CardShell>
               </li>
             ))}
           </ul>
@@ -118,19 +147,33 @@ export function BlogStories() {
                 Asked at the desk
               </p>
               <ol className="mt-5 space-y-5">
-                {mostAsked.map((item, i) => (
-                  <li key={item.slug} className="flex gap-4">
-                    <span className="font-display text-lg leading-none font-semibold text-line-strong tabular-nums">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block text-[0.9375rem] leading-snug font-semibold text-heading text-pretty">
-                        {item.title}
+                {mostAsked.map((item, i) => {
+                  const post = getPost(item.slug)
+                  const linked = post && hasArticle(post)
+
+                  return (
+                    <li key={item.slug} className="flex gap-4">
+                      <span className="font-display text-lg leading-none font-semibold text-line-strong tabular-nums">
+                        {String(i + 1).padStart(2, '0')}
                       </span>
-                      <span className="mt-1 block text-[0.8125rem] text-muted">{item.note}</span>
-                    </span>
-                  </li>
-                ))}
+                      <span className="min-w-0">
+                        {linked ? (
+                          <Link
+                            to={`/blog/${item.slug}`}
+                            className="block text-[0.9375rem] leading-snug font-semibold text-heading text-pretty transition-colors hover:text-primary"
+                          >
+                            {item.title}
+                          </Link>
+                        ) : (
+                          <span className="block text-[0.9375rem] leading-snug font-semibold text-heading text-pretty">
+                            {item.title}
+                          </span>
+                        )}
+                        <span className="mt-1 block text-[0.8125rem] text-muted">{item.note}</span>
+                      </span>
+                    </li>
+                  )
+                })}
               </ol>
             </div>
 

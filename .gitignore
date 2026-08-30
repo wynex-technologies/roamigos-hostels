@@ -25,6 +25,11 @@ admin/dist
 # a fresh clone builds with no database. `npm run sync:content` overwrites it
 # during a build; that copy is a build artefact and should not be committed back.
 
+# What Publish writes in development. The live one is written by publish.php on
+# the server; this is the local stand-in and is not part of the repo.
+public/content.json
+public/content.json.bak
+
 # The assembled upload folder, and the server config that carries your settings.
 deploy
 hostinger/api/config.php

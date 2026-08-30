@@ -15,7 +15,8 @@ import {
   Users,
   Wallet,
 } from 'lucide-react'
-import { categoryLabels, getRoom, hostelAmenities, reviews, rooms } from '@/data/rooms'
+import { iconFor } from '@shared/amenity-icons'
+import { amenityLabel, categoryLabel, getRoom, hostelAmenities, reviews, rooms } from '@/data/rooms'
 import { site } from '@/data/site'
 import { Gallery } from '@/components/room/Gallery'
 import { BookingWidget, toDraft, useBookingState } from '@/components/room/BookingWidget'
@@ -246,7 +247,7 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
             covers the room it is selling. */}
         <div className="max-w-2xl">
           <p className="text-[0.6875rem] font-bold tracking-[0.22em] text-mustard uppercase">
-            {categoryLabels[room.categories[0]]}
+            {categoryLabel(room.categories[0])}
           </p>
 
           <h1 className="mt-4 font-display text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.05] font-semibold text-white text-balance">
@@ -361,6 +362,26 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
                   </li>
                 ))}
               </ul>
+
+              {/* This room's own amenities. Each icon comes from the name, so
+                  one added at the front desk arrives here already drawn - see
+                  `shared/amenity-icons.ts`. */}
+              {room.amenities.length > 0 && (
+                <ul className="mt-8 flex flex-wrap gap-2.5 border-t border-line pt-7">
+                  {room.amenities.map((key) => {
+                    const Icon = iconFor(key)
+                    return (
+                      <li
+                        key={key}
+                        className="group inline-flex items-center gap-2.5 rounded-full border border-line bg-surface px-4 py-2.5 text-[0.875rem] font-semibold text-heading transition-[border-color,background-color,transform] duration-400 ease-[var(--ease-out-soft)] hover:-translate-y-0.5 hover:border-line-strong hover:bg-surface-2"
+                      >
+                        <Icon className="size-4 text-accent transition-transform duration-400 group-hover:scale-110" />
+                        {amenityLabel(key)}
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
 
               {/* The highlights, as a printed strip under the list. */}
               <ul className="mt-8 flex flex-wrap gap-2.5 border-t border-line pt-7">

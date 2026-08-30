@@ -25,7 +25,7 @@ import {
   type FilterState,
   type SortKey,
 } from '@/components/rooms/filters'
-import { categoryLabels, rooms as allRooms, type Room } from '@/data/rooms'
+import { categoryLabel, rooms as allRooms, type Room } from '@/data/rooms'
 import { Photo } from '@/components/ui/Photo'
 import { ButtonAnchor } from '@/components/ui/Button'
 import { Badge, Container } from '@/components/ui/primitives'
@@ -588,7 +588,7 @@ function RoomRow({
           className="h-px w-7 shrink-0 bg-mustard transition-[width] duration-600 ease-[var(--ease-out-soft)] group-hover:w-16"
         />
         <span className="text-[0.6875rem] font-bold tracking-[0.16em] text-mustard uppercase">
-          {categoryLabels[room.categories[0]]}
+          {categoryLabel(room.categories[0])}
         </span>
       </p>
 

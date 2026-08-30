@@ -7,7 +7,7 @@
  */
 import { site } from '@/data/site'
 import type { Room } from '@/data/rooms'
-import { blogPosts } from '@/data/blog'
+import { blogPosts, hasArticle, type BlogPost } from '@/data/blog'
 import { contactFaqs } from '@/data/contact'
 import { absoluteUrl, shareImage } from './seo'
 
@@ -104,10 +104,9 @@ export function roomListSchema(rooms: Room[]) {
 /**
  * The journal.
  *
- * Every post points at `/blog` because that is where it is published - there
- * are no article pages yet. When `/blog/:slug` lands, these `url` and
- * `mainEntityOfPage` values have to move with it, or the markup starts
- * describing a page the post is no longer on.
+ * A post points at its own article page when it has one. A post with no body
+ * has no page, so it stays pointed at `/blog`, which is where it is published
+ * and the only address that will actually answer for it.
  */
 export function blogSchema() {
   const url = absoluteUrl('/blog')
@@ -119,16 +118,51 @@ export function blogSchema() {
     name: `The Journal - ${site.legalName}`,
     url,
     publisher: HOSTEL,
-    blogPost: blogPosts.map((post) => ({
-      '@type': 'BlogPosting',
-      headline: post.title,
-      description: post.excerpt,
-      datePublished: post.date,
-      author: { '@type': 'Person', name: post.author },
-      image: shareImage(post.image),
-      mainEntityOfPage: url,
-      publisher: HOSTEL,
-    })),
+    blogPost: blogPosts.map((post) => {
+      const postUrl = hasArticle(post) ? absoluteUrl(`/blog/${post.slug}`) : url
+
+      return {
+        '@type': 'BlogPosting',
+        headline: post.title,
+        description: post.excerpt,
+        datePublished: post.date,
+        author: { '@type': 'Person', name: post.author },
+        image: shareImage(post.image),
+        url: postUrl,
+        mainEntityOfPage: postUrl,
+        publisher: HOSTEL,
+      }
+    }),
+  }
+}
+
+/**
+ * One article, on its own page.
+ *
+ * `wordCount` and `articleBody` are what separate a BlogPosting that Google
+ * treats as an article from one it treats as a link, so the body goes in as
+ * written rather than being summarised down to the standfirst.
+ */
+export function articleSchema(post: BlogPost) {
+  const url = absoluteUrl(`/blog/${post.slug}`)
+  const body = post.body ?? ''
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    '@id': `${url}#article`,
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    author: { '@type': 'Person', name: post.author },
+    image: shareImage(post.image),
+    url,
+    mainEntityOfPage: url,
+    articleSection: post.category,
+    wordCount: body.trim().split(/\s+/).filter(Boolean).length,
+    articleBody: body,
+    isPartOf: { '@id': `${absoluteUrl('/blog')}#blog` },
+    publisher: HOSTEL,
   }
 }
 

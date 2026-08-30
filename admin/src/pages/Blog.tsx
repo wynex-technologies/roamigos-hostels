@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ArrowLeft, Plus, Save, Trash2 } from 'lucide-react'
+import { ArrowLeft, ExternalLink, Plus, Save, Trash2 } from 'lucide-react'
+import { ImageField } from '@/components/ImageField'
 import { supabase } from '@/lib/supabase'
-import { COLUMNS, formatDate, type BlogRow } from '@/lib/db'
+import { useMediaCleanup } from '@/lib/media'
+import { COLUMNS, formatDate, isoDate, type BlogRow } from '@/lib/db'
+import { cn } from '@/components/ui'
 import {
   Area,
   Badge,
@@ -39,13 +42,24 @@ const blank: Omit<BlogRow, 'id'> = {
   excerpt: '',
   category: 'city',
   author: '',
-  published_on: new Date().toISOString().slice(0, 10),
+  published_on: isoDate(),
   read_time: '6 min read',
   image: '',
   featured: false,
   facts: [],
+  body: '',
   sort_order: 99,
   published: true,
+}
+
+/** The site is served from the same domain in production and proxied to the
+    same one in development, so a story's page is always one path away. */
+const siteUrl = (slug: string) => `${window.location.origin}/blog/${slug}`
+
+/** Roughly what the site will print if Read time is left empty. */
+const readingTime = (body: string) => {
+  const words = body.trim().split(/\s+/).filter(Boolean).length
+  return words ? `${Math.max(1, Math.round(words / 220))} min read` : ''
 }
 
 /**
@@ -55,10 +69,13 @@ const blank: Omit<BlogRow, 'id'> = {
  * unique index - so turning Featured on for a second post is refused rather
  * than quietly making the lead depend on row order. The message says so.
  *
- * Posts have no pages of their own on the site yet: the journal prints titles
- * and standfirsts, and the slug is stored for when article pages land.
+ * A post with an Article gets a page of its own at `/blog/<slug>`, and every
+ * card on the journal links to it. A post without one still lists - headline,
+ * standfirst, photograph - but nothing links to a page that is not there. That
+ * is why the editor says which of the two this row currently is.
  */
 export default function Blog() {
+  const media = useMediaCleanup()
   const [rows, setRows] = useState<ListRow[]>([])
   const [editing, setEditing] = useState<BlogRow | Omit<BlogRow, 'id'> | null>(null)
   const [loading, setLoading] = useState(true)
@@ -113,18 +130,29 @@ export default function Blog() {
       return
     }
 
+    await media.commit()
     setEditing(null)
     load()
   }
 
   async function remove(id: number, title: string) {
     if (!confirm(`Delete "${title}"?`)) return
+
+    const image = (editing as BlogRow | null)?.image
     const { error: failure } = await supabase.from('blog_posts').delete().eq('id', id)
     if (failure) setError(failure.message)
     else {
+      // The row is gone, so its photograph has nothing pointing at it.
+      await media.purge(image ? [image] : [])
       setEditing(null)
       load()
     }
+  }
+
+  /** Back, not Save: anything uploaded during this edit was never referenced. */
+  async function cancel() {
+    await media.discard()
+    setEditing(null)
   }
 
   if (editing) {
@@ -132,16 +160,31 @@ export default function Blog() {
     const set = <K extends keyof BlogRow>(key: K, value: BlogRow[K]) =>
       setEditing({ ...post, [key]: value })
 
+    const words = post.body.trim().split(/\s+/).filter(Boolean).length
+
     return (
       <>
         <PageHeader
           title={post.id ? 'Edit story' : 'New story'}
           actions={
             <>
-              <Button variant="ghost" onClick={() => setEditing(null)}>
+              <Button variant="ghost" onClick={cancel}>
                 <ArrowLeft className="size-4" />
                 Back
               </Button>
+              {/* Only offered once the page exists - a link to a 404 is worse
+                  than no link, and an unsaved slug is not a page yet. */}
+              {post.id && post.published && post.body.trim() && (
+                <a
+                  href={siteUrl(post.slug)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-line px-4 py-2 text-sm font-semibold text-heading transition-colors hover:border-line-strong hover:bg-surface-2"
+                >
+                  <ExternalLink className="size-4" />
+                  View on site
+                </a>
+              )}
               {post.id && (
                 <Button variant="danger" onClick={() => remove(post.id, post.title)}>
                   <Trash2 className="size-4" />
@@ -202,9 +245,17 @@ export default function Blog() {
           </Card>
 
           <Card className="space-y-4">
-            <Field label="Image" hint="Unsplash id or a full URL. Never an upload.">
-              <Text value={post.image} onChange={(e) => set('image', e.target.value)} />
-            </Field>
+            <ImageField
+              label="Image"
+              value={post.image}
+              onChange={(next) => set('image', next)}
+              folder="journal"
+              dimensions="1600 x 900"
+              note="Runs full width across the top of the article and is cropped to 16:9 on the cards, so keep the subject away from the edges."
+              onUploaded={media.trackUpload}
+              onRemoved={media.trackRemoval}
+              aspect="aspect-16/9"
+            />
 
             <Field
               label="Facts"
@@ -238,6 +289,48 @@ export default function Blog() {
                 label="Lead story"
               />
             </div>
+          </Card>
+
+          {/* The article. Full width, and tall, because this is the field
+              somebody actually spends their time in. */}
+          <Card className="space-y-4 lg:col-span-2">
+            <div className="flex flex-wrap items-baseline justify-between gap-3">
+              <h2 className="font-display text-lg font-semibold">Article</h2>
+              <span className="text-[0.8125rem] text-muted">
+                {words > 0 ? `${words} words - about ${readingTime(post.body)}` : 'Empty'}
+              </span>
+            </div>
+
+            <Field
+              label="The story"
+              hint="Blank line between paragraphs. Start a line with ## for a heading, - for a bullet, > for a pulled quote. **Bold** with two stars either side."
+            >
+              <Area
+                rows={22}
+                value={post.body}
+                onChange={(e) => set('body', e.target.value)}
+                className="font-mono text-[0.8125rem] leading-relaxed"
+              />
+            </Field>
+
+            <p
+              className={cn(
+                'rounded-lg border px-3 py-2 text-[0.8125rem]',
+                post.body.trim()
+                  ? 'border-green/40 bg-green/10 text-green-deep dark:text-green'
+                  : 'border-mustard/50 bg-mustard/12 text-gold',
+              )}
+            >
+              {post.body.trim()
+                ? `This story gets its own page at /blog/${post.slug || '...'} and every card on the journal links to it.`
+                : 'With no article, this story lists on the journal as a card only - nothing links anywhere. Write something here to give it a page.'}
+            </p>
+
+            {post.read_time.trim() === '' && words > 0 && (
+              <p className="text-[0.8125rem] text-muted">
+                Read time is empty, so the site will print {readingTime(post.body)}.
+              </p>
+            )}
           </Card>
         </div>
       </>

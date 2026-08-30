@@ -1,8 +1,48 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { ArrowUpRight, Star } from 'lucide-react'
 import { Photo } from '@/components/ui/Photo'
-import { blogHero as b } from '@/data/blog'
+import { blogHero as b, blogPosts, hasArticle } from '@/data/blog'
 import { photo } from '@/lib/images'
+
+/**
+ * The masthead's one button.
+ *
+ * It opens the lead story when the lead story has a page. Before article pages
+ * existed it could only scroll to the contents list, which is the thing already
+ * visible one flick down - a button that does what scrolling does. If the lead
+ * has no body, that is still the honest destination, so it falls back to it.
+ */
+function Cta() {
+  const lead = blogPosts.find((post) => post.featured) ?? blogPosts[0]
+  const className =
+    'group/cta inline-flex items-center gap-3 rounded-full bg-primary py-2.5 pr-2.5 pl-7 ' +
+    'text-sm font-semibold text-on-primary shadow-[0_18px_36px_-16px] shadow-maroon/70 ' +
+    'transition-colors hover:bg-primary-hover'
+
+  const inner = (
+    <>
+      {lead && hasArticle(lead) ? b.cta : 'See the contents'}
+      <span className="grid size-9 place-items-center rounded-full bg-cream text-maroon transition-transform duration-300 group-hover/cta:rotate-45">
+        <ArrowUpRight className="size-4" />
+      </span>
+    </>
+  )
+
+  if (!lead || !hasArticle(lead)) {
+    return (
+      <a href="#stories" className={className}>
+        {inner}
+      </a>
+    )
+  }
+
+  return (
+    <Link to={`/blog/${lead.slug}`} className={className}>
+      {inner}
+    </Link>
+  )
+}
 
 const prefersReduced = () =>
   typeof window !== 'undefined' &&
@@ -297,15 +337,7 @@ export function BlogHero() {
           </p>
 
           <div className="flex lg:justify-end" style={enter('fade-up', 0.92)}>
-            <a
-              href="#stories"
-              className="group/cta inline-flex items-center gap-3 rounded-full bg-primary py-2.5 pr-2.5 pl-7 text-sm font-semibold text-on-primary shadow-[0_18px_36px_-16px] shadow-maroon/70 transition-colors hover:bg-primary-hover"
-            >
-              {b.cta}
-              <span className="grid size-9 place-items-center rounded-full bg-cream text-maroon transition-transform duration-300 group-hover/cta:rotate-45">
-                <ArrowUpRight className="size-4" />
-              </span>
-            </a>
+            <Cta />
           </div>
         </div>
 

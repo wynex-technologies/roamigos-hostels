@@ -51,6 +51,8 @@ export interface BlogRow {
   image: string
   featured: boolean
   facts: { label: string; value: string }[]
+  /** The article, in the site's markdown subset. Empty means card only. */
+  body: string
   sort_order: number
   published: boolean
 }
@@ -75,6 +77,20 @@ export interface OfferRow {
   note: string | null
   expires_on: string | null
   delay_ms: number
+}
+
+/**
+ * A discount code the booking form accepts, separate from the campaign's own.
+ * The site never receives these as a list - see `Coupons.tsx`.
+ */
+export interface CouponRow {
+  id: number
+  code: string
+  percent: number
+  label: string | null
+  active: boolean
+  starts_on: string | null
+  expires_on: string | null
 }
 
 export interface FaqRow {
@@ -127,9 +143,13 @@ export interface BookingRow {
 
 export interface EnquiryRow {
   id: string
-  name: string
-  phone: string
+  /** Null for a chat somebody opened from a WhatsApp button - the name and the
+      number arrive in the chat itself. The contact form always has both. */
+  name: string | null
+  phone: string | null
   topic: string
+  /** Which button and page a nameless row came from. Null for the form. */
+  source: string | null
   check_in: string | null
   check_out: string | null
   guests: string | null
@@ -146,21 +166,26 @@ export const COLUMNS = {
     'id,slug,name,categories,badge,capacity,capacity_label,bathroom,short_description,subtitle,' +
     'price_per_night,rating,review_count,highlights,about,inclusions,amenities,images,' +
     'total_photos,max_guests_note,sort_order,published',
+  // `body` is a whole article per row, so it is deliberately not in the list
+  // set - the list prints titles. `has_body` is not a column, so whether a post
+  // has a page is answered when the row is opened, not on every list load.
   blogList: 'id,slug,title,category,author,published_on,featured,published,sort_order',
   blog:
-    'id,slug,title,excerpt,category,author,published_on,read_time,image,featured,facts,' +
+    'id,slug,title,excerpt,category,author,published_on,read_time,image,featured,facts,body,' +
     'sort_order,published',
   offer:
     'id,name,active,eyebrow,headline,headline_accent,badge_value,badge_label,description,code,' +
     'discount_percent,image,image_alt,perks,cta_label,cta_href,note,expires_on,delay_ms',
   faq: 'id,question,answer,sort_order,published',
+  coupon: 'id,code,percent,label,active,starts_on,expires_on',
   settings:
     'id,whatsapp_number,phone_display,email,address_line1,address_line2,address_line3,coords,' +
     'map_url,check_in,check_out,stat_guests,stat_rating,stat_reviews,socials',
   booking:
     'id,room_slug,room_name,guest_name,guest_phone,guest_email,check_in,check_out,nights,guests,' +
     'coupon_code,coupon_percent,subtotal,discount,total,note,status,admin_note,created_at',
-  enquiry: 'id,name,phone,topic,check_in,check_out,guests,message,status,admin_note,created_at',
+  enquiry:
+    'id,name,phone,topic,source,check_in,check_out,guests,message,status,admin_note,created_at',
 } as const
 
 /** How many rows a list asks for at a time. */
@@ -171,6 +196,21 @@ export const inr = new Intl.NumberFormat('en-IN', {
   currency: 'INR',
   maximumFractionDigits: 0,
 })
+
+/**
+ * Today, as `YYYY-MM-DD`, in the desk's own timezone.
+ *
+ * `new Date().toISOString()` is UTC, and India is five and a half hours ahead
+ * of it - so between midnight and half past five in the morning that returns
+ * yesterday. On a date input that is a `min` in the past and a default that is
+ * off by a day, and on a coupon it is a code that quietly stops being valid
+ * several hours early. Local parts, always.
+ */
+export function isoDate(date = new Date()) {
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${date.getFullYear()}-${month}-${day}`
+}
 
 export function formatDate(iso: string | null) {
   if (!iso) return '-'

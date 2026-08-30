@@ -1,4 +1,40 @@
-import { amenityLabels, categoryLabels, rooms, type AmenityKey, type Room, type RoomCategory } from '@/data/rooms'
+import { iconFor } from '@shared/amenity-icons'
+import {
+  amenityLabel,
+  amenityLabels,
+  categoryLabel,
+  categoryLabels,
+  rooms,
+  type AmenityKey,
+  type Room,
+  type RoomCategory,
+} from '@/data/rooms'
+
+/**
+ * The filter lists are built from the rooms themselves, not from a hardcoded
+ * set of keys.
+ *
+ * This is what makes an amenity added in the panel appear in the sidebar with
+ * no code change: the moment a room carries it, it is an option. The curated
+ * keys are seeded first so their order stays deliberate, and anything new is
+ * appended in the order the rooms mention it.
+ *
+ * A key that no room carries is dropped - the sidebar has never advertised a
+ * filter that returns nothing, and it should not start now that the set is
+ * open.
+ */
+function keysInUse(curated: string[], pick: (room: Room) => string[]) {
+  const used = new Set(rooms.flatMap(pick))
+  const seen = new Set<string>()
+  const out: string[] = []
+
+  for (const key of [...curated, ...used]) {
+    if (!used.has(key) || seen.has(key)) continue
+    seen.add(key)
+    out.push(key)
+  }
+  return out
+}
 
 export type SortKey = 'popularity' | 'price-asc' | 'price-desc' | 'rating'
 
@@ -36,16 +72,21 @@ export const emptyFilters: FilterState = {
 
 export const categoryOptions: { key: RoomCategory | 'all'; label: string }[] = [
   { key: 'all', label: 'All Rooms' },
-  ...(Object.keys(categoryLabels) as RoomCategory[]).map((key) => ({
+  ...keysInUse(Object.keys(categoryLabels), (room) => room.categories).map((key) => ({
     key,
-    label: categoryLabels[key],
+    label: categoryLabel(key),
   })),
 ]
 
-export const amenityOptions = (Object.keys(amenityLabels) as AmenityKey[]).map((key) => ({
-  key,
-  label: amenityLabels[key],
-}))
+/** Each option carries the icon its own name resolved to, so the sidebar and
+    the room page never disagree about what a thing looks like. */
+export const amenityOptions = keysInUse(Object.keys(amenityLabels), (room) => room.amenities).map(
+  (key) => ({
+    key,
+    label: amenityLabel(key),
+    icon: iconFor(key),
+  }),
+)
 
 /** Live counts, so the sidebar never advertises a filter that returns nothing. */
 export const counts = {

@@ -35,7 +35,7 @@ export const QUERIES = {
     'reviews?select=name,date_label,rating,text' +
     '&published=is.true&room_id=is.null&order=sort_order.asc',
   blogPosts:
-    'blog_posts?select=slug,title,excerpt,category,author,published_on,read_time,image,featured,facts' +
+    'blog_posts?select=slug,title,excerpt,category,author,published_on,read_time,image,featured,facts,body' +
     '&published=is.true&order=published_on.desc',
   faqs: 'faqs?select=question,answer&published=is.true&order=sort_order.asc',
   settings:
@@ -107,6 +107,9 @@ export const shape: Record<ContentKey, (rows: Row[]) => unknown> = {
       image: row.image,
       ...(row.featured ? { featured: true } : {}),
       ...(Array.isArray(row.facts) && row.facts.length ? { facts: row.facts } : {}),
+      // An empty body is a post with no article page, and the site checks for
+      // exactly that - so it is left out rather than published as ''.
+      ...(typeof row.body === 'string' && row.body.trim() ? { body: row.body } : {}),
     })),
 
   faqs: (rows) => rows.map((row) => ({ q: row.question, a: row.answer })),

@@ -1,9 +1,23 @@
+import { Link } from 'react-router-dom'
 import { ArrowUpRight, Clock } from 'lucide-react'
 import { Photo } from '@/components/ui/Photo'
 import { Badge, Container, Eyebrow } from '@/components/ui/primitives'
-import { blogCategories, blogPosts } from '@/data/blog'
+import { ButtonLink } from '@/components/ui/Button'
+import { blogCategories, blogPosts, hasArticle } from '@/data/blog'
 import { useReveal } from '@/lib/useReveal'
 import { formatDate } from '@/lib/utils'
+
+/** The photo half of the spread: a link to the article, or a plain frame when
+    the post has no body to open. */
+function Wrap({ to, children }: { to: string | null; children: React.ReactNode }) {
+  const className = 'group relative block min-h-70 overflow-hidden lg:min-h-[30rem]'
+  if (!to) return <div className={className}>{children}</div>
+  return (
+    <Link to={to} className={className} aria-label="Read the lead story">
+      {children}
+    </Link>
+  )
+}
 
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
@@ -18,6 +32,7 @@ export function BlogLead() {
   const block = useReveal<HTMLDivElement>(0.08)
 
   const category = blogCategories.find((entry) => entry.key === post.category)?.label ?? 'Journal'
+  const linked = hasArticle(post)
 
   return (
     <section className="py-16 sm:py-20 lg:py-24">
@@ -29,7 +44,7 @@ export function BlogLead() {
           </div>
 
           <article className="card-raised mt-8 grid overflow-hidden lg:grid-cols-[1.15fr_1fr]">
-            <div className="group relative min-h-70 overflow-hidden lg:min-h-[30rem]">
+            <Wrap to={linked ? `/blog/${post.slug}` : null}>
               <Photo
                 id={post.image}
                 width={1200}
@@ -45,7 +60,7 @@ export function BlogLead() {
               <span className="absolute top-5 left-5">
                 <Badge tone="primary">Issue 01 · Lead story</Badge>
               </span>
-            </div>
+            </Wrap>
 
             <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[0.75rem] tracking-[0.16em] text-muted uppercase">
@@ -60,7 +75,13 @@ export function BlogLead() {
               </div>
 
               <h2 className="mt-5 font-display text-[clamp(1.6rem,3.2vw,2.5rem)] leading-[1.1] font-semibold text-balance">
-                {post.title}
+                {linked ? (
+                  <Link to={`/blog/${post.slug}`} className="transition-colors hover:text-primary">
+                    {post.title}
+                  </Link>
+                ) : (
+                  post.title
+                )}
               </h2>
 
               <p className="mt-5 text-[1.0625rem] leading-relaxed text-pretty">{post.excerpt}</p>
@@ -91,9 +112,18 @@ export function BlogLead() {
                   <span className="block font-semibold text-heading">{post.author}</span>
                   <span className="text-muted">Front desk, Guwahati</span>
                 </span>
+              </div>
+
+              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+                {linked && (
+                  <ButtonLink to={`/blog/${post.slug}`} size="md">
+                    Read article
+                    <ArrowUpRight className="size-4" />
+                  </ButtonLink>
+                )}
                 <a
                   href="#stories"
-                  className="group/link ml-auto inline-flex items-center gap-2 text-[0.875rem] font-semibold text-heading"
+                  className="group/link inline-flex items-center gap-2 text-[0.875rem] font-semibold text-heading"
                 >
                   <span className="relative">
                     More in this issue

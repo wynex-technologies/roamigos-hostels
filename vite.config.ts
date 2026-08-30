@@ -4,6 +4,8 @@ import tailwindcss from '@tailwindcss/vite'
 import path from 'node:path'
 import { headTags, robots, sitemap } from './src/lib/seoStatic'
 import { rooms } from './src/data/rooms'
+import { blogPosts, hasArticle } from './src/data/blog'
+import { publishDev } from './scripts/publish-dev'
 
 /**
  * Writes the share card, the canonical link and the site-wide schema into
@@ -49,17 +51,24 @@ function seo(): Plugin {
     },
     generateBundle() {
       const slugs = rooms.map((room) => room.slug)
-      this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemap(slugs) })
+      const posts = blogPosts.filter(hasArticle).map((post) => post.slug)
+      this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemap(slugs, posts) })
       this.emitFile({ type: 'asset', fileName: 'robots.txt', source: robots() })
     },
   }
 }
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), seo(), adminTrailingSlash()],
+  plugins: [react(), tailwindcss(), seo(), adminTrailingSlash(), publishDev()],
 
   resolve: {
-    alias: { '@': path.resolve(__dirname, './src') },
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      // Shared with the panel. The row mapping lives here, and so does the
+      // amenity icon resolver, so both apps draw the same icon for the same
+      // word rather than each guessing.
+      '@shared': path.resolve(__dirname, './shared'),
+    },
   },
 
   server: {

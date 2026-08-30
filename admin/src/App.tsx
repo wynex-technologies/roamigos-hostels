@@ -14,6 +14,7 @@ import Blog from '@/pages/Blog'
 import Offer from '@/pages/Offer'
 import Faqs from '@/pages/Faqs'
 import Settings from '@/pages/Settings'
+import Profile from '@/pages/Profile'
 
 /**
  * Three gates before any screen renders, in this order: the panel has to be
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="offer" element={<Offer />} />
         <Route path="faqs" element={<Faqs />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="profile" element={<Profile />} />
         <Route path="*" element={<Dashboard />} />
       </Route>
     </Routes>

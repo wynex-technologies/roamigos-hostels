@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ChevronDown, MessageCircle, RefreshCw } from 'lucide-react'
+import { Check, ChevronDown, Download, MessageCircle, RefreshCw, Trash2 } from 'lucide-react'
+import { ExportPanel, type ExportRequest } from '@/components/ExportPanel'
+import { downloadXlsx, rangeLabel, type Column } from '@/lib/xlsx'
 import { supabase } from '@/lib/supabase'
 import {
   COLUMNS,
@@ -14,12 +16,58 @@ import { Badge, Button, Card, Empty, ErrorNote, Loading, PageHeader, Select } fr
 
 const STATUSES: Status[] = ['new', 'confirmed', 'cancelled', 'stayed']
 
+/**
+ * What the desk calls them.
+ *
+ * The stored value stays `new`, because that is what the column's check
+ * constraint allows and what every query filters on - but nobody at a front
+ * desk thinks of an unanswered request as "new", they think of it as one they
+ * have not confirmed yet. The label is the only thing that changes.
+ */
+const LABEL: Record<Status, string> = {
+  new: 'pending',
+  confirmed: 'confirmed',
+  cancelled: 'cancelled',
+  stayed: 'stayed',
+}
+
 const tone: Record<Status, 'warn' | 'live' | 'alert' | 'neutral'> = {
   new: 'warn',
   confirmed: 'live',
   cancelled: 'alert',
   stayed: 'neutral',
 }
+
+/**
+ * The sheet, column by column.
+ *
+ * Written out rather than dumped from the row, because a spreadsheet is read by
+ * a person: the headings are words rather than column names, the money is
+ * plain numbers so it can be summed, and the coupon is split into a code and a
+ * percent rather than one string nobody can filter on.
+ */
+const EXPORT_COLUMNS: Column<BookingRow>[] = [
+  { header: 'Received', value: (row) => row.created_at, type: 'datetime', width: 18 },
+  { header: 'Status', value: (row) => LABEL[row.status], width: 11 },
+  { header: 'Guest', value: (row) => row.guest_name, width: 22 },
+  // Phone stays text on purpose: as a number Excel eats the leading zero and
+  // turns a long one into 9.1988E+11.
+  { header: 'Phone', value: (row) => row.guest_phone, width: 16 },
+  { header: 'Email', value: (row) => row.guest_email, width: 26 },
+  { header: 'Room', value: (row) => row.room_name, width: 24 },
+  { header: 'Room slug', value: (row) => row.room_slug, width: 20 },
+  { header: 'Check in', value: (row) => row.check_in, type: 'date', width: 12 },
+  { header: 'Check out', value: (row) => row.check_out, type: 'date', width: 12 },
+  { header: 'Nights', value: (row) => row.nights, type: 'number', width: 8 },
+  { header: 'Guests', value: (row) => row.guests, type: 'number', width: 8 },
+  { header: 'Coupon', value: (row) => row.coupon_code, width: 14 },
+  { header: 'Coupon %', value: (row) => row.coupon_percent || '', type: 'number', width: 10 },
+  { header: 'Subtotal', value: (row) => row.subtotal, type: 'money', width: 12 },
+  { header: 'Discount', value: (row) => row.discount, type: 'money', width: 12 },
+  { header: 'Total', value: (row) => row.total, type: 'money', width: 12 },
+  { header: 'Guest request', value: (row) => row.note, width: 40 },
+  { header: 'Desk note', value: (row) => row.admin_note, width: 40 },
+]
 
 /**
  * The booking requests the site has recorded.
@@ -35,12 +83,21 @@ const tone: Record<Status, 'warn' | 'live' | 'alert' | 'neutral'> = {
  */
 export default function Bookings() {
   const [rows, setRows] = useState<BookingRow[]>([])
-  const [filter, setFilter] = useState<Status | 'all'>('new')
+  // Everything, not just the pending ones.
+  //
+  // It used to open on `new`, which meant confirming or cancelling a booking
+  // made it vanish from the screen the moment you acted on it - filtered out,
+  // not deleted, but there is no way to tell those two apart by looking. The
+  // filter is still here and still one click away; it just is not the default
+  // any more.
+  const [filter, setFilter] = useState<Status | 'all'>('all')
   const [page, setPage] = useState(0)
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [openId, setOpenId] = useState<string | null>(null)
+  const [exporting, setExporting] = useState(false)
+  const [exportOpen, setExportOpen] = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -78,6 +135,89 @@ export default function Bookings() {
     }
   }
 
+  /**
+   * Removes the row for good.
+   *
+   * Deliberately separate from Cancelled, and deliberately not next to it.
+   * Cancelling is a fact about the booking that the desk will want to look
+   * back at - how many fell through in July is a real question. Deleting is
+   * for a row that should never have existed: a test, a duplicate, somebody's
+   * mistyped submission. Two different actions, so two different buttons, and
+   * this one lives inside the opened row rather than in the list.
+   */
+  async function remove(row: BookingRow) {
+    if (!confirm(`Delete ${row.guest_name}'s booking? This cannot be undone.\n\nTo record that it fell through, set it to cancelled instead - that keeps it on the books.`)) {
+      return
+    }
+
+    const { error: failure } = await supabase.from('bookings').delete().eq('id', row.id)
+    if (failure) {
+      setError(failure.message)
+      return
+    }
+
+    setRows((current) => current.filter((item) => item.id !== row.id))
+    setTotal((current) => Math.max(0, current - 1))
+    setOpenId(null)
+  }
+
+  /**
+   * Every matching row, as a spreadsheet.
+   *
+   * Fetched here rather than reusing the page on screen, because the point of
+   * an export is the rows that are *not* on screen. It is pulled in batches of
+   * a thousand: one query for a year of bookings is the kind of request that
+   * times out on a slow connection right when somebody is trying to close their
+   * books, and the loop costs nothing when there are forty rows.
+   */
+  async function runExport({ from, to, basis, status }: ExportRequest) {
+    setExporting(true)
+    setError('')
+
+    const all: BookingRow[] = []
+    const BATCH = 1000
+
+    try {
+      for (let page = 0; ; page += 1) {
+        let query = supabase
+          .from('bookings')
+          .select(COLUMNS.booking)
+          .gte(basis, from)
+          // The To date is inclusive, and `created_at` is a timestamp - so the
+          // 4th means up to the end of the 4th, not midnight at the start of it.
+          .lte(basis, basis === 'created_at' ? `${to}T23:59:59.999Z` : to)
+          .order(basis, { ascending: false })
+          .range(page * BATCH, page * BATCH + BATCH - 1)
+
+        if (status !== 'all') query = query.eq('status', status)
+
+        const { data, error: failure } = await query
+        if (failure) throw new Error(failure.message)
+
+        const batch = (data ?? []) as unknown as BookingRow[]
+        all.push(...batch)
+        if (batch.length < BATCH) break
+      }
+
+      if (!all.length) {
+        setError('No bookings in that range, so there was nothing to download.')
+        return
+      }
+
+      downloadXlsx(
+        `roamigos-bookings-${rangeLabel(from, to)}.xlsx`,
+        'Bookings',
+        EXPORT_COLUMNS,
+        all,
+      )
+      setExportOpen(false)
+    } catch (failure) {
+      setError(failure instanceof Error ? failure.message : 'The export failed.')
+    } finally {
+      setExporting(false)
+    }
+  }
+
   async function setNote(id: string, admin_note: string) {
     setRows((current) => current.map((row) => (row.id === id ? { ...row, admin_note } : row)))
     await supabase.from('bookings').update({ admin_note }).eq('id', id)
@@ -89,7 +229,7 @@ export default function Bookings() {
     <>
       <PageHeader
         title="Bookings"
-        note={`${total} ${filter === 'all' ? 'in total' : filter}`}
+        note={`${total} ${filter === 'all' ? 'in total' : LABEL[filter]}`}
         actions={
           <>
             <Select
@@ -103,16 +243,30 @@ export default function Bookings() {
               <option value="all">All</option>
               {STATUSES.map((status) => (
                 <option key={status} value={status}>
-                  {status}
+                  {LABEL[status]}
                 </option>
               ))}
             </Select>
+            <Button variant="ghost" onClick={() => setExportOpen((on) => !on)}>
+              <Download className="size-4" />
+              Export
+            </Button>
             <Button variant="ghost" onClick={load}>
               <RefreshCw className="size-4" />
               Refresh
             </Button>
           </>
         }
+      />
+
+      <ExportPanel
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        onExport={runExport}
+        busy={exporting}
+        statuses={STATUSES}
+        statusLabel={(status) => LABEL[status as Status]}
+        note="Opens straight in Excel, Sheets or Numbers."
       />
 
       {error && <ErrorNote error={error} />}
@@ -153,7 +307,18 @@ export default function Bookings() {
                     {inr.format(row.total)}
                   </span>
 
-                  <Badge tone={tone[row.status]}>{row.status}</Badge>
+                  <Badge tone={tone[row.status]}>{LABEL[row.status]}</Badge>
+
+                  {/* A request that has been agreed in the chat is confirmed
+                      here, and that is the single commonest thing this page is
+                      opened to do - so it is a button, not a dropdown to find
+                      the right line in. Everything else stays in the Select. */}
+                  {row.status === 'new' && (
+                    <Button onClick={() => setStatus(row.id, 'confirmed')}>
+                      <Check className="size-4" />
+                      Confirm
+                    </Button>
+                  )}
 
                   <Select
                     value={row.status}
@@ -163,7 +328,7 @@ export default function Bookings() {
                   >
                     {STATUSES.map((status) => (
                       <option key={status} value={status}>
-                        {status}
+                        {LABEL[status]}
                       </option>
                     ))}
                   </Select>
@@ -223,6 +388,13 @@ export default function Bookings() {
                         <MessageCircle className="size-4" />
                         Message {row.guest_name.split(' ')[0]}
                       </a>
+
+                      {/* Inside the opened row, well away from Confirm. A row
+                          deleted by a mis-tap is not recoverable. */}
+                      <Button variant="danger" onClick={() => remove(row)}>
+                        <Trash2 className="size-4" />
+                        Delete this booking
+                      </Button>
                     </div>
                   </div>
                 )}

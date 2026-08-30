@@ -14,6 +14,7 @@ import {
   Sun,
   Tag,
   UploadCloud,
+  UserRound,
   X,
 } from 'lucide-react'
 import { LogoMark } from './Logo'
@@ -133,12 +134,34 @@ export function Shell() {
 
         {nav}
 
+        {/* Who is signed in, and the way to their own account. The identity
+            block was already here saying the email; making it the link means
+            the password lives where somebody would go looking for it rather
+            than in the content nav above, which is about the hostel. */}
         <div className="mt-auto border-t border-line pt-4">
-          <p className="truncate px-1 text-[0.75rem] text-muted">{admin?.email}</p>
+          <NavLink
+            to="/profile"
+            className={({ isActive }) =>
+              cn(
+                'flex items-center gap-3 rounded-lg px-2 py-2 transition-colors',
+                isActive ? 'bg-surface-2' : 'hover:bg-surface-2',
+              )
+            }
+          >
+            <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
+              <UserRound className="size-4" />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-medium text-heading">
+                {admin?.fullName || 'Profile'}
+              </span>
+              <span className="block truncate text-[0.6875rem] text-muted">{admin?.email}</span>
+            </span>
+          </NavLink>
           <button
             type="button"
             onClick={signOut}
-            className="mt-2 flex items-center gap-2 rounded-lg px-1 py-1.5 text-sm text-body transition-colors hover:text-maroon"
+            className="mt-1 flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-body transition-colors hover:text-maroon"
           >
             <LogOut className="size-4" />
             Sign out
@@ -199,14 +222,24 @@ export function Shell() {
               </button>
             </div>
             {nav}
-            <button
-              type="button"
-              onClick={signOut}
-              className="mt-auto flex items-center gap-2 border-t border-line px-1 pt-4 text-sm text-body"
-            >
-              <LogOut className="size-4" />
-              Sign out
-            </button>
+            <div className="mt-auto border-t border-line pt-4">
+              <NavLink
+                to="/profile"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 rounded-lg px-1 py-1.5 text-sm font-medium text-body"
+              >
+                <UserRound className="size-4" />
+                <span className="min-w-0 truncate">{admin?.fullName || 'Profile'}</span>
+              </NavLink>
+              <button
+                type="button"
+                onClick={signOut}
+                className="mt-1 flex items-center gap-2 px-1 py-1.5 text-sm text-body"
+              >
+                <LogOut className="size-4" />
+                Sign out
+              </button>
+            </div>
           </div>
         </div>
       )}

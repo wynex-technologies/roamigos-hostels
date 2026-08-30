@@ -16,6 +16,12 @@ interface AuthValue {
   loading: boolean
   signIn: (email: string, password: string) => Promise<string | null>
   signOut: () => Promise<void>
+  /**
+   * Changes the signed-in admin's own password. The current one is required and
+   * checked first, so a walked-away-from desk cannot be locked by a passer-by.
+   * Returns an error message, or null when the change went through.
+   */
+  changePassword: (current: string, next: string) => Promise<string | null>
 }
 
 const AuthContext = createContext<AuthValue | null>(null)
@@ -96,8 +102,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut()
   }, [])
 
+  // Supabase will happily change a password on the strength of the session
+  // alone. That is fine for a reset link and wrong for a panel that stays
+  // signed in on a desk, so the current password is re-checked here first -
+  // a sign-in with the same credentials, which also refreshes the session.
+  const changePassword = useCallback(
+    async (current: string, next: string) => {
+      const email = session?.user?.email
+      if (!email) return 'You are not signed in.'
+
+      const { error: wrongCurrent } = await supabase.auth.signInWithPassword({
+        email,
+        password: current,
+      })
+      if (wrongCurrent) {
+        return /invalid login credentials/i.test(wrongCurrent.message)
+          ? 'That is not your current password.'
+          : wrongCurrent.message
+      }
+
+      const { error: failed } = await supabase.auth.updateUser({ password: next })
+      return failed?.message ?? null
+    },
+    [session],
+  )
+
   return (
-    <AuthContext.Provider value={{ session, admin, loading, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ session, admin, loading, signIn, signOut, changePassword }}
+    >
       {children}
     </AuthContext.Provider>
   )

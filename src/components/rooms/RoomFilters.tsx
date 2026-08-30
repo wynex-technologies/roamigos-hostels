@@ -1,4 +1,5 @@
 import { Check, RotateCcw } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import type { AmenityKey } from '@/data/rooms'
 import { cn, formatINR } from '@/lib/utils'
 import {
@@ -22,7 +23,18 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
 }
 
 /** Pill toggle - used for amenities and capacity, where more than one can be on. */
-function Chip({ label, on, onClick }: { label: string; on: boolean; onClick: () => void }) {
+function Chip({
+  label,
+  on,
+  onClick,
+  icon: Icon,
+}: {
+  label: string
+  on: boolean
+  onClick: () => void
+  /** Amenity chips carry one, worked out from the name. The rest do not. */
+  icon?: LucideIcon
+}) {
   return (
     <button
       type="button"
@@ -36,7 +48,9 @@ function Chip({ label, on, onClick }: { label: string; on: boolean; onClick: () 
           : 'border-line bg-surface text-body hover:border-line-strong hover:text-heading',
       )}
     >
-      {on && <Check className="size-3.5" />}
+      {/* The tick replaces the icon when selected rather than joining it - two
+          glyphs on a chip this size is a crowd. */}
+      {on ? <Check className="size-3.5" /> : Icon ? <Icon className="size-3.5" /> : null}
       {label}
     </button>
   )
@@ -149,6 +163,7 @@ export function RoomFilters({
             <Chip
               key={option.key}
               label={option.label}
+              icon={option.icon}
               on={state.amenities.includes(option.key)}
               onClick={() =>
                 onChange({ ...state, amenities: toggle<AmenityKey>(state.amenities, option.key) })

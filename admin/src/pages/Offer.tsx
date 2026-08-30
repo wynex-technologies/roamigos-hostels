@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Plus, Save, Zap } from 'lucide-react'
+import { Coupons } from '@/components/Coupons'
+import { ImageField } from '@/components/ImageField'
 import { supabase } from '@/lib/supabase'
 import { COLUMNS, fromList, toList, type OfferRow } from '@/lib/db'
+import { useMediaCleanup } from '@/lib/media'
 import {
   Area,
   Badge,
@@ -53,6 +56,7 @@ const blank: Omit<OfferRow, 'id'> = {
  * activating one deactivates the rest first.
  */
 export default function Offer() {
+  const media = useMediaCleanup()
   const [rows, setRows] = useState<OfferRow[]>([])
   const [selected, setSelected] = useState<OfferRow | Omit<OfferRow, 'id'> | null>(null)
   const [loading, setLoading] = useState(true)
@@ -104,8 +108,20 @@ export default function Offer() {
       return
     }
 
+    // Saved, so the image this edit replaced is now unreferenced.
+    await media.commit()
     setSelected(null)
     load()
+  }
+
+  /**
+   * Switching campaigns, or starting a new one, without saving the current
+   * edit. Anything uploaded into it was never referenced by a row, so it goes
+   * rather than sitting in the bucket forever.
+   */
+  async function switchTo(next: OfferRow | Omit<OfferRow, 'id'> | null) {
+    await media.discard()
+    setSelected(next)
   }
 
   if (loading) return <Loading />
@@ -119,7 +135,7 @@ export default function Offer() {
         note="The only thing here that goes live without a publish - within five minutes."
         actions={
           <>
-            <Button variant="ghost" onClick={() => setSelected({ ...blank })}>
+            <Button variant="ghost" onClick={() => switchTo({ ...blank })}>
               <Plus className="size-4" />
               New campaign
             </Button>
@@ -147,7 +163,7 @@ export default function Offer() {
             <button
               key={row.id}
               type="button"
-              onClick={() => setSelected(row)}
+              onClick={() => switchTo(row)}
               className={`rounded-full border px-3.5 py-1.5 text-[0.8125rem] font-semibold transition-colors ${
                 offer && 'id' in offer && offer.id === row.id
                   ? 'border-transparent bg-primary text-on-primary'
@@ -282,9 +298,19 @@ export default function Offer() {
                 </Field>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Image" hint="Unsplash id or full URL.">
-                    <Text value={offer.image} onChange={(e) => set('image', e.target.value)} />
-                  </Field>
+                  <div className="sm:col-span-2">
+                    <ImageField
+                      label="Image"
+                      value={offer.image}
+                      onChange={(next) => set('image', next)}
+                      folder="offer"
+                      dimensions="1200 x 1500"
+                      note="Fills the left half of the popup, cropped tall on desktop and short on a phone, so keep the subject centred."
+                      onUploaded={media.trackUpload}
+                      onRemoved={media.trackRemoval}
+                      aspect="aspect-4/5"
+                    />
+                  </div>
 
                   <Field label="Image alt">
                     <Text value={offer.image_alt} onChange={(e) => set('image_alt', e.target.value)} />
@@ -309,6 +335,11 @@ export default function Offer() {
           )
         })()
       )}
+
+      {/* Codes that work with or without a campaign running above. */}
+      <div className="mt-6">
+        <Coupons />
+      </div>
     </>
   )
 }

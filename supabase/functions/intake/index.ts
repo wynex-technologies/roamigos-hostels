@@ -1,5 +1,5 @@
 /**
- * Guest submissions: a booking request, or a contact enquiry.
+ * Guest submissions: a booking request, a contact enquiry, or a chat opened.
  *
  * The site still opens WhatsApp, and that chat is still the real conversation.
  * This only gives the desk its own copy, so a request is not lost when somebody
@@ -26,6 +26,17 @@ const supabase = createClient(
 /** Two minutes. Long enough to swallow a double tap, short enough to allow a
     guest who really is booking a second room straight after the first. */
 const DEDUPE_WINDOW_MS = 2 * 60 * 1000
+
+/**
+ * Thirty seconds for a bare chat, which is a different problem.
+ *
+ * A booking carries an email, so two rows can be told apart by who sent them.
+ * A chat carries nothing - just which button, on which page - so the only
+ * thing dedupe can match on is the button itself, and two different visitors
+ * pressing the same one would collapse into a single row. Short enough that
+ * only a double tap is caught, and a second person a minute later is not.
+ */
+const CHAT_DEDUPE_WINDOW_MS = 30 * 1000
 
 Deno.serve(async (request) => {
   const cors = preflight(request)
@@ -113,10 +124,48 @@ Deno.serve(async (request) => {
       name,
       phone,
       topic,
+      // The contact form has a page of its own; nothing to disambiguate.
+      source: null,
       check_in: date(payload.checkIn),
       check_out: date(payload.checkOut),
       guests: str(payload.guests, 20),
       message: str(payload.message, 4000),
+    })
+
+    return empty(request, error ? 500 : 204)
+  }
+
+  // --------------------------------------------------------------- chat ----
+  // A WhatsApp button pressed anywhere on the site. No name, no number - those
+  // arrive in the chat itself. What is worth having is that somebody is on
+  // their way and what they were looking at when they left.
+  if (kind === 'chat') {
+    const topic = str(payload.topic, 200)
+    if (!topic) return empty(request, 400)
+
+    const source = str(payload.source, 200)
+    const since = new Date(Date.now() - CHAT_DEDUPE_WINDOW_MS).toISOString()
+
+    const query = supabase
+      .from('enquiries')
+      .select('id')
+      .is('name', null)
+      .eq('topic', topic)
+      .gte('created_at', since)
+      .limit(1)
+
+    const { data: recent } = await (source
+      ? query.eq('source', source)
+      : query.is('source', null))
+
+    if (recent?.length) return empty(request, 202)
+
+    const { error } = await supabase.from('enquiries').insert({
+      name: null,
+      phone: null,
+      topic,
+      source,
+      message: str(payload.message, 1000),
     })
 
     return empty(request, error ? 500 : 204)

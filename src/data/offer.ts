@@ -124,5 +124,56 @@ export function loadOffer(): Promise<Offer> {
 export function couponValue(current: Offer | null, input: string): number {
   if (!current?.code || !offerIsLive(current)) return 0
   if (input.trim().toUpperCase() !== current.code.trim().toUpperCase()) return 0
-  return Math.min(Math.max(current.discountPercent ?? 0, 0), 100)
+  return clampPercent(current.discountPercent ?? 0)
+}
+
+const clampPercent = (value: number) =>
+  Number.isFinite(value) ? Math.min(Math.max(Math.round(value), 0), 100) : 0
+
+/**
+ * What a typed code is worth, campaign or coupon.
+ *
+ * Two places are asked, in this order, and the order is the point:
+ *
+ *   1. The running campaign, in memory. Its code is on the popup and on the
+ *      artwork - it is already public, so checking it costs nothing and
+ *      answers instantly.
+ *   2. The `coupons` table, through the offer endpoint. Every other code the
+ *      desk has issued lives there and is never sent to the browser as a list,
+ *      because a list is a list of codes anybody can read. The typed code goes
+ *      up; a percent comes back.
+ *
+ * Anything unrecognised, expired or not yet started comes back as 0, and all
+ * three read the same from here - there is nothing to be learned by guessing.
+ */
+export async function checkCoupon(
+  current: Offer | null,
+  input: string,
+  signal?: AbortSignal,
+): Promise<number> {
+  const code = input.trim()
+  if (!code) return 0
+
+  const onCampaign = couponValue(current, code)
+  if (onCampaign) return onCampaign
+
+  if (!OFFER_ENDPOINT) return 0
+
+  try {
+    const response = await fetch(`${OFFER_ENDPOINT}?code=${encodeURIComponent(code)}`, {
+      signal,
+      headers: { Accept: 'application/json' },
+    })
+    // 204 is the endpoint's way of saying "not a code", and is also what a
+    // campaign-only deployment answers. Both mean the same thing here.
+    if (response.status !== 200) return 0
+
+    const payload = (await response.json()) as { percent?: number } | null
+    return clampPercent(payload?.percent ?? 0)
+  } catch {
+    // Offline, or the endpoint is down. A coupon that cannot be verified is
+    // not applied - quoting a discount the desk never agreed to is worse than
+    // asking somebody to mention the code on WhatsApp instead.
+    return 0
+  }
 }

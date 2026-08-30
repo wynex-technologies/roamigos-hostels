@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ArrowLeft, Plus, Save, Trash2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { ImageListField } from '@/components/ImageListField'
+import { KeyChips } from '@/components/KeyChips'
 import { COLUMNS, fromList, inr, toList, type RoomRow } from '@/lib/db'
+import { useMediaCleanup } from '@/lib/media'
 import {
   Area,
   Badge,
@@ -21,6 +24,15 @@ type ListRow = Pick<
   'id' | 'slug' | 'name' | 'price_per_night' | 'capacity_label' | 'categories' | 'published' | 'sort_order'
 >
 
+/**
+ * The keys the site was built around, offered first in the pickers below.
+ *
+ * Not a closed list any more: `KeyChips` can add one, and the site derives its
+ * label and its icon from the key rather than looking it up here - so a
+ * category or an amenity added at the front desk needs no code change on
+ * either side. These stay because their order is deliberate and because two of
+ * them ("Dorms", "AC") read better than a machine would write them.
+ */
 const CATEGORIES = ['dorm', 'private', 'deluxe', 'long-stay']
 const AMENITIES = ['ac', 'ensuite', 'locker', 'balcony', 'desk', 'mountain-view']
 
@@ -61,6 +73,7 @@ const blank: Omit<RoomRow, 'id'> = {
  * egress flat no matter how much traffic the site takes.
  */
 export default function Rooms() {
+  const media = useMediaCleanup()
   const [rows, setRows] = useState<ListRow[]>([])
   const [editing, setEditing] = useState<RoomRow | Omit<RoomRow, 'id'> | null>(null)
   const [loading, setLoading] = useState(true)
@@ -111,18 +124,30 @@ export default function Rooms() {
       return
     }
 
+    // Saved, so the images this edit dropped are now unreferenced.
+    await media.commit()
     setEditing(null)
     load()
   }
 
   async function remove(id: number, name: string) {
     if (!confirm(`Delete "${name}"? The site will stop showing it on the next publish.`)) return
+
+    const images = (editing as RoomRow | null)?.images ?? []
     const { error: failure } = await supabase.from('rooms').delete().eq('id', id)
     if (failure) setError(failure.message)
     else {
+      // The row is gone, so the whole gallery has nothing pointing at it.
+      await media.purge(images)
       setEditing(null)
       load()
     }
+  }
+
+  /** Back, not Save: anything uploaded during this edit was never referenced. */
+  async function cancel() {
+    await media.discard()
+    setEditing(null)
   }
 
   /* ------------------------------------------------------------- editor --- */
@@ -138,7 +163,7 @@ export default function Rooms() {
           note={room.id ? `/rooms/${room.slug}` : 'It appears on the site after the next publish.'}
           actions={
             <>
-              <Button variant="ghost" onClick={() => setEditing(null)}>
+              <Button variant="ghost" onClick={cancel}>
                 <ArrowLeft className="size-4" />
                 Back
               </Button>
@@ -269,63 +294,27 @@ export default function Rooms() {
                 </Field>
               </div>
 
-              <Field label="Categories" hint="Which filters this room appears under.">
-                <div className="flex flex-wrap gap-2">
-                  {CATEGORIES.map((category) => {
-                    const on = room.categories.includes(category)
-                    return (
-                      <button
-                        key={category}
-                        type="button"
-                        onClick={() =>
-                          set(
-                            'categories',
-                            on
-                              ? room.categories.filter((item) => item !== category)
-                              : [...room.categories, category],
-                          )
-                        }
-                        className={`rounded-full border px-3 py-1 text-[0.8125rem] font-semibold transition-colors ${
-                          on
-                            ? 'border-transparent bg-primary text-on-primary'
-                            : 'border-line text-body hover:border-line-strong'
-                        }`}
-                      >
-                        {category}
-                      </button>
-                    )
-                  })}
-                </div>
-              </Field>
+              <KeyChips
+                label="Categories"
+                hint="Which filters this room appears under, on the rooms page and on the home page deck. Add one and it appears in both on the next publish."
+                values={room.categories}
+                options={CATEGORIES}
+                onChange={(next) => set('categories', next)}
+                addLabel="Add another"
+                placeholder="Family Room"
+              />
 
-              <Field label="Amenities" hint="Drives the amenity filter on the rooms page.">
-                <div className="flex flex-wrap gap-2">
-                  {AMENITIES.map((amenity) => {
-                    const on = room.amenities.includes(amenity)
-                    return (
-                      <button
-                        key={amenity}
-                        type="button"
-                        onClick={() =>
-                          set(
-                            'amenities',
-                            on
-                              ? room.amenities.filter((item) => item !== amenity)
-                              : [...room.amenities, amenity],
-                          )
-                        }
-                        className={`rounded-full border px-3 py-1 text-[0.8125rem] font-semibold transition-colors ${
-                          on
-                            ? 'border-transparent bg-mustard text-ink'
-                            : 'border-line text-body hover:border-line-strong'
-                        }`}
-                      >
-                        {amenity}
-                      </button>
-                    )
-                  })}
-                </div>
-              </Field>
+              <KeyChips
+                label="Amenities"
+                hint="Drives the amenity filter, and prints on the room page. The icon is worked out from the name - what you see on each chip is what the site draws."
+                values={room.amenities}
+                options={AMENITIES}
+                onChange={(next) => set('amenities', next)}
+                tone="accent"
+                withIcons
+                addLabel="Add another"
+                placeholder="Hot water"
+              />
             </Card>
 
             <Card className="space-y-4">
@@ -347,16 +336,16 @@ export default function Rooms() {
                 />
               </Field>
 
-              <Field
+              <ImageListField
                 label="Images"
-                hint="One per line. An Unsplash id (photo-1709805...) or a full URL on any CDN. Five or more: the gallery shows one large shot plus a 2x2 block. Nothing is uploaded here on purpose - see the runbook."
-              >
-                <Area
-                  rows={6}
-                  value={fromList(room.images)}
-                  onChange={(e) => set('images', toList(e.target.value))}
-                />
-              </Field>
+                values={room.images}
+                onChange={(next) => set('images', next)}
+                folder="rooms"
+                dimensions="1600 x 1200"
+                note="Cropped to 4:3 in the gallery. Five or more and the room page shows one large shot plus a 2x2 block."
+                onUploaded={media.trackUpload}
+                onRemoved={media.trackRemoval}
+              />
 
               <Field label="Total photos" hint="The number printed on the gallery button.">
                 <Text

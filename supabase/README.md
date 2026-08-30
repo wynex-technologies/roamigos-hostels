@@ -70,9 +70,39 @@ supabase link --project-ref <your-project-ref>
 supabase db push
 ```
 
-Or paste the two files in `supabase/migrations/` into the SQL editor, in
-filename order. `20260830000001_init.sql` builds the tables;
-`20260830000002_rls.sql` closes them.
+Or paste the files in `supabase/migrations/` into the SQL editor, in filename
+order. `20260830000001_init.sql` builds the tables; `20260830000002_rls.sql`
+closes them; `20260830000003_blog_body.sql` adds the journal's article text,
+which is what gives a post a page of its own at `/blog/<slug>`; `20260830000004_media_storage.sql` creates the `media` bucket the panel
+uploads images into; and `20260830000005_coupons.sql` adds the discount codes
+the booking form accepts.
+
+Those last two have to be run against an existing project too. Until the third
+is, the panel cannot save an article and `npm run sync:content` will say
+`column blog_posts.body does not exist` and keep the content it already had.
+Until the fourth is, every image upload fails with `Bucket not found`. Until
+the fifth is, the Coupons list on the Offer page cannot load.
+
+The fifth also needs the `offer` function redeployed, because that is what
+checks a typed code:
+
+```sh
+supabase functions deploy offer
+```
+
+### About that bucket
+
+It is public, which is the only way the site can fetch an image without a key -
+and it is also the reason images used to be banned from Storage entirely, since
+public means every page view is billed egress.
+
+Three things hold that down, and they are described where they are implemented
+(`admin/src/lib/media.ts`): the panel downscales and re-encodes to WebP before
+uploading, objects are named by the hash of their bytes and cached for a year,
+and removing or replacing an image deletes the object rather than orphaning it.
+
+If somebody ever adds an upload path that skips `media.ts`, the first two stop
+being true and the bill stops being small. There is one upload path on purpose.
 
 ## 3. Seed it with what the site already ships
 

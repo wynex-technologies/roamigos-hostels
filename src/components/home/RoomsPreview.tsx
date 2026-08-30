@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, Bath, BedDouble, Images, Star, Users } from 'lucide-react'
-import { categoryLabels, rooms, type Room, type RoomCategory } from '@/data/rooms'
+import { categoryOptions } from '@/components/rooms/filters'
+import { rooms, type Room, type RoomCategory } from '@/data/rooms'
 import { Photo } from '@/components/ui/Photo'
 import { Badge, Container, Section } from '@/components/ui/primitives'
 import { useReveal } from '@/lib/useReveal'
@@ -10,13 +11,9 @@ import { cn, formatINR } from '@/lib/utils'
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
 
-const filters: { key: RoomCategory | 'all'; label: string }[] = [
-  { key: 'all', label: 'All Rooms' },
-  ...(Object.keys(categoryLabels) as RoomCategory[]).map((key) => ({
-    key,
-    label: categoryLabels[key],
-  })),
-]
+/** The same list the rooms page refines by, so a category added at the front
+    desk appears on the home deck too rather than only on /rooms. */
+const filters = categoryOptions
 
 const unit = (room: Room) => (room.categories.includes('dorm') ? 'bed' : 'night')
 const capacityIcon = (room: Room) => (room.categories.includes('dorm') ? BedDouble : Users)
@@ -40,7 +37,8 @@ export function RoomsPreview() {
   /** Printed on the chips, so the rail never promises more than it shows. */
   const counts = useMemo(() => {
     const map: Record<string, number> = { all: rooms.length }
-    for (const key of Object.keys(categoryLabels) as RoomCategory[]) {
+    for (const { key } of filters) {
+      if (key === 'all') continue
       map[key] = rooms.filter((room) => room.categories.includes(key)).length
     }
     return map

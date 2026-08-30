@@ -4,7 +4,7 @@ import { CalendarDays, Minus, Plus, ShieldCheck, Tag, X } from 'lucide-react'
 import type { Room } from '@/data/rooms'
 import { site } from '@/data/site'
 import { bookingAssurances } from '@/data/content'
-import { couponValue } from '@/data/offer'
+import { checkCoupon, couponValue } from '@/data/offer'
 import { useOffer } from '@/lib/useOffer'
 import { bookingTotals, type AppliedCoupon, type BookingDraft } from '@/lib/whatsapp'
 import { addDaysISO, formatINR, todayISO } from '@/lib/utils'
@@ -68,6 +68,10 @@ export function BookingWidget({
 }) {
   const [codeInput, setCodeInput] = useState('')
   const [codeError, setCodeError] = useState('')
+  /** A coupon that is not the campaign's own is checked by the server, so this
+      is a real wait - short, but it has to be visible or the button feels
+      dead on a slow connection. */
+  const [checking, setChecking] = useState(false)
   const today = todayISO()
   const isDorm = room.categories.includes('dorm')
 
@@ -85,15 +89,19 @@ export function BookingWidget({
   const label =
     'pointer-events-none absolute top-2.5 left-4 text-[0.625rem] font-bold tracking-[0.14em] text-muted uppercase'
 
-  function applyCode(raw: string) {
+  async function applyCode(raw: string) {
     const code = raw.trim()
-    if (!code) return
-    const percent = couponValue(offer, code)
+    if (!code || checking) return
+
+    setChecking(true)
+    setCodeError('')
+    const percent = await checkCoupon(offer, code)
+    setChecking(false)
+
     if (!percent) {
       setCodeError('That code is not valid right now.')
       return
     }
-    setCodeError('')
     setCodeInput('')
     setState({ ...state, coupon: { code: code.toUpperCase(), percent } })
   }
@@ -232,7 +240,7 @@ export function BookingWidget({
                       // Enter inside the form would fire Book Now, not apply.
                       if (e.key === 'Enter') {
                         e.preventDefault()
-                        applyCode(codeInput)
+                        void applyCode(codeInput)
                       }
                     }}
                     className={`${field} uppercase`}
@@ -241,11 +249,11 @@ export function BookingWidget({
                 </div>
                 <button
                   type="button"
-                  onClick={() => applyCode(codeInput)}
-                  disabled={!codeInput.trim()}
+                  onClick={() => void applyCode(codeInput)}
+                  disabled={!codeInput.trim() || checking}
                   className="shrink-0 rounded-xl border border-line-strong px-5 text-[0.875rem] font-semibold text-heading transition-colors duration-300 hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-40"
                 >
-                  Apply
+                  {checking ? 'Checking' : 'Apply'}
                 </button>
               </div>
 
@@ -254,7 +262,7 @@ export function BookingWidget({
               ) : liveCode ? (
                 <button
                   type="button"
-                  onClick={() => applyCode(liveCode)}
+                  onClick={() => void applyCode(liveCode)}
                   className="mt-2 inline-flex items-center gap-2 text-[0.8125rem] text-muted transition-colors duration-300 hover:text-primary"
                 >
                   <Tag className="size-3.5 text-accent" />

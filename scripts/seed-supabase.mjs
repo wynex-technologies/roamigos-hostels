@@ -125,6 +125,8 @@ await upsert(
     image: post.image,
     featured: Boolean(post.featured),
     facts: post.facts ?? [],
+    // The article. Empty for a post that was only ever a card.
+    body: post.body ?? '',
     sort_order: index,
     published: true,
   })),

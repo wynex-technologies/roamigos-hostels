@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { Header } from './Header'
 import { Footer } from './Footer'
 import { OfferModal } from '@/components/offer/OfferModal'
+import { useChatIntake } from '@/lib/useChatIntake'
 
 /** Scrolls to the top on route change, or to the anchor when the URL has a hash. */
 function ScrollManager() {
@@ -23,6 +24,9 @@ function ScrollManager() {
 }
 
 export function Layout() {
+  // Every WhatsApp link on the site, recorded for the desk from one listener.
+  useChatIntake()
+
   return (
     <div className="relative flex min-h-dvh flex-col">
       <ScrollManager />

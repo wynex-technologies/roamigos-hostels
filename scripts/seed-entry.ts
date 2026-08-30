@@ -5,6 +5,7 @@
  */
 export { site } from '../src/data/site'
 export { rooms, reviews } from '../src/data/rooms'
-export { blogPosts } from '../src/data/blog'
+// The shipped copy, not the resolved one - see the note on it in `blog.ts`.
+export { shippedPosts as blogPosts } from '../src/data/blog'
 export { contactFaqs } from '../src/data/contact'
 export { offer } from '../src/data/offer'
