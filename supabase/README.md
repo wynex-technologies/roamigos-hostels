@@ -74,14 +74,32 @@ Or paste the files in `supabase/migrations/` into the SQL editor, in filename
 order. `20260830000001_init.sql` builds the tables; `20260830000002_rls.sql`
 closes them; `20260830000003_blog_body.sql` adds the journal's article text,
 which is what gives a post a page of its own at `/blog/<slug>`; `20260830000004_media_storage.sql` creates the `media` bucket the panel
-uploads images into; and `20260830000005_coupons.sql` adds the discount codes
-the booking form accepts.
+uploads images into; `20260830000005_coupons.sql` adds the discount codes
+the booking form accepts; `20260830000006_chat_intake.sql` records the guest
+submissions; and `20260831000007_page_content.sql` adds the two page documents
+behind the panel's Page settings screen.
 
-Those last two have to be run against an existing project too. Until the third
+The later ones have to be run against an existing project too. Until the third
 is, the panel cannot save an article and `npm run sync:content` will say
 `column blog_posts.body does not exist` and keep the content it already had.
 Until the fourth is, every image upload fails with `Bucket not found`. Until
-the fifth is, the Coupons list on the Offer page cannot load.
+the fifth is, the Coupons list on the Offer page cannot load. Until the seventh
+is, Page settings cannot load and `npm run sync:content` says
+`Could not find the table 'public.page_content'` - the site keeps rendering the
+Home and About copy it shipped with, which is exactly what it should do.
+
+### Why the pages are one jsonb document each
+
+Everything else in the schema is a table because it is a list of things. A page
+is not a list; it is one shaped document whose sections each hold a different
+set of fields, and modelling that as columns would mean a migration every time
+a section gains a line of copy.
+
+So the row holds the document and `shared/page-content.ts` holds the shape and
+the shipped copy. The site deep-merges the row over those defaults, which is
+what makes a page that has never been edited store `{}` and render exactly what
+the bundle shipped, and a field added to the shape later need no migration and
+no backfill.
 
 The fifth also needs the `offer` function redeployed, because that is what
 checks a typed code:

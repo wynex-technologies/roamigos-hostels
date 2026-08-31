@@ -1,35 +1,19 @@
 /**
- * The panel that opens the About page. Everything numeric here is derived from
- * `site` rather than typed out again, so the page cannot drift away from the
- * footer and the homepage.
+ * The colophon strip that closes the About panel.
+ *
+ * Everything numeric here is derived from `rooms` and `site` rather than typed
+ * out again, so the page cannot drift away from the footer and the homepage -
+ * which is why this is the one part of the About page the panel does not offer
+ * as editable copy. The prose beside it lives in `shared/page-content.ts` and
+ * is edited under Page settings.
+ *
+ * Four segments, hairline-divided - the same object the homepage value row is
+ * built from, so the About page reads as part of the same house.
  */
 
 import { rooms } from '@/data/rooms'
 import { site } from '@/data/site'
 
-export const aboutIntro = {
-  eyebrow: 'About the house',
-
-  /** The plate beside the copy - a common room, not a bed; this is the house. */
-  image: 'photo-1648960456182-00643d5d20eb',
-
-  /** The opening clause is set in maroon; the rest carries in heading colour. */
-  leadAccent: 'Roamigos is a hostel in Pan Bazar,',
-  leadRest: ' ten minutes off the Brahmaputra, run on one idea: the room is the easy part.',
-
-  body: [
-    'Clean beds, hot water, a locker that actually locks and somebody awake at the desk at three in the morning - that is the floor, not the offer. What people come back for is the common room at ten, the trek somebody talked them into, and the fact that a solo check-in rarely stays solo past dinner.',
-    'There is no booking engine here and no deposit. You message the desk, a person answers, and you pay when you walk in. That is how the price stays honest and the plans stay changeable, which on this kind of trip is most of what you need.',
-  ],
-
-  signoff: { by: 'The front desk', place: site.address.line2 },
-}
-
-/**
- * The colophon strip that closes the panel. Four segments, hairline-divided -
- * the same object the homepage value row is built from, so the About page reads
- * as part of the same house.
- */
 export const aboutFacts = [
   // One house - so the segment counts what is actually in it.
   { label: 'Rooms & dorms', value: String(rooms.length), icon: 'map-pin' },

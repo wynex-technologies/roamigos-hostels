@@ -1,4 +1,4 @@
-import { valueProps } from '@/data/content'
+import { homePage } from '@/data/pages'
 import { Icon } from '@/components/ui/Icon'
 
 /**
@@ -15,7 +15,7 @@ export function ValueProps() {
     <section className="relative z-20 -mt-14 hidden pb-12 sm:block lg:-mt-20 lg:pb-16">
       <div className="container-wide">
         <ul className="card-raised grid overflow-hidden shadow-raised-lg divide-y divide-line sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-5">
-          {valueProps.map((prop, i) => (
+          {homePage.valueProps.map((prop, i) => (
             <li
               key={prop.title}
               className={`group flex flex-col items-center px-5 py-7 text-center transition-colors duration-300 hover:bg-surface-2 lg:px-4 lg:py-8 ${

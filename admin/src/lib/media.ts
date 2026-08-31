@@ -41,7 +41,7 @@ export const MAX_INPUT_BYTES = 15 * 1024 * 1024
 export const ACCEPT = 'image/jpeg,image/png,image/webp,image/avif'
 
 /** Where an image belongs, which is only used to keep the bucket browsable. */
-export type MediaFolder = 'rooms' | 'journal' | 'offer'
+export type MediaFolder = 'rooms' | 'journal' | 'offer' | 'pages'
 
 export function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`

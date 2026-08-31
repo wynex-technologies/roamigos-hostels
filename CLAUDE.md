@@ -244,6 +244,29 @@ Three things follow, and all three are load-bearing:
   They are what builds with no credentials, no network or an empty table. Keep
   them real and keep them current.
 
+### The Home and About pages are editable, and only their words are
+The panel's **Page settings** screen edits two documents - one per page - stored
+in `page_content` as jsonb and travelling to the site the same way the rooms do.
+`shared/page-content.ts` declares the shape and holds the shipped copy; the site
+deep-merges the published document over it in `src/data/pages.ts`, and the panel
+fills its form the same way and saves the result back whole.
+
+Three things follow:
+
+- **The document carries copy and image references, never design.** Not a class
+  name, not a colour, not a size. A section heading is stored as the pieces the
+  markup already sets differently - the plain line, the italic accent word, the
+  text either side of it - so the desk can rewrite the words and cannot disturb
+  the type. Keep it that way: the moment a class name goes into that document,
+  the panel can break the page.
+- **A field the panel does not draw an input for still survives.** Save writes
+  the merged document, so a hero slide's crop hint and a card's `key` round-trip
+  untouched. Adding a field to the shape needs no migration and no backfill -
+  the default answers until somebody edits it.
+- **The About colophon is deliberately not in it.** Its four figures are derived
+  from the room list and the settings row (`src/data/about.ts`), so the page
+  cannot drift away from the footer and the homepage.
+
 ### One mapping, two callers
 `shared/content-shape.ts` holds the PostgREST queries and the row-to-site
 mapping. `scripts/sync-content.ts` uses it at build time; `admin/src/lib/publish.ts`
@@ -313,7 +336,11 @@ Everything else is a file; these two are live because they have to be.
 
 - `src/data/site.ts` - brand info, contact, nav, footer, WhatsApp number. **Edit content here, not in components.**
 - `src/data/rooms.ts` - all rooms + full detail content
-- `src/data/content.ts` - features, activities, amenities, reviews, blog
+- `src/data/content.ts` - the rooms-listing and booking-widget rows. What the
+  home page prints is **not** here any more - see `shared/page-content.ts`
+- `src/data/pages.ts` - the Home and About pages as the site renders them: the
+  published document merged over the shipped defaults. Every section on those
+  two pages reads its copy and its photographs from here
 - `src/data/offer.ts` - the welcome-offer popup (copy, image, coupon, dates) plus
   `fetchOffer()`, which lets the admin panel serve the same shape as JSON from
   `VITE_OFFER_ENDPOINT` and override the shipped defaults without a deploy
@@ -329,4 +356,9 @@ Everything else is a file; these two are live because they have to be.
 - `admin/` - the panel. Its own app, its own build, its own README
 - `shared/content-shape.ts` - the queries and the row mapping, shared by the
   build and the Publish button. One copy, on purpose
+- `shared/page-content.ts` - the Home and About page shape, their shipped copy,
+  and the merge. Shared by the site and the panel's Page settings screen, for
+  the same reason `content-shape.ts` is shared
+- `shared/icon-names.ts` - the icon names a data row may carry. `Icon.tsx` is
+  typed against it and the panel offers exactly that list
 - `hostinger/` - `.htaccess`, `api/publish.php` and the deployment runbook

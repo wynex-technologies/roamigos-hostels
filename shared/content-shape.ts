@@ -38,6 +38,7 @@ export const QUERIES = {
     'blog_posts?select=slug,title,excerpt,category,author,published_on,read_time,image,featured,facts,body' +
     '&published=is.true&order=published_on.desc',
   faqs: 'faqs?select=question,answer&published=is.true&order=sort_order.asc',
+  pages: 'page_content?select=page,data&order=page.asc',
   settings:
     'site_settings?select=whatsapp_number,phone_display,email,address_line1,address_line2,' +
     'address_line3,coords,map_url,check_in,check_out,stat_guests,stat_rating,stat_reviews,socials' +
@@ -114,6 +115,21 @@ export const shape: Record<ContentKey, (rows: Row[]) => unknown> = {
 
   faqs: (rows) => rows.map((row) => ({ q: row.question, a: row.answer })),
 
+  /**
+   * `[{ page: 'home', data }, ...]` to `{ home: data, about: data }`.
+   *
+   * The documents are passed through exactly as stored. Nothing here knows
+   * what a section is called, which is the point: `src/data/pages.ts` owns the
+   * shape and deep-merges these over its own defaults, so a field added there
+   * needs no change in this file and no migration behind it.
+   */
+  pages: (rows) =>
+    Object.fromEntries(
+      rows
+        .filter((row) => row.data && typeof row.data === 'object')
+        .map((row) => [row.page, row.data]),
+    ),
+
   settings: (rows) => {
     const row = rows[0]
     if (!row) return null
@@ -148,4 +164,10 @@ export const shape: Record<ContentKey, (rows: Row[]) => unknown> = {
  * through and blanking a page.
  */
 export const isEmpty = (value: unknown) =>
-  value === null || value === undefined || (Array.isArray(value) && value.length === 0)
+  value === null ||
+  value === undefined ||
+  (Array.isArray(value) && value.length === 0) ||
+  // The page documents come back as an object rather than a list, and a
+  // project whose `page_content` table has not been created yet answers with
+  // nothing at all. `{}` means the same thing an empty table does.
+  (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0)

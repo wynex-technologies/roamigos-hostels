@@ -3,7 +3,8 @@ import { Expand } from 'lucide-react'
 import { Photo } from '@/components/ui/Photo'
 import { Lightbox } from './Lightbox'
 import { Container, Eyebrow, SectionTitle } from '@/components/ui/primitives'
-import { galleryAlbums, galleryShots, type AlbumKey } from '@/data/gallery'
+import { type AlbumKey } from '@/data/gallery'
+import { aboutPage } from '@/data/pages'
 import { useReveal } from '@/lib/useReveal'
 import { cn } from '@/lib/utils'
 
@@ -17,6 +18,11 @@ const footprint = {
   tall: 'row-span-3',
   wide: 'row-span-2 sm:col-span-2',
 } as const
+
+/** Everything on this section that the front desk can edit from the panel. */
+const section = aboutPage.wall
+const galleryAlbums = section.albums
+const galleryShots = section.shots
 
 export function GalleryWall() {
   const [album, setAlbum] = useState<AlbumKey | 'all'>('all')
@@ -35,11 +41,11 @@ export function GalleryWall() {
       <Container>
         <div ref={header} className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-xl">
-            <Eyebrow>The wall</Eyebrow>
-            <SectionTitle className="mt-3" underline="frame">
-              Pick an album,
+            <Eyebrow>{section.eyebrow}</Eyebrow>
+            <SectionTitle className="mt-3" underline={section.underline}>
+              {section.titleLine1}
               <br />
-              then pick a
+              {section.titleLine2}
             </SectionTitle>
             <p className="mt-5 text-[1.0625rem] leading-relaxed text-pretty">{current.note}.</p>
           </div>

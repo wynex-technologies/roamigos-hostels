@@ -1,5 +1,5 @@
 import { ArrowUpRight, Quote, ShieldCheck, Star } from 'lucide-react'
-import { ratingBreakdown, whyChooseUs } from '@/data/content'
+import { homePage } from '@/data/pages'
 import { reviews } from '@/data/rooms'
 import { site } from '@/data/site'
 import { ButtonLink } from '@/components/ui/Button'
@@ -9,6 +9,9 @@ import { useReveal } from '@/lib/useReveal'
 
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
+
+/** Everything on this section that the front desk can edit from the panel. */
+const section = homePage.why
 
 /** The quote beside the score - the first full-marks review, never a written one. */
 const verdict = reviews.find((review) => review.rating === 5) ?? reviews[0]
@@ -43,7 +46,7 @@ export function WhyChooseUs() {
         <div ref={header}>
           <p style={lag(0)} className="reveal-rise eyebrow flex items-center gap-2.5">
             <span aria-hidden className="size-1.5 rotate-45 bg-accent-soft" />
-            Why Roamigos
+            {section.eyebrow}
           </p>
 
           <div className="mt-6 flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between lg:gap-14">
@@ -53,19 +56,17 @@ export function WhyChooseUs() {
                 reads as emphasis rather than as type set too large. */}
             <h2 className="max-w-3xl font-display text-[clamp(2.4rem,5.4vw,4.25rem)] leading-[1.02] font-extrabold tracking-[-0.02em]">
               <span style={lag(0.14)} className="reveal-line">
-                <span className="text-[0.72em] font-medium text-muted">
-                  Plenty of beds in town.
-                </span>
+                <span className="text-[0.72em] font-medium text-muted">{section.titleQuiet}</span>
               </span>
               <span style={lag(0.26)} className="reveal-line">
                 <span>
-                  Here is why{' '}
+                  {section.heading.lead}
                   {/* Maroon word, mustard stroke - the two brand colours doing
                       the emphasis so the size does not have to do all of it. */}
                   <em className="font-semibold text-primary italic underline decoration-accent-soft decoration-[0.075em] underline-offset-[0.06em]">
-                    this
-                  </em>{' '}
-                  one.
+                    {section.heading.accent}
+                  </em>
+                  {section.heading.tail}
                 </span>
               </span>
             </h2>
@@ -74,8 +75,7 @@ export function WhyChooseUs() {
               style={lag(0.42)}
               className="reveal-rise max-w-sm text-[1.0625rem] leading-relaxed text-muted text-pretty lg:pb-2"
             >
-              We are not the only hostel near the Brahmaputra. So here is the difference in plain
-              terms - and the scores our guests put against it.
+              {section.copy}
             </p>
           </div>
 
@@ -92,7 +92,7 @@ export function WhyChooseUs() {
         >
           {/* ========================= the ledger ========================= */}
           <ol>
-            {whyChooseUs.map((reason, i) => {
+            {section.reasons.map((reason, i) => {
               const numeral = String(i + 1).padStart(2, '0')
 
               return (
@@ -195,7 +195,7 @@ export function WhyChooseUs() {
                 <div className="relative">
                   <p className="eyebrow flex items-center gap-2.5">
                     <span aria-hidden className="size-1.5 rotate-45 bg-mustard" />
-                    The guest verdict
+                    {section.verdictEyebrow}
                   </p>
 
                   <div className="mt-5 flex items-end gap-5">
@@ -221,7 +221,7 @@ export function WhyChooseUs() {
                   The bars ride the same `--in` as the rest of the block, so they
                   fill as the panel arrives rather than on a timer of their own. */}
               <ul className="space-y-4 border-b border-line px-7 py-7">
-                {ratingBreakdown.map((row, i) => (
+                {section.breakdown.map((row, i) => (
                   <li key={row.label}>
                     <div className="flex items-baseline justify-between gap-4">
                       <span className="text-[0.8125rem] font-semibold text-heading">
@@ -276,7 +276,7 @@ export function WhyChooseUs() {
 
             <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
               <ButtonLink to="/rooms">
-                See rooms and rates
+                {section.ctaLabel}
                 <ArrowUpRight className="size-4" />
               </ButtonLink>
               <span className="text-[0.8125rem] text-muted">No prepayment, pay at check-in.</span>

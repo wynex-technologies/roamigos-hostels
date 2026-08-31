@@ -2,12 +2,16 @@ import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import { Container, Section } from '@/components/ui/primitives'
-import { homeBanner } from '@/data/content'
+import { homePage } from '@/data/pages'
 import { photo, photoSet } from '@/lib/images'
 import { useReveal } from '@/lib/useReveal'
 
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
+
+/** Everything on this section that the front desk can edit from the panel. */
+const offers = homePage.offers
+const homeBanner = offers.banner
 
 /**
  * Offers and promotions.
@@ -18,7 +22,7 @@ const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProper
  *
  * Phones get their own crop through `<picture>` rather than a shrunk copy of the
  * wide file, and only the matching one is ever fetched. Everything is set in
- * `homeBanner` (`src/data/content.ts`).
+ * the Home page document, edited under Page settings in the panel.
  */
 export function PromoBanner() {
   const header = useReveal<HTMLDivElement>(0.3)
@@ -99,31 +103,32 @@ export function PromoBanner() {
                 className="animate-dot-halo absolute size-2 rounded-full bg-mustard"
               />
             </span>
-            Offers &amp; promotions
+            {offers.eyebrow}
           </p>
 
           <div className="mt-6 flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between lg:gap-14">
             <h2 className="max-w-2xl font-display text-[clamp(2rem,4.6vw,3.4rem)] leading-[1.08] font-semibold">
               <span style={lag(0.14)} className="reveal-line">
-                <span>Deals worth</span>
+                <span>{offers.heading.line1}</span>
               </span>
               <span style={lag(0.26)} className="reveal-line">
                 <span>
-                  <em className="font-normal text-accent-soft italic">packing</em> for.
+                  {offers.heading.lead}
+                  <em className="font-normal text-accent-soft italic">{offers.heading.accent}</em>
+                  {offers.heading.tail}
                 </span>
               </span>
             </h2>
 
             <div style={lag(0.42)} className="reveal-rise max-w-md lg:text-right">
               <p className="text-[1.0625rem] leading-relaxed text-muted text-pretty">
-                Book with us and not a listing site - what is running this month is below, and
-                the desk applies it on WhatsApp before you pay a rupee.
+                {offers.copy}
               </p>
               <Link
                 to="/rooms"
                 className="group/link mt-4 inline-flex items-center gap-2 text-[0.9375rem] font-semibold text-primary transition-colors duration-300 hover:text-primary-hover"
               >
-                Browse rooms &amp; beds
+                {offers.linkLabel}
                 <ArrowUpRight className="size-4 transition-transform duration-300 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
               </Link>
             </div>

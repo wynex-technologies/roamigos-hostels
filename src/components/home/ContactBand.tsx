@@ -1,5 +1,6 @@
 import { ArrowRight, Mail, MapPin, MessageCircle, Phone } from 'lucide-react'
 import { site } from '@/data/site'
+import { homePage } from '@/data/pages'
 import { enquiryUrl } from '@/lib/whatsapp'
 import { ButtonAnchor, ButtonLink } from '@/components/ui/Button'
 import { Container, Section } from '@/components/ui/primitives'
@@ -8,6 +9,9 @@ import { useReveal } from '@/lib/useReveal'
 
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
+
+/** Everything on this section that the front desk can edit from the panel. */
+const section = homePage.contact
 
 /**
  * The homepage's closing band. Same slab, same light and same micro-interactions
@@ -33,7 +37,7 @@ export function ContactBand() {
                   />
                 </span>
                 <p className="text-[0.6875rem] font-bold tracking-[0.28em] text-mustard uppercase">
-                  Ready when you are
+                  {section.eyebrow}
                 </p>
                 <span
                   aria-hidden
@@ -50,17 +54,17 @@ export function ContactBand() {
                     colours in the order the sentence needs them. Kept to the first
                     three words so the red never has to hold a whole line on a
                     near-black ground. */}
-                <span className="text-maroon">Pick a bed.</span> Send one message.
+                <span className="text-maroon">{section.titleAccent}</span>
+                {section.titleRest}
                 <br />
-                <span className="text-sheen">That&apos;s the whole booking.</span>
+                <span className="text-sheen">{section.titleSheen}</span>
               </h2>
 
               <p
                 style={lag(0.16)}
                 className="reveal-rise mt-6 max-w-lg text-[1.0625rem] leading-relaxed text-gray-200 text-pretty"
               >
-                No prepayment, no long forms. Choose your room, hit Book Now and your dates land
-                straight in our WhatsApp - we confirm within minutes and you pay at check-in.
+                {section.copy}
               </p>
 
               <div style={lag(0.24)} className="reveal-rise mt-9 flex flex-wrap gap-3">
@@ -70,7 +74,7 @@ export function ContactBand() {
                   size="lg"
                   className="gloss-sweep group/pri hover:-translate-y-0.5 hover:shadow-[0_18px_38px_-14px] hover:shadow-gold/70"
                 >
-                  Browse Rooms &amp; Beds
+                  {section.primaryCta}
                   <ArrowRight className="size-4 transition-transform duration-300 group-hover/pri:translate-x-1" />
                 </ButtonLink>
                 <ButtonAnchor
@@ -82,7 +86,7 @@ export function ContactBand() {
                   className="gloss-sweep group/chat border border-cream/25 bg-cream/10 text-cream hover:-translate-y-0.5 hover:border-mustard/70 hover:bg-cream/15"
                 >
                   <MessageCircle className="size-4 transition-transform duration-300 group-hover/chat:-rotate-12" />
-                  Chat on WhatsApp
+                  {section.secondaryCta}
                 </ButtonAnchor>
               </div>
             </div>

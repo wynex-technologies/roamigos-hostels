@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowUpRight, Bath, BedDouble, Images, Star, Users } from 'lucide-react'
 import { categoryOptions } from '@/components/rooms/filters'
 import { rooms, type Room, type RoomCategory } from '@/data/rooms'
+import { homePage } from '@/data/pages'
 import { Photo } from '@/components/ui/Photo'
 import { Badge, Container, Section } from '@/components/ui/primitives'
 import { useReveal } from '@/lib/useReveal'
@@ -10,6 +11,9 @@ import { cn, formatINR } from '@/lib/utils'
 
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
+
+/** Everything on this section that the front desk can edit from the panel. */
+const section = homePage.rooms
 
 /** The same list the rooms page refines by, so a category added at the front
     desk appears on the home deck too rather than only on /rooms. */
@@ -77,17 +81,19 @@ export function RoomsPreview() {
         <div ref={header}>
           <p style={lag(0)} className="reveal-rise eyebrow flex items-center gap-2.5">
             <span aria-hidden className="size-1.5 rotate-45 bg-accent-soft" />
-            Rooms &amp; Beds
+            {section.eyebrow}
           </p>
 
           <div className="mt-6 flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between lg:gap-14">
             <h2 className="max-w-2xl font-display text-[clamp(2rem,4.6vw,3.4rem)] leading-[1.08] font-semibold">
               <span style={lag(0.14)} className="reveal-line">
-                <span>A bed for tonight,</span>
+                <span>{section.heading.line1}</span>
               </span>
               <span style={lag(0.26)} className="reveal-line">
                 <span>
-                  a <em className="font-normal text-accent-soft italic">room</em> for the week.
+                  {section.heading.lead}
+                  <em className="font-normal text-accent-soft italic">{section.heading.accent}</em>
+                  {section.heading.tail}
                 </span>
               </span>
             </h2>
@@ -96,8 +102,7 @@ export function RoomsPreview() {
               style={lag(0.42)}
               className="reveal-rise max-w-sm text-[1.0625rem] leading-relaxed text-muted text-pretty lg:pb-2"
             >
-              Curtained pod bunks, private doubles, a family room that takes four. Eight ways to
-              stay - all of them on the same warm floor.
+              {section.copy}
             </p>
           </div>
 
@@ -148,7 +153,7 @@ export function RoomsPreview() {
             className="group inline-flex shrink-0 items-center gap-3 text-[0.9375rem] font-semibold text-heading"
           >
             <span className="relative">
-              Browse all rooms
+              {section.browseLabel}
               <span
                 aria-hidden
                 className="absolute -bottom-1 left-0 block h-px w-full origin-left scale-x-0 bg-accent-soft transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:scale-x-100"

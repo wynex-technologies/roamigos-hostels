@@ -25,8 +25,16 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react'
+import type { IconName } from '@shared/icon-names'
 
-/** Data files reference icons by name so they stay free of JSX. */
+/**
+ * Data files reference icons by name so they stay free of JSX.
+ *
+ * The names themselves are declared in `shared/icon-names.ts`, because the
+ * admin panel writes some of these rows and offers exactly that list in a menu.
+ * `satisfies Record<IconName, ...>` is what keeps the two honest: add a name
+ * there without mapping it here and this file stops compiling.
+ */
 const icons = {
   award: Award,
   bike: Bike,
@@ -52,9 +60,9 @@ const icons = {
   washing: WashingMachine,
   wifi: Wifi,
   zap: Zap,
-} satisfies Record<string, LucideIcon>
+} satisfies Record<IconName, LucideIcon>
 
-export type IconName = keyof typeof icons
+export type { IconName }
 
 export function Icon({ name, className }: { name: string; className?: string }) {
   const Component = icons[name as IconName] ?? Sparkles

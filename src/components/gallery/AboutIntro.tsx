@@ -1,4 +1,4 @@
-import { aboutFacts, aboutIntro as a } from '@/data/about'
+import { aboutPage, aboutPageFacts } from '@/data/pages'
 import { site } from '@/data/site'
 import { Photo } from '@/components/ui/Photo'
 import { Wordmark } from '@/components/brand/Wordmark'
@@ -8,6 +8,9 @@ import { useReveal } from '@/lib/useReveal'
 
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
+
+/** Everything on this section that the front desk can edit from the panel. */
+const a = aboutPage.intro
 
 /**
  * Who the house is, as a bento.
@@ -24,8 +27,8 @@ export function AboutIntro() {
   const block = useReveal<HTMLDivElement>(0.15)
 
   // The last fact goes in the filled cell; the rest take a plain cell each.
-  const desk = aboutFacts[aboutFacts.length - 1]
-  const rest = aboutFacts.slice(0, -1)
+  const desk = aboutPageFacts[aboutPageFacts.length - 1]
+  const rest = aboutPageFacts.slice(0, -1)
 
   return (
     <section id="about" className="scroll-mt-24 bg-canvas py-14 sm:py-16 lg:py-20">
@@ -57,9 +60,9 @@ export function AboutIntro() {
 
             <p className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line pt-6 text-[0.6875rem] font-bold tracking-[0.18em] text-muted uppercase">
               <span aria-hidden className="size-1.5 rotate-45 bg-maroon" />
-              {a.signoff.by}
+              {a.signoffBy}
               <span aria-hidden className="h-px w-7 bg-line-strong" />
-              {a.signoff.place}
+              {a.signoffPlace}
             </p>
           </div>
 
@@ -73,7 +76,7 @@ export function AboutIntro() {
               width={800}
               widths={[400, 600, 800]}
               sizes="(min-width: 1024px) 22rem, 100vw"
-              alt="The Roamigos common room in Pan Bazar"
+              alt={a.imageAlt}
               loading="lazy"
               decoding="async"
               className="aspect-16/10 size-full object-cover lg:absolute lg:inset-0 lg:aspect-auto"

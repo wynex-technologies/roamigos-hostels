@@ -2,17 +2,20 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Photo } from '@/components/ui/Photo'
-import { promos, showcase, type ShowcaseCard } from '@/data/content'
+import { homePage, showcaseDeck, type ShowcaseEntry } from '@/data/pages'
 import { useReveal } from '@/lib/useReveal'
 
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
 
+/** Everything on this section that the front desk can edit from the panel. */
+const section = homePage.destinations
+
 /** Places first, then whatever offers are running - one deck, one rotation. */
-const cards: ShowcaseCard[] = [...showcase, ...promos]
+const cards: ShowcaseEntry[] = showcaseDeck
 
 /** Only the first row's worth of cards fans out; the rest wait off-stage. */
-const DEAL_COUNT = showcase.length
+const DEAL_COUNT = section.cards.length
 /** Middle of that row - cards fan outwards from here. */
 const CENTRE = (DEAL_COUNT - 1) / 2
 
@@ -236,7 +239,7 @@ export function Destinations() {
             className="reveal-rise eyebrow flex shrink-0 items-center gap-2.5 whitespace-nowrap"
           >
             <span aria-hidden className="size-1.5 rotate-45 bg-accent-soft" />
-            Guwahati &amp; the house
+            {section.eyebrow}
             <span aria-hidden className="size-1.5 rotate-45 bg-accent-soft" />
           </span>
           <span
@@ -249,11 +252,13 @@ export function Destinations() {
         {/* Two masked lines - the display type rises out from behind its own edge. */}
         <h2 className="mx-auto mt-7 max-w-4xl text-center font-display text-[clamp(2.1rem,5vw,4rem)] leading-[1.08] font-semibold">
           <span style={lag(0.18)} className="reveal-line">
-            <span>Your whole trip starts</span>
+            <span>{section.heading.line1}</span>
           </span>
           <span style={lag(0.32)} className="reveal-line">
             <span>
-              at the <em className="font-normal text-accent-soft italic">front door</em>.
+              {section.heading.lead}
+              <em className="font-normal text-accent-soft italic">{section.heading.accent}</em>
+              {section.heading.tail}
             </span>
           </span>
         </h2>
@@ -271,9 +276,7 @@ export function Destinations() {
           className="reveal-rise mt-7 flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:justify-between"
         >
           <p className="max-w-md text-center text-[1.0625rem] leading-relaxed text-muted text-pretty sm:text-left">
-            The river at sunset, tea trails an hour out, and a common room that fills
-            up by nine. Five reasons most people book a second night before the first
-            one ends.
+            {section.copy}
           </p>
 
           <Link
@@ -281,7 +284,7 @@ export function Destinations() {
             className="group inline-flex shrink-0 items-center gap-3 text-[0.9375rem] font-semibold text-heading"
           >
             <span className="relative">
-              Browse rooms &amp; beds
+              {section.linkLabel}
               {/* Underline that runs out from the left on hover. */}
               <span
                 aria-hidden

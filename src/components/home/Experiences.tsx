@@ -1,5 +1,5 @@
 import { ArrowUpRight } from 'lucide-react'
-import { experiences } from '@/data/content'
+import { homePage } from '@/data/pages'
 import { Photo } from '@/components/ui/Photo'
 import { Container, Section } from '@/components/ui/primitives'
 import { Icon } from '@/components/ui/Icon'
@@ -8,6 +8,9 @@ import { cn } from '@/lib/utils'
 
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
+
+/** Everything on this section that the front desk can edit from the panel. */
+const section = homePage.experiences
 
 /**
  * Mosaic footprint, by position in the data. The opening tile takes a quarter of
@@ -41,7 +44,7 @@ export function Experiences() {
               className="reveal-rise eyebrow flex shrink-0 items-center gap-2.5 whitespace-nowrap"
             >
               <span aria-hidden className="size-1.5 rotate-45 bg-accent-soft" />
-              More than a stay
+              {section.eyebrow}
               <span aria-hidden className="size-1.5 rotate-45 bg-accent-soft" />
             </span>
             <span
@@ -53,11 +56,13 @@ export function Experiences() {
 
           <h2 className="mt-7 font-display text-[clamp(2rem,4.6vw,3.4rem)] leading-[1.08] font-semibold">
             <span style={lag(0.2)} className="reveal-line">
-              <span>Nobody remembers</span>
+              <span>{section.heading.line1}</span>
             </span>
             <span style={lag(0.32)} className="reveal-line">
               <span>
-                the <em className="font-normal text-accent-soft italic">bed</em>.
+                {section.heading.lead}
+                <em className="font-normal text-accent-soft italic">{section.heading.accent}</em>
+                {section.heading.tail}
               </span>
             </span>
           </h2>
@@ -66,13 +71,12 @@ export function Experiences() {
             style={lag(0.46)}
             className="reveal-rise mt-6 text-[1.0625rem] leading-relaxed text-muted text-pretty"
           >
-            They remember the bonfire that ran past two, the trek somebody talked them into, and
-            the six strangers at breakfast who are now the group chat.
+            {section.copy}
           </p>
         </div>
 
         <ul className="mt-12 grid gap-4 sm:grid-cols-2 sm:gap-5 lg:mt-16 lg:auto-rows-[13.5rem] lg:grid-cols-4">
-          {experiences.map((item, i) => {
+          {section.items.map((item, i) => {
             const featured = i === 0
             return (
               <li key={item.title} className={cn('h-64 sm:h-72 lg:h-auto', spans[i])}>

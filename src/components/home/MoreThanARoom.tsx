@@ -1,6 +1,6 @@
 import { ArrowUpRight, MessageCircle, Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { commonSpaceImages, roomPerks } from '@/data/content'
+import { homePage } from '@/data/pages'
 import { site } from '@/data/site'
 import { Photo } from '@/components/ui/Photo'
 import { ButtonLink } from '@/components/ui/Button'
@@ -12,13 +12,16 @@ import { useReveal } from '@/lib/useReveal'
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
 
+/** Everything on this section that the front desk can edit from the panel. */
+const section = homePage.stay
+
 /**
  * The house itself, on one raised panel: a photograph mosaic with the guest
  * ticket floating over the seam on the left, and everything a room comes with
  * - as chips, not a bare icon row - on the right.
  */
 export function MoreThanARoom() {
-  const [lead, ...rest] = commonSpaceImages
+  const [lead, ...rest] = section.images
   const block = useReveal<HTMLDivElement>(0.15)
 
   return (
@@ -79,16 +82,18 @@ export function MoreThanARoom() {
             <div>
               <p style={lag(0.08)} className="reveal-rise eyebrow flex items-center gap-2.5">
                 <span aria-hidden className="size-1.5 rotate-45 bg-accent-soft" />
-                What every stay includes
+                {section.eyebrow}
               </p>
 
               <h2 className="mt-5 font-display text-[clamp(1.85rem,3.6vw,2.75rem)] leading-[1.1] font-semibold">
                 <span style={lag(0.18)} className="reveal-line">
-                  <span>More than</span>
+                  <span>{section.heading.line1}</span>
                 </span>
                 <span style={lag(0.28)} className="reveal-line">
                   <span>
-                    just a <em className="font-normal text-accent-soft italic">room</em>.
+                    {section.heading.lead}
+                    <em className="font-normal text-accent-soft italic">{section.heading.accent}</em>
+                    {section.heading.tail}
                   </span>
                 </span>
               </h2>
@@ -97,13 +102,11 @@ export function MoreThanARoom() {
                 style={lag(0.4)}
                 className="reveal-rise mt-5 max-w-lg text-[1.0625rem] leading-relaxed text-muted text-pretty"
               >
-                Hot water at six in the morning, a desk that answers at two in the night, and a
-                common room that fills up before dinner. The small things, handled - so the trip
-                gets your whole attention.
+                {section.copy}
               </p>
 
               <ul style={lag(0.5)} className="reveal-rise mt-8 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-                {roomPerks.map((perk) => (
+                {section.perks.map((perk) => (
                   <li
                     key={perk.title}
                     className="flex flex-col items-start gap-2 rounded-xl border border-line bg-surface-2/70 px-3 py-3 transition-[border-color,background-color] duration-300 hover:border-line-strong hover:bg-surface-2 sm:flex-row sm:items-center sm:gap-3 sm:px-3.5"
@@ -135,12 +138,12 @@ export function MoreThanARoom() {
                     className="inline-flex items-center gap-1.5 font-semibold text-green-deep transition-colors hover:text-green dark:text-cream"
                   >
                     <MessageCircle className="size-4" />
-                    Ask us anything
+                    {section.askLabel}
                   </a>
                 </div>
 
                 <ButtonLink to="/rooms" className="self-start sm:self-auto">
-                  View all rooms
+                  {section.ctaLabel}
                   <ArrowUpRight className="size-4" />
                 </ButtonLink>
               </div>
@@ -150,14 +153,14 @@ export function MoreThanARoom() {
 
         {/* A quiet way onward, so the panel does not dead-end the page. */}
         <p className="mt-6 text-center text-[0.8125rem] text-muted">
-          Staying a while?{' '}
+          {section.footNote.before}{' '}
           <Link
             to="/rooms"
             className="font-semibold text-heading underline decoration-accent-soft decoration-2 underline-offset-4 transition-colors hover:text-primary"
           >
-            Long-stay rates
+            {section.footNote.link}
           </Link>{' '}
-          start at a week.
+          {section.footNote.after}
         </p>
       </Container>
     </section>

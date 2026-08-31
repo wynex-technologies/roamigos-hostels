@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { CalendarDays, Search, Sparkles, Users } from 'lucide-react'
 import { Wordmark } from '@/components/brand/Wordmark'
 import { ButtonAnchor, ButtonLink } from '@/components/ui/Button'
-import { heroSlides } from '@/data/content'
-import { site } from '@/data/site'
+import { homePage } from '@/data/pages'
 import { Photo } from '@/components/ui/Photo'
 import { enquiryUrl } from '@/lib/whatsapp'
 import { addDaysISO, todayISO } from '@/lib/utils'
+
+/** Everything on this section that the front desk can edit from the panel. */
+const hero = homePage.hero
 
 function AvailabilityCard() {
   const navigate = useNavigate()
@@ -38,17 +40,15 @@ function AvailabilityCard() {
     <div className="relative">
       <span className="absolute -top-3.5 -left-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-mustard px-3.5 py-1.5 text-[0.6875rem] font-bold tracking-wide text-ink uppercase shadow-warm sm:-left-4">
         <Sparkles className="size-3.5" />
-        Best rates guaranteed
+        {hero.searchBadge}
       </span>
 
       <form
         onSubmit={search}
         className="card-surface w-full max-w-lg space-y-3.5 p-7 shadow-lift sm:p-8"
       >
-        <h2 className="font-display text-[1.75rem] leading-tight font-bold">Check Availability</h2>
-        <p className="!mt-1.5 pb-2 text-[0.9375rem] text-muted">
-          Pick your dates - we confirm on WhatsApp in minutes.
-        </p>
+        <h2 className="font-display text-[1.75rem] leading-tight font-bold">{hero.searchTitle}</h2>
+        <p className="!mt-1.5 pb-2 text-[0.9375rem] text-muted">{hero.searchNote}</p>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="relative">
@@ -105,7 +105,7 @@ function AvailabilityCard() {
           className="mt-1 inline-flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-on-primary transition-[background-color,transform] hover:bg-primary-hover active:scale-[0.99]"
         >
           <Search className="size-4" />
-          Search Availability
+          {hero.searchCta}
         </button>
       </form>
     </div>
@@ -121,13 +121,13 @@ export function Hero() {
   // Auto-advance through the photographs; stays on the first frame for reduced motion.
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const id = window.setTimeout(() => setActive((a) => (a + 1) % heroSlides.length), SLIDE_MS)
+    const id = window.setTimeout(() => setActive((a) => (a + 1) % hero.slides.length), SLIDE_MS)
     return () => window.clearTimeout(id)
   }, [active])
 
   return (
     <section className="relative isolate overflow-hidden">
-      {heroSlides.map((slide, i) => (
+      {hero.slides.map((slide, i) => (
         <Photo
           key={slide.key}
           id={slide.image}
@@ -165,13 +165,13 @@ export function Hero() {
             blocks stack in column one and the form sits beside them in column two. */}
         <div className="max-w-3xl animate-rise lg:col-start-1 lg:row-start-1">
           <p className="text-[0.8125rem] font-bold tracking-[0.28em] text-mustard uppercase">
-            {site.motto}
+            {hero.eyebrow}
           </p>
 
           <h1 className="mt-5 font-display text-[clamp(3rem,8vw,6rem)] leading-[0.95] font-bold text-white">
-            Travel More.
+            {hero.titleLine1}
             <br />
-            Pay Less.
+            {hero.titleLine2}
           </h1>
 
           {/* The third line is the real logo lettering, not a font imitation. */}
@@ -184,15 +184,13 @@ export function Hero() {
         </div>
 
         <div className="max-w-lg animate-rise lg:col-start-1 lg:row-start-2 lg:mt-7">
-          <p className="text-[1.1875rem] leading-relaxed text-gray-200 text-pretty">
-            Comfortable stays, great vibes and new friends. Your journey begins here.
-          </p>
+          <p className="text-[1.1875rem] leading-relaxed text-gray-200 text-pretty">{hero.lead}</p>
 
           {/* Both CTAs share one row on mobile - they only fall back to intrinsic
               width once there is room for them side by side anyway. */}
           <div className="mt-7 flex items-center gap-3 sm:mt-9">
             <ButtonLink to="/rooms" size="lg" className="flex-1 px-4 sm:flex-none sm:px-8">
-              Book Your Stay
+              {hero.primaryCta}
             </ButtonLink>
             <ButtonAnchor
               href={enquiryUrl()}
@@ -201,7 +199,7 @@ export function Hero() {
               size="lg"
               className="flex-1 border border-cream/35 bg-cream/10 px-4 text-cream backdrop-blur-sm hover:bg-cream/20 sm:flex-none sm:px-8"
             >
-              Chat with us
+              {hero.secondaryCta}
             </ButtonAnchor>
           </div>
         </div>

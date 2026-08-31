@@ -37,6 +37,12 @@ export interface SyncedContent {
   reviews?: Review[]
   blogPosts?: BlogPost[]
   faqs?: { q: string; a: string }[]
+  /**
+   * The Home and About page documents, keyed by page. Shapeless here on
+   * purpose - `src/data/pages.ts` owns the shape and validates as it merges,
+   * so a field added there needs no change in this file.
+   */
+  pages?: Record<string, unknown>
   settings?: SiteSettings
 }
 
@@ -71,6 +77,9 @@ export const content = {
   },
   get faqs() {
     return current.faqs
+  },
+  get pages() {
+    return current.pages
   },
   get settings() {
     return current.settings

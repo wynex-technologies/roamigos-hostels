@@ -5,6 +5,8 @@ import {
   CalendarCheck,
   HelpCircle,
   LayoutDashboard,
+  LayoutTemplate,
+  Lock,
   LogOut,
   Menu,
   MessageSquare,
@@ -19,6 +21,7 @@ import {
 } from 'lucide-react'
 import { LogoMark } from './Logo'
 import { useAuth } from '@/lib/auth'
+import { PAGE_SETTINGS_LOCKED } from '@/lib/flags'
 import { usePublish } from '@/lib/publish'
 import { useTheme } from '@/lib/theme'
 import { Button, cn } from './ui'
@@ -31,6 +34,10 @@ const links = [
   { to: '/blog', label: 'Journal', icon: Newspaper },
   { to: '/offer', label: 'Offer', icon: Tag },
   { to: '/faqs', label: 'FAQs', icon: HelpCircle },
+  // Built, not open yet - see `lib/flags.ts`. It stays in the list rather than
+  // being dropped from it, so the panel does not appear to grow a screen later:
+  // it is visibly there and visibly closed.
+  { to: '/pages', label: 'Page settings', icon: LayoutTemplate, locked: PAGE_SETTINGS_LOCKED },
   { to: '/settings', label: 'Settings', icon: Settings },
 ]
 
@@ -92,27 +99,45 @@ export function Shell() {
   const { admin, signOut } = useAuth()
   const [open, setOpen] = useState(false)
 
+  const row = 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors'
+
   const nav = (
     <nav className="flex flex-col gap-1">
-      {links.map(({ to, label, icon: Icon, end }) => (
-        <NavLink
-          key={to}
-          to={to}
-          end={end}
-          onClick={() => setOpen(false)}
-          className={({ isActive }) =>
-            cn(
-              'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-              isActive
-                ? 'bg-primary text-on-primary'
-                : 'text-body hover:bg-surface-2 hover:text-heading',
-            )
-          }
-        >
-          <Icon className="size-4" />
-          {label}
-        </NavLink>
-      ))}
+      {links.map(({ to, label, icon: Icon, end, locked }) =>
+        locked ? (
+          // Present, dimmed and not a link. `aria-disabled` rather than a
+          // disabled button so it is still read out - a screen reader user
+          // should hear that the screen exists and is closed, not silence.
+          <span
+            key={to}
+            aria-disabled
+            title="Not open yet"
+            className={cn(row, 'cursor-not-allowed text-muted opacity-60')}
+          >
+            <Icon className="size-4" />
+            <span className="flex-1">{label}</span>
+            <Lock className="size-3.5 shrink-0" />
+          </span>
+        ) : (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            onClick={() => setOpen(false)}
+            className={({ isActive }) =>
+              cn(
+                row,
+                isActive
+                  ? 'bg-primary text-on-primary'
+                  : 'text-body hover:bg-surface-2 hover:text-heading',
+              )
+            }
+          >
+            <Icon className="size-4" />
+            {label}
+          </NavLink>
+        ),
+      )}
     </nav>
   )
 

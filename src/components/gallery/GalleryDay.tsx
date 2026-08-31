@@ -1,10 +1,13 @@
 import { Photo } from '@/components/ui/Photo'
 import { Container, Eyebrow, Flourish, SectionTitle } from '@/components/ui/primitives'
-import { galleryDay } from '@/data/gallery'
+import { aboutPage } from '@/data/pages'
 import { useReveal } from '@/lib/useReveal'
 
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
+
+/** Everything on this section that the front desk can edit from the panel. */
+const day = aboutPage.day
 
 /**
  * The wall answers "what does it look like"; this answers "what does a day
@@ -18,17 +21,14 @@ export function GalleryDay() {
     <section ref={section} className="py-16 sm:py-20 lg:py-28">
       <Container>
         <div className="mx-auto max-w-2xl text-center">
-          <Eyebrow>06:40 to whenever</Eyebrow>
-          <SectionTitle className="mt-3" underline="day">
-            One completely
+          <Eyebrow>{day.eyebrow}</Eyebrow>
+          <SectionTitle className="mt-3" underline={day.underline}>
+            {day.titleLine1}
             <br />
-            ordinary
+            {day.titleLine2}
           </SectionTitle>
           <Flourish className="mt-7" />
-          <p className="mt-7 text-[1.0625rem] leading-relaxed text-pretty">
-            Nothing here is scheduled and nothing is compulsory. This is just how the hours tend to
-            fall once you have dropped your bag.
-          </p>
+          <p className="mt-7 text-[1.0625rem] leading-relaxed text-pretty">{day.copy}</p>
         </div>
 
         {/* The rule the whole strip hangs from - drawn out from the middle. */}
@@ -40,7 +40,7 @@ export function GalleryDay() {
           />
 
           <ol className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-            {galleryDay.map((moment, i) => (
+            {day.moments.map((moment, i) => (
               <li
                 key={moment.time}
                 style={lag(0.2 + i * 0.12)}

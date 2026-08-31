@@ -8,6 +8,7 @@ import { usePageMeta } from '@/lib/usePageMeta'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { breadcrumbs } from '@/lib/structuredData'
 import { site } from '@/data/site'
+import { aboutPage } from '@/data/pages'
 
 export default function About() {
   usePageMeta(
@@ -25,16 +26,16 @@ export default function About() {
       <GalleryDay />
       <GuestWall />
       <CtaBand
-        eyebrow="Seen enough?"
+        eyebrow={aboutPage.cta.eyebrow}
         title={
           <>
-            The next photograph on this wall
+            {aboutPage.cta.titleLine1}
             <br />
-            <span className="text-sheen">could be yours.</span>
+            <span className="text-sheen">{aboutPage.cta.titleSheen}</span>
           </>
         }
-        copy="Pick a bed, send one message, and the desk confirms within minutes. No prepayment, no forms - you pay when you walk in."
-        chatPrompt="Hi Roamigos! I was reading about the hostel and I'd like to check availability."
+        copy={aboutPage.cta.copy}
+        chatPrompt={aboutPage.cta.chatPrompt}
       />
     </>
   )

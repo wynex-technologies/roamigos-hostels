@@ -13,6 +13,7 @@ import Rooms from '@/pages/Rooms'
 import Blog from '@/pages/Blog'
 import Offer from '@/pages/Offer'
 import Faqs from '@/pages/Faqs'
+import PageSettings from '@/pages/PageSettings'
 import Settings from '@/pages/Settings'
 import Profile from '@/pages/Profile'
 
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="blog" element={<Blog />} />
         <Route path="offer" element={<Offer />} />
         <Route path="faqs" element={<Faqs />} />
+        <Route path="pages" element={<PageSettings />} />
         <Route path="settings" element={<Settings />} />
         <Route path="profile" element={<Profile />} />
         <Route path="*" element={<Dashboard />} />

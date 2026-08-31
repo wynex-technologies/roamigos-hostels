@@ -1,7 +1,10 @@
 import { useRef } from 'react'
 import { ArrowUpRight, MapPin, Play, Sparkles, Users } from 'lucide-react'
 import { Photo } from '@/components/ui/Photo'
-import { galleryHero as g } from '@/data/gallery'
+import { aboutPage } from '@/data/pages'
+
+/** Everything on this section that the front desk can edit from the panel. */
+const g = aboutPage.hero
 
 /* ------------------------------------------------------------------
    Layout notes

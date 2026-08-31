@@ -2,7 +2,7 @@ import { Instagram } from 'lucide-react'
 import { Photo } from '@/components/ui/Photo'
 import { Container, Eyebrow, SectionTitle } from '@/components/ui/primitives'
 import { ButtonAnchor } from '@/components/ui/Button'
-import { guestFrames } from '@/data/gallery'
+import { aboutPage } from '@/data/pages'
 import { site } from '@/data/site'
 
 /**
@@ -10,6 +10,10 @@ import { site } from '@/data/site'
  * track translates exactly -50%, so the seam lands on an identical frame and
  * the loop has no visible jump.
  */
+/** Everything on this section that the front desk can edit from the panel. */
+const section = aboutPage.guests
+const guestFrames = section.frames
+
 export function GuestWall() {
   const instagram = site.socials.find((social) => social.icon === 'instagram')?.href ?? '#'
 
@@ -18,15 +22,16 @@ export function GuestWall() {
       <Container>
         <div className="flex flex-col items-center gap-8 text-center lg:flex-row lg:justify-between lg:text-left">
           <div className="max-w-xl">
-            <Eyebrow>Tagged by our guests</Eyebrow>
-            <SectionTitle className="mt-3" underline="us">
-              The half of the wall
+            <Eyebrow>{section.eyebrow}</Eyebrow>
+            <SectionTitle className="mt-3" underline={section.underline}>
+              {section.titleLine1}
               <br />
-              that is not
+              {section.titleLine2}
             </SectionTitle>
             <p className="mt-5 text-[1.0625rem] leading-relaxed text-pretty">
-              Tag <span className="font-semibold text-heading">@roamigos</span> and your frame goes
-              up on the board by the stairs - the physical one, with actual pins.
+              {section.copyBefore}
+              <span className="font-semibold text-heading">{section.handle}</span>
+              {section.copyAfter}
             </p>
           </div>
 
@@ -39,7 +44,7 @@ export function GuestWall() {
             className="shrink-0"
           >
             <Instagram className="size-4" />
-            Follow on Instagram
+            {section.ctaLabel}
           </ButtonAnchor>
         </div>
       </Container>
