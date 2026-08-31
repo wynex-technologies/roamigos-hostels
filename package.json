@@ -12,6 +12,7 @@
     "prebuild": "node --env-file-if-exists=.env.local scripts/sync-content.ts",
     "build": "tsc -b && vite build",
     "build:hostinger": "node --env-file-if-exists=.env.local scripts/build-hostinger.ts",
+    "build:vercel": "node scripts/build-vercel.ts",
     "preview:hostinger": "node scripts/preview-hostinger.ts",
     "typecheck": "tsc -b --noEmit"
   },
