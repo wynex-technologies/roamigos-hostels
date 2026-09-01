@@ -1,15 +1,31 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, BedDouble, CalendarCheck, MessageSquare, Tag } from 'lucide-react'
+import { ArrowUpRight, BedDouble, CalendarCheck, IndianRupee, MessageSquare } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { Badge, Card, ErrorNote, Loading, PageHeader } from '@/components/ui'
-import { formatWhen, inr, type BookingRow } from '@/lib/db'
+import { formatWhen, inr, isoDate, type BookingRow } from '@/lib/db'
 
 interface Counts {
   newBookings: number
   newEnquiries: number
   rooms: number
-  offer: string | null
+  revenue: number
+}
+
+/**
+ * What counts as money.
+ *
+ * A booking the desk has confirmed, and one the guest has actually stayed for.
+ * `new` is a request nobody has answered yet and `cancelled` is not revenue -
+ * counting either would make the tile a number that goes down, which is not
+ * what anybody reads a revenue figure as.
+ */
+const EARNED = ['confirmed', 'stayed']
+
+/** Midnight on the first of this month, in the desk's own timezone. */
+function startOfMonth() {
+  const now = new Date()
+  return `${isoDate(new Date(now.getFullYear(), now.getMonth(), 1))}T00:00:00`
 }
 
 /**
@@ -32,7 +48,7 @@ export default function Dashboard() {
     let alive = true
 
     async function load() {
-      const [bookings, enquiries, rooms, offer, latest] = await Promise.all([
+      const [bookings, enquiries, rooms, earned, latest] = await Promise.all([
         supabase
           .from('bookings')
           .select('id', { count: 'exact', head: true })
@@ -45,7 +61,15 @@ export default function Dashboard() {
           .from('rooms')
           .select('id', { count: 'exact', head: true })
           .eq('published', true),
-        supabase.from('offers').select('name,code,discount_percent').eq('active', true).maybeSingle(),
+        // Only the one column, only the rows that count, only this month.
+        // PostgREST can sum server-side, but aggregates are not on by every
+        // project, and a month of a hostel's bookings is a few dozen numbers -
+        // so this is a handful of bytes either way and it works everywhere.
+        supabase
+          .from('bookings')
+          .select('total')
+          .in('status', EARNED)
+          .gte('created_at', startOfMonth()),
         supabase
           .from('bookings')
           .select('id,guest_name,room_name,check_in,total,status,created_at')
@@ -55,7 +79,8 @@ export default function Dashboard() {
 
       if (!alive) return
 
-      const failure = bookings.error ?? enquiries.error ?? rooms.error ?? latest.error
+      const failure =
+        bookings.error ?? enquiries.error ?? rooms.error ?? earned.error ?? latest.error
       if (failure) {
         setError(failure.message)
         return
@@ -65,9 +90,7 @@ export default function Dashboard() {
         newBookings: bookings.count ?? 0,
         newEnquiries: enquiries.count ?? 0,
         rooms: rooms.count ?? 0,
-        offer: offer.data
-          ? `${offer.data.code ?? offer.data.name} - ${offer.data.discount_percent}%`
-          : null,
+        revenue: (earned.data ?? []).reduce((sum, row) => sum + Number(row.total ?? 0), 0),
       })
       setRecent((latest.data ?? []) as BookingRow[])
     }
@@ -98,10 +121,10 @@ export default function Dashboard() {
     },
     { to: '/rooms', label: 'Rooms live', value: String(counts.rooms), icon: BedDouble, loud: false },
     {
-      to: '/offer',
-      label: 'Campaign',
-      value: counts.offer ?? 'None running',
-      icon: Tag,
+      to: '/bookings',
+      label: 'Revenue this month',
+      value: inr.format(counts.revenue),
+      icon: IndianRupee,
       loud: false,
     },
   ]
