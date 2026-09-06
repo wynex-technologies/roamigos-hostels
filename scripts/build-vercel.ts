@@ -20,13 +20,18 @@
  *
  * Two things are worth knowing before deploying here.
  *
- * **Publish does not work on Vercel.** The button posts to `api/publish.php`,
- * which is PHP on the same disk as `index.html` - there is no PHP here and no
- * disk to write to. Everything else in the panel works, because it talks to
- * Supabase directly; what is lost is the step that pushes saved content onto
- * the live site without a rebuild. On Vercel that step is a redeploy: the
- * `prebuild` sync pulls the same rows into the bundle. Hostinger remains the
- * deployment the panel was built around.
+ * **Publish means a rebuild here, not a file write.** The button posts to
+ * `api/publish.php` on Hostinger, which is PHP on the same disk as
+ * `index.html` - there is no PHP here and no disk to write to. So this build
+ * puts the panel in `redeploy` mode instead: Publish asks the `publish` edge
+ * function to fire a Vercel deploy hook, and the `prebuild` sync pulls the
+ * same rows into the bundle. The edit is live when the build finishes rather
+ * than immediately, and the panel says so.
+ *
+ * That needs `VERCEL_DEPLOY_HOOK` set on the Supabase project. Without it the
+ * function answers 501 and the panel tells the desk there is nothing to
+ * rebuild. The hook is never a `VITE_` variable - it would be readable by
+ * anyone who opens /admin, and it is enough on its own to start a build.
  *
  * **The panel needs its two variables at build time.** `admin/.env` is
  * gitignored, so `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` have to be
@@ -50,9 +55,14 @@ const exists = (path: string) =>
     () => false,
   )
 
-function run(command: string, args: string[], cwd: string) {
+function run(command: string, args: string[], cwd: string, env: NodeJS.ProcessEnv = {}) {
   console.log(`\n> ${command} ${args.join(' ')}  (in ${cwd.replace(root, '.')})`)
-  const result = spawnSync(command, args, { cwd, stdio: 'inherit', shell: true })
+  const result = spawnSync(command, args, {
+    cwd,
+    stdio: 'inherit',
+    shell: true,
+    env: { ...process.env, ...env },
+  })
   if (result.status !== 0) {
     console.error(`\nFailed: ${command} ${args.join(' ')}`)
     process.exit(result.status ?? 1)
@@ -72,7 +82,12 @@ if (!(await exists(resolve(admin, 'node_modules')))) {
   console.log('\n[vercel] admin dependencies missing, installing them.')
   run('npm', ['ci'], admin)
 }
-run('npm', ['run', 'build'], admin)
+// `redeploy` rather than the default `file`, and set here rather than as a
+// variable on the platform: this script *is* the Vercel build, so it is the one
+// place that already knows which host it is. Publish then asks the `publish`
+// edge function for a rebuild instead of posting to a `publish.php` that does
+// not exist here. See `admin/src/lib/publish.ts`.
+run('npm', ['run', 'build'], admin, { VITE_PUBLISH_MODE: 'redeploy' })
 
 /* -------------------------------------------------------------- assembly --- */
 

@@ -146,8 +146,29 @@ supabase functions deploy intake
 supabase secrets set ALLOWED_ORIGINS="https://your-domain.com"
 ```
 
-There is no `publish` function. On Hostinger there is no build to trigger - the
-panel writes the content file directly through `hostinger/api/publish.php`.
+On Hostinger there is no build to trigger - the panel writes the content file
+directly through `hostinger/api/publish.php`, and the `publish` function is not
+deployed or needed.
+
+On a host that builds, Vercel included, that file cannot be written in place:
+no PHP, no writable disk. There a publish is a rebuild, and the `publish`
+function is what fires it.
+
+```sh
+supabase functions deploy publish
+supabase secrets set VERCEL_DEPLOY_HOOK="https://api.vercel.com/v1/integrations/deploy/…"
+```
+
+The hook lives here rather than in the panel because it is a bare secret -
+whoever holds it can start a build - and a `VITE_` variable is compiled into a
+bundle anyone who opens /admin can read. So the panel proves it is an admin and
+this function does the privileged part, which is exactly what `publish.php`
+does on the other host. Being an admin means a row in `admin_users`; signing in
+is not enough. Leave the hook unset and the function answers 501, which the
+panel shows as having nothing to rebuild.
+
+`scripts/build-vercel.ts` puts the panel in that mode itself, so there is no
+`VITE_PUBLISH_MODE` to set on the platform.
 
 `ALLOWED_ORIGINS` matters. Left unset the functions answer any origin, which
 means any page on the internet can post into the desk's inbox. Name the site's

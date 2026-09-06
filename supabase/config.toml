@@ -18,3 +18,9 @@ verify_jwt = false
 
 [functions.intake]
 verify_jwt = false
+
+# Publish, on a host that builds. Not used on Hostinger, where `publish.php`
+# writes the file directly. It does its own auth: the caller's token must
+# resolve to a user who is a row in `admin_users`, checked in the function.
+[functions.publish]
+verify_jwt = false

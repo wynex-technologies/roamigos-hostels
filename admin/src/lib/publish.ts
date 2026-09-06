@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { CONTENT_KEYS, QUERIES, isEmpty, shape } from '@shared/content-shape'
-import { anonKey, supabase, url } from './supabase'
+import { anonKey, functionsBase, supabase, url } from './supabase'
 
 type State = 'idle' | 'working' | 'done' | 'error'
 
@@ -28,9 +28,38 @@ type State = 'idle' | 'working' | 'done' | 'error'
  * only show up in production and only after somebody made an edit.
  */
 
+/**
+ * What Publish means here, because it is not the same on every host.
+ *
+ * `file` - Hostinger, and the default. The panel posts the finished content
+ * file to `api/publish.php`, which writes it beside `index.html`. The site
+ * picks it up on its next boot, so an edit is live immediately and nothing is
+ * rebuilt. This is what the panel was designed around.
+ *
+ * `redeploy` - Vercel, and anywhere else that builds. There is no PHP and no
+ * writable disk, so the file cannot be written in place; a publish there is a
+ * fresh build, whose `prebuild` pulls the same rows into the bundle. The panel
+ * asks the `publish` edge function to trigger it, because the deploy hook is a
+ * secret and must not be compiled into this bundle.
+ *
+ * The difference the desk sees is honest: one is live now, the other is live
+ * when the build finishes.
+ */
+const MODE = (import.meta.env.VITE_PUBLISH_MODE as string) === 'redeploy' ? 'redeploy' : 'file'
+
 /** Same origin in production, because the panel is served from /admin on the
     site's own domain. Set it in `.env` to develop against a live server. */
-const ENDPOINT = (import.meta.env.VITE_PUBLISH_ENDPOINT as string) || '/api/publish.php'
+const ENDPOINT =
+  (import.meta.env.VITE_PUBLISH_ENDPOINT as string) ||
+  (MODE === 'redeploy' ? `${functionsBase}/publish` : '/api/publish.php')
+
+/** What a failing publish means, in words the desk can act on. */
+const REASONS: Record<number, string> = {
+  401: 'Session expired. Sign in again.',
+  403: 'This account is not an admin on this project.',
+  501: 'No deploy hook is configured on the server, so there is nothing to rebuild.',
+  502: 'The deploy hook refused the request. Check it is still valid in Vercel.',
+}
 
 export function usePublish() {
   const [state, setState] = useState<State>('idle')
@@ -77,19 +106,30 @@ export function usePublish() {
         throw new Error('No published rooms to publish. Check the Rooms page.')
       }
 
+      // The rows above are read in both modes, because reading them is what
+      // catches "no published rooms" before anything is published. In redeploy
+      // mode the payload itself is not sent - the build reads the same rows
+      // again on the server - so there is nothing to put in the body.
       const response = await fetch(ENDPOINT, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        headers:
+          MODE === 'redeploy'
+            ? { Authorization: `Bearer ${token}` }
+            : { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        ...(MODE === 'redeploy' ? {} : { body: JSON.stringify(payload) }),
       })
 
       if (!response.ok) {
         const body = await response.json().catch(() => ({}))
-        throw new Error(body.error ?? `Publish failed (${response.status}).`)
+        throw new Error(body.error ?? REASONS[response.status] ?? `Publish failed (${response.status}).`)
       }
 
       setState('done')
-      setMessage('Live now. Reload the site to see it.')
+      setMessage(
+        MODE === 'redeploy'
+          ? 'Rebuilding the site. It goes live in a minute or two.'
+          : 'Live now. Reload the site to see it.',
+      )
     } catch (error) {
       setState('error')
       setMessage(error instanceof Error ? error.message : 'Publish failed.')
