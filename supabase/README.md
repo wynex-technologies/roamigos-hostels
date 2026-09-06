@@ -156,6 +156,47 @@ domain and the panel's, comma separated.
 `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are injected into every function
 automatically - do not set them yourself.
 
+### What else `intake` does with a submission
+
+A booking and an enquiry are written to their table first, and that row is the
+record. On top of it the function sends the desk an email, and a booking is also
+appended to a Google Sheet. Both are courtesies: they run after the row is
+saved, they swallow their own failures, and neither can turn a saved submission
+into a 500. Leave their variables unset and each is skipped silently, which is
+what a fresh project, a fork and `supabase functions serve` all do.
+
+**The email** goes out over the hostel's own mailbox, so no second vendor and no
+domain to verify. Every one of these is required or the mailer stays off:
+
+```sh
+supabase secrets set \
+  SMTP_HOSTNAME="mail.example.com" \
+  SMTP_PORT=465 \
+  SMTP_USERNAME="stay@example.com" \
+  SMTP_PASSWORD="…" \
+  SMTP_FROM="stay@example.com" \
+  NOTIFY_EMAIL="stay@example.com"
+```
+
+`SMTP_PORT` 465 is implicit TLS, which is what `_shared/mail.ts` connects with.
+587 would need STARTTLS and a change there. `SMTP_FROM` has to be the mailbox
+that authenticated - shared hosts reject anything else. `NOTIFY_EMAIL` takes a
+comma separated list if more than one person should get the copy.
+
+**The sheet** is a bound Apps Script in the owner's own spreadsheet, not the
+Sheets API, so there is no service account and no JSON key to keep out of the
+bundle. `google-sheet/README.md` has the whole setup; the two variables are:
+
+```sh
+supabase secrets set \
+  SHEETS_WEBHOOK_URL="https://script.google.com/macros/s/…/exec" \
+  SHEETS_WEBHOOK_TOKEN="the same word that is in the script"
+```
+
+The token is the only guard on that URL: a web app deployed as "anyone" is a
+public address, because an edge function arrives with no Google session for
+Google to authorise.
+
 ## 5. Make yourself an admin
 
 Sign up once through the panel, or create the user under **Authentication →
