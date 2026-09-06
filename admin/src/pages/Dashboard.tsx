@@ -107,6 +107,13 @@ export default function Dashboard() {
   const tiles = [
     {
       to: '/bookings',
+      label: 'Revenue this month',
+      value: inr.format(counts.revenue),
+      icon: IndianRupee,
+      loud: false,
+    },
+    {
+      to: '/bookings',
       label: 'New bookings',
       value: String(counts.newBookings),
       icon: CalendarCheck,
@@ -120,13 +127,6 @@ export default function Dashboard() {
       loud: counts.newEnquiries > 0,
     },
     { to: '/rooms', label: 'Rooms live', value: String(counts.rooms), icon: BedDouble, loud: false },
-    {
-      to: '/bookings',
-      label: 'Revenue this month',
-      value: inr.format(counts.revenue),
-      icon: IndianRupee,
-      loud: false,
-    },
   ]
 
   return (
