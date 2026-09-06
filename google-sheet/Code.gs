@@ -21,10 +21,22 @@ var TOKEN = 'PASTE_THE_SAME_TOKEN_HERE';
  * The header row is written from this list the first time a tab is created.
  * After that the sheet's own header decides the order, so a column dragged
  * around in the spreadsheet keeps getting the right values - see `headerOf_`.
+ *
+ * `monthly` splits a kind into one tab per month - `Sep-2026`, `Oct-2026` - and
+ * the new one appears by itself when the first submission of that month lands.
+ * Nobody creates it, nobody rolls anything over, and nothing has to be running
+ * at midnight on the first: the name is simply worked out from today's date
+ * each time, and a tab that is not there yet is created with its header.
+ *
+ * Bookings are monthly because that is how they are read - a month's takings,
+ * a month handed to an accountant. Enquiries stay on one tab, because they are
+ * a list you work through rather than a figure you total. Flip either flag and
+ * the other behaviour follows on the next submission.
  */
 var SHEETS = {
   booking: {
     tab: 'Bookings',
+    monthly: true,
     columns: [
       ['Received', function (r) { return new Date(); }],
       ['Guest', function (r) { return r.guest_name; }],
@@ -47,6 +59,7 @@ var SHEETS = {
 
   enquiry: {
     tab: 'Enquiries',
+    monthly: false,
     columns: [
       ['Received', function (r) { return new Date(); }],
       ['Name', function (r) { return r.name; }],
@@ -121,12 +134,30 @@ function appendRow_(config, row) {
   }
 }
 
+/**
+ * Which tab this submission belongs on, worked out fresh every time.
+ *
+ * For a monthly kind that is the current month, in the **spreadsheet's own**
+ * timezone rather than the script's. It matters at exactly the moment it is
+ * hardest to notice: a booking taken at half past eleven on the night of the
+ * 30th belongs to that month, and reading the date in UTC would quietly file
+ * it under the next one.
+ */
+function tabName_(config) {
+  if (!config.monthly) return config.tab;
+
+  var book = SpreadsheetApp.getActiveSpreadsheet();
+  return Utilities.formatDate(new Date(), book.getSpreadsheetTimeZone(), 'MMM-yyyy');
+}
+
 function tab_(config) {
   var book = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = book.getSheetByName(config.tab);
+  var name = tabName_(config);
+
+  var sheet = book.getSheetByName(name);
   if (sheet) return sheet;
 
-  sheet = book.insertSheet(config.tab);
+  sheet = book.insertSheet(name);
   var header = config.columns.map(function (c) { return c[0]; });
 
   sheet.appendRow(header);

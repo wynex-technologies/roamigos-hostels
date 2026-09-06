@@ -4,14 +4,20 @@ The fourth copy. WhatsApp is the conversation, the table row is what the panel
 shows, the email is what gets noticed on a phone, and this is the spreadsheet
 the owner already keeps.
 
-One spreadsheet, two tabs: bookings land on `Bookings` and contact enquiries on
-`Enquiries`. They are different shapes - one carries money and a room, the other
-a question - so sharing a table would leave half the columns blank on every row
-and no way to total a month. Both tabs are created on first use.
+One spreadsheet, two kinds. Bookings land on a tab per month - `Sep-2026`,
+`Oct-2026` - and contact enquiries on a single `Enquiries` tab. They are
+different shapes, one carrying money and a room and the other a question, so
+sharing a table would leave half the columns blank on every row and no way to
+total a month.
+
+Every tab is created the first time something needs it, header and all. The
+month tab is worked out from today's date on each submission, so the new one
+appears by itself when the first booking of the month lands: nothing runs at
+midnight, nothing has to be rolled over, and a quiet month simply has no tab.
 
 `Code.gs` is a bound Apps Script: it lives inside the sheet, runs as the person
-who owns the sheet, and needs no key. The `intake` edge function posts a booking
-to it as a booking or an enquiry is saved.
+who owns the sheet, and needs no key. The `intake` edge function posts to it as
+a booking or an enquiry is saved.
 
 ## Why not the Sheets API
 
@@ -63,6 +69,18 @@ shared word. For one line appended per booking, that trade is not close.
 
 Unset either secret and nothing is sent, silently - the site, the panel and the
 email carry on exactly as before.
+
+## Monthly tabs
+
+`monthly` in `SHEETS` is what splits a kind by month. It is on for bookings and
+off for enquiries: a month of bookings is a figure somebody totals, while
+enquiries are a list to work through. Flip either flag and the change takes
+effect on the next submission.
+
+The month is read in the **spreadsheet's** timezone, not the script's. That
+matters at the one moment it is hardest to notice: a booking taken at half past
+eleven on the night of the 30th belongs to that month, and reading the clock in
+UTC would quietly file it under the next one.
 
 ## Changing the columns
 
