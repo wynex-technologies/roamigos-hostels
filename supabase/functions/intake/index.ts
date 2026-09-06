@@ -17,7 +17,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.47.10'
 import { date, empty, int, preflight, str } from '../_shared/http.ts'
 import { afterResponse, notify } from '../_shared/mail.ts'
-import { appendBooking } from '../_shared/sheet.ts'
+import { appendBooking, appendEnquiry } from '../_shared/sheet.ts'
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -481,20 +481,24 @@ Deno.serve(async (request) => {
 
     const { error } = await supabase.from('enquiries').insert(row)
 
-    // Same rule as a booking: the row is the record and the email is the
-    // courtesy, so it is only sent once the insert has succeeded and a mail
-    // failure never turns a saved enquiry into a 500.
+    // Same rule as a booking: the row is the record, the email and the
+    // spreadsheet line are courtesies. Both run only after the insert has
+    // succeeded, both swallow their own failures, and `allSettled` keeps one
+    // being down from stopping the other.
     if (!error) {
       const pending = afterResponse(
-        notify(
-          `New enquiry: ${row.topic}, ${row.name}`,
-          enquiryEmail(row),
-          enquiryEmailHtml(row),
-          // A contact enquiry carries no email address - the form asks for a
-          // phone, because the reply goes back over WhatsApp. So there is
-          // nothing to set Reply-To to, and the desk answers from the card.
-          null,
-        ),
+        Promise.allSettled([
+          notify(
+            `New enquiry: ${row.topic}, ${row.name}`,
+            enquiryEmail(row),
+            enquiryEmailHtml(row),
+            // A contact enquiry carries no email address - the form asks for a
+            // phone, because the reply goes back over WhatsApp. So there is
+            // nothing to set Reply-To to, and the desk answers from the card.
+            null,
+          ),
+          appendEnquiry(row),
+        ]),
       )
       if (pending) await pending
     }

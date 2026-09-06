@@ -40,15 +40,24 @@ export function sheetReady() {
 }
 
 /**
- * Appends one booking.
+ * Appends one submission to the tab its kind belongs on.
+ *
+ * `kind` is what the script routes on: a booking lands on `Bookings` and an
+ * enquiry on `Enquiries`, in the same spreadsheet. They are different shapes -
+ * one carries money and a room, the other a question - and sharing a table
+ * would mean half the columns blank on every row.
  *
  * The payload is an object, not an array of cells, and the script maps it onto
  * the header row it finds in the sheet. That is deliberate: the two sides can
  * then be changed one at a time. A field added here and not yet in the sheet is
  * ignored rather than shifting every column one to the right, which is the
  * failure a positional array gives you and which nobody notices for a month.
+ *
+ * A script that has not been redeployed yet answers `ignored` for a kind it
+ * does not know, which is a 200 and therefore silent. That is the right way
+ * round: the site must not start failing because a spreadsheet is behind.
  */
-export async function appendBooking(row: Record<string, unknown>) {
+async function append(kind: 'booking' | 'enquiry', row: Record<string, unknown>) {
   if (!sheetReady()) return
 
   try {
@@ -57,7 +66,7 @@ export async function appendBooking(row: Record<string, unknown>) {
       // Apps Script hands `doPost` the raw body regardless of this, and
       // text/plain avoids a preflight on any path that might care.
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ token: TOKEN, kind: 'booking', row }),
+      body: JSON.stringify({ token: TOKEN, kind, row }),
       // A web app answers with a 302 to googleusercontent.com. `fetch` follows
       // it; without that the call looks like it worked and writes nothing.
       redirect: 'follow',
@@ -65,11 +74,22 @@ export async function appendBooking(row: Record<string, unknown>) {
     })
 
     if (!response.ok) {
-      console.error(`[intake] sheet not updated: HTTP ${response.status}`)
+      console.error(`[intake] sheet not updated (${kind}): HTTP ${response.status}`)
     }
   } catch (error) {
-    // Logged, never thrown. The booking is already saved and the guest is
-    // already in WhatsApp - a spreadsheet is not worth failing any of that for.
-    console.error('[intake] sheet not updated:', error instanceof Error ? error.message : error)
+    // Logged, never thrown. The row is already saved and the guest is already
+    // in WhatsApp - a spreadsheet is not worth failing any of that for.
+    console.error(
+      `[intake] sheet not updated (${kind}):`,
+      error instanceof Error ? error.message : error,
+    )
   }
+}
+
+export function appendBooking(row: Record<string, unknown>) {
+  return append('booking', row)
+}
+
+export function appendEnquiry(row: Record<string, unknown>) {
+  return append('enquiry', row)
 }

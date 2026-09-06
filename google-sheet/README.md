@@ -1,12 +1,17 @@
-# Bookings into a Google Sheet
+# Guest submissions into a Google Sheet
 
-The fourth copy of a booking. WhatsApp is the conversation, the `bookings` row
-is what the panel shows, the email is what gets noticed on a phone, and this is
-the spreadsheet the owner already keeps.
+The fourth copy. WhatsApp is the conversation, the table row is what the panel
+shows, the email is what gets noticed on a phone, and this is the spreadsheet
+the owner already keeps.
+
+One spreadsheet, two tabs: bookings land on `Bookings` and contact enquiries on
+`Enquiries`. They are different shapes - one carries money and a room, the other
+a question - so sharing a table would leave half the columns blank on every row
+and no way to total a month. Both tabs are created on first use.
 
 `Code.gs` is a bound Apps Script: it lives inside the sheet, runs as the person
 who owns the sheet, and needs no key. The `intake` edge function posts a booking
-to it as the row is saved.
+to it as a booking or an enquiry is saved.
 
 ## Why not the Sheets API
 
@@ -17,8 +22,9 @@ shared word. For one line appended per booking, that trade is not close.
 
 ## Setup, once
 
-1. Open the sheet the bookings should land in. A blank one is fine - the script
-   creates a `Bookings` tab with its header the first time it runs.
+1. Open the sheet the submissions should land in. A blank one is fine - each
+   tab is created with its header the first time something of that kind
+   arrives.
 
 2. **Extensions -> Apps Script**. Delete whatever is in `Code.gs` and paste this
    folder's `Code.gs` over it.
@@ -64,11 +70,11 @@ The sheet's own header row decides the order, so a column dragged around in the
 spreadsheet keeps getting the right values, and a column added by hand is left
 alone rather than overwritten.
 
-To add a field, add a line to `COLUMNS` in `Code.gs` **and** put that heading in
-the sheet's first row. A field the script knows about but the sheet has no
-column for is simply not written; a column the script does not know about is
-left blank. Neither shifts anything, which is the failure a positional list of
-cells gives you and which nobody notices for a month.
+To add a field, add a line to that kind's `columns` in `Code.gs` **and** put the
+same heading in that tab's first row. A field the script knows about but the
+sheet has no column for is simply not written; a column the script does not
+know about is left blank. Neither shifts anything, which is the failure a
+positional list of cells gives you and which nobody notices for a month.
 
 ## Redeploying the script
 
