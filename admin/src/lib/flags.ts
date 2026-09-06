@@ -17,4 +17,4 @@
  * Locking hides the link *and* answers the route, because a hidden link is not
  * a lock - anybody who has been on the screen once has the URL.
  */
-export const PAGE_SETTINGS_LOCKED = true
+export const PAGE_SETTINGS_LOCKED = false
