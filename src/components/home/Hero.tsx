@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CalendarDays, Search, Sparkles, Users } from 'lucide-react'
 import { Wordmark } from '@/components/brand/Wordmark'
+import { DateField } from '@shared/DateField'
 import { ButtonAnchor, ButtonLink } from '@/components/ui/Button'
 import { homePage } from '@/data/pages'
 import { Photo } from '@/components/ui/Photo'
@@ -21,8 +22,13 @@ function AvailabilityCard() {
   // Check-out can never be on or before check-in.
   const minCheckOut = checkIn ? addDaysISO(checkIn, 1) : addDaysISO(today, 1)
 
+  // The date fields are buttons now, not inputs, so the browser no longer blocks
+  // the submit for us - the form asks for both dates itself.
+  const ready = Boolean(checkIn && checkOut)
+
   function search(event: React.FormEvent) {
     event.preventDefault()
+    if (!ready) return
     const params = new URLSearchParams()
     if (checkIn) params.set('checkIn', checkIn)
     if (checkOut) params.set('checkOut', checkOut)
@@ -53,31 +59,29 @@ function AvailabilityCard() {
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="relative">
             <span className={label}>Check-in</span>
-            <input
-              type="date"
+            <DateField
+              label="Check-in"
               required
               min={today}
               value={checkIn}
-              onChange={(e) => {
-                setCheckIn(e.target.value)
-                if (checkOut && e.target.value >= checkOut) setCheckOut(addDaysISO(e.target.value, 1))
+              onChange={(iso) => {
+                setCheckIn(iso)
+                if (checkOut && iso >= checkOut) setCheckOut(addDaysISO(iso, 1))
               }}
               className={field}
-              aria-label="Check-in date"
             />
             <CalendarDays className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-accent" />
           </div>
 
           <div className="relative">
             <span className={label}>Check-out</span>
-            <input
-              type="date"
+            <DateField
+              label="Check-out"
               required
               min={minCheckOut}
               value={checkOut}
-              onChange={(e) => setCheckOut(e.target.value)}
+              onChange={setCheckOut}
               className={field}
-              aria-label="Check-out date"
             />
             <CalendarDays className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-accent" />
           </div>
@@ -102,7 +106,8 @@ function AvailabilityCard() {
 
         <button
           type="submit"
-          className="mt-1 inline-flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-on-primary transition-[background-color,transform] hover:bg-primary-hover active:scale-[0.99]"
+          disabled={!ready}
+          className="mt-1 inline-flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-on-primary transition-[background-color,transform] hover:bg-primary-hover active:scale-[0.99] disabled:pointer-events-none disabled:opacity-45"
         >
           <Search className="size-4" />
           {hero.searchCta}
@@ -175,7 +180,7 @@ export function Hero() {
           </h1>
 
           {/* The third line is the real logo lettering, not a font imitation. */}
-          <Wordmark className="mt-4 h-[clamp(3.25rem,7.5vw,5.25rem)] w-[clamp(10.5rem,24vw,16.5rem)] text-mustard" />
+          <Wordmark pin className="mt-4 h-[clamp(3.25rem,7.5vw,5.25rem)] w-[clamp(10.5rem,24vw,16.5rem)] text-mustard" />
         </div>
 
         {/* `lg:mt-10` puts the card's top edge on the "Travel More" baseline-top. */}

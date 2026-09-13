@@ -14,6 +14,13 @@ export interface AppliedCoupon {
 
 export interface BookingDraft {
   room?: Room
+  /**
+   * The booking reference (`RMG-001`), reserved from the database while the
+   * guest details dialog was open. Absent when that reservation did not come
+   * back in time - the message simply goes without it and the row still gets
+   * one, so the desk is never left with a booking it cannot name.
+   */
+  reference?: string
   checkIn: string
   checkOut: string
   guests: number
@@ -52,6 +59,10 @@ export function bookingTotals(draft: BookingDraft): BookingTotals {
 export function bookingMessage(draft: BookingDraft) {
   const { nights, subtotal, discount, total } = bookingTotals(draft)
   const lines: string[] = ['*New Booking Request - Roamigos Hostel*', '']
+
+  // Straight under the title: the desk matches this chat to the row, the email
+  // and the spreadsheet line by this one string, and the guest can quote it back.
+  if (draft.reference) lines.push(`*Booking ID:* ${draft.reference}`, '')
 
   const isDorm = draft.room?.categories.includes('dorm')
 

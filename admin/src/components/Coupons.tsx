@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Plus, Save, Tag, Trash2, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { COLUMNS, formatDate, isoDate, type CouponRow } from '@/lib/db'
-import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, Text, Toggle, cn } from './ui'
+import { Badge, Button, Card, DateText, Empty, ErrorNote, Field, Loading, Text, Toggle, cn } from './ui'
 
 /**
  * Discount codes, beside the campaign that has its own.
@@ -198,18 +198,20 @@ export function Coupons() {
             </div>
 
             <Field label="Starts" hint="Leave empty to start immediately.">
-              <Text
-                type="date"
+              <DateText
+                label="Starts"
+                placeholder="Immediately"
                 value={draft.starts_on ?? ''}
-                onChange={(event) => set('starts_on', event.target.value || null)}
+                onChange={(iso) => set('starts_on', iso || null)}
               />
             </Field>
 
             <Field label="Expires" hint="Leave empty and it runs until you turn it off.">
-              <Text
-                type="date"
+              <DateText
+                label="Expires"
+                placeholder="No end date"
                 value={draft.expires_on ?? ''}
-                onChange={(event) => set('expires_on', event.target.value || null)}
+                onChange={(iso) => set('expires_on', iso || null)}
               />
             </Field>
           </div>

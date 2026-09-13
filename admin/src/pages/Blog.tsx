@@ -10,6 +10,7 @@ import {
   Badge,
   Button,
   Card,
+  DateText,
   Empty,
   ErrorNote,
   Field,
@@ -231,10 +232,10 @@ export default function Blog() {
               </Field>
 
               <Field label="Published on">
-                <Text
-                  type="date"
+                <DateText
+                  label="Published on"
                   value={post.published_on}
-                  onChange={(e) => set('published_on', e.target.value)}
+                  onChange={(iso) => set('published_on', iso)}
                 />
               </Field>
 

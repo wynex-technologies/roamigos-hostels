@@ -8,6 +8,8 @@ import {
   LayoutTemplate,
   Lock,
   LogOut,
+  Bell,
+  BellRing,
   Menu,
   MessageSquare,
   Moon,
@@ -24,12 +26,16 @@ import { useAuth } from '@/lib/auth'
 import { PAGE_SETTINGS_LOCKED } from '@/lib/flags'
 import { usePublish } from '@/lib/publish'
 import { useTheme } from '@/lib/theme'
+import { useNotifications, type Kind } from '@/lib/notifications'
+import { Toasts } from './Toasts'
 import { Button, cn } from './ui'
 
 const links = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/bookings', label: 'Bookings', icon: CalendarCheck },
-  { to: '/enquiries', label: 'Enquiries', icon: MessageSquare },
+  // `watch` ties a row to the notification counter it shows - the two screens
+  // something can arrive on while nobody is looking at them.
+  { to: '/bookings', label: 'Bookings', icon: CalendarCheck, watch: 'booking' as Kind },
+  { to: '/enquiries', label: 'Enquiries', icon: MessageSquare, watch: 'enquiry' as Kind },
   { to: '/rooms', label: 'Rooms', icon: BedDouble },
   { to: '/blog', label: 'Journal', icon: Newspaper },
   { to: '/offer', label: 'Offer', icon: Tag },
@@ -97,13 +103,14 @@ function ThemeButton() {
 
 export function Shell() {
   const { admin, signOut } = useAuth()
+  const { unseen, permission, askPermission } = useNotifications()
   const [open, setOpen] = useState(false)
 
   const row = 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors'
 
   const nav = (
     <nav className="flex flex-col gap-1">
-      {links.map(({ to, label, icon: Icon, end, locked }) =>
+      {links.map(({ to, label, icon: Icon, end, locked, watch }) =>
         locked ? (
           // Present, dimmed and not a link. `aria-disabled` rather than a
           // disabled button so it is still read out - a screen reader user
@@ -134,7 +141,21 @@ export function Shell() {
             }
           >
             <Icon className="size-4" />
-            {label}
+            <span className="flex-1">{label}</span>
+            {/* What arrived and has not been read. It outlives a reload and
+                counts what landed while the panel was shut, which is the thing
+                a toast cannot do. Cleared by opening the screen. */}
+            {watch && unseen[watch] > 0 && (
+              <span
+                aria-label={`${unseen[watch]} new`}
+                className={cn(
+                  'grid min-w-5 shrink-0 place-items-center rounded-full px-1.5 text-[0.6875rem] font-bold tabular-nums',
+                  'bg-mustard text-ink',
+                )}
+              >
+                {unseen[watch] > 99 ? '99+' : unseen[watch]}
+              </span>
+            )}
           </NavLink>
         ),
       )}
@@ -212,6 +233,30 @@ export function Shell() {
           </span>
 
           <div className="ml-auto flex items-center gap-3">
+            {/* Offered only while it can still be granted. Browsers refuse the
+                prompt unless it comes from a click, which is why this is a
+                button and not something the app asks for on its own; once the
+                answer is given - either way - there is nothing left to ask, so
+                the button goes. */}
+            {permission === 'default' && (
+              <button
+                type="button"
+                onClick={askPermission}
+                title="Get notified when a booking or enquiry arrives"
+                aria-label="Turn on desktop notifications"
+                className="grid size-9 place-items-center rounded-full border border-line text-heading transition-colors hover:border-primary hover:text-primary"
+              >
+                <Bell className="size-4" />
+              </button>
+            )}
+            {permission === 'granted' && (
+              <span
+                title="Desktop notifications are on"
+                className="grid size-9 place-items-center rounded-full text-green"
+              >
+                <BellRing className="size-4" />
+              </span>
+            )}
             <ThemeButton />
             <PublishButton />
           </div>
@@ -268,6 +313,8 @@ export function Shell() {
           </div>
         </div>
       )}
+
+      <Toasts />
     </div>
   )
 }

@@ -10,6 +10,7 @@ import {
   Badge,
   Button,
   Card,
+  DateText,
   ErrorNote,
   Field,
   Loading,
@@ -220,10 +221,11 @@ export default function Offer() {
                   </Field>
 
                   <Field label="Expires on" hint="Blank means it runs until switched off.">
-                    <Text
-                      type="date"
+                    <DateText
+                      label="Expires on"
+                      placeholder="No end date"
                       value={offer.expires_on ?? ''}
-                      onChange={(e) => set('expires_on', e.target.value || null)}
+                      onChange={(iso) => set('expires_on', iso || null)}
                     />
                   </Field>
 

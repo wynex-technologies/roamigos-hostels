@@ -9,8 +9,15 @@
  * Egress: the answer is roughly half a kilobyte and is cached for five minutes
  * by the browser and any CDN in front of it, so a returning visitor moving
  * between pages does not ask again. `src/lib/useOffer.ts` also shares one fetch
- * across the whole page. An empty campaign answers 204, which costs nothing at
- * all - and the site simply keeps the defaults compiled into it.
+ * across the whole page.
+ *
+ * Three answers, and the difference between the last two is the whole point:
+ *
+ *     200 { active: true, ... }   the campaign that is running
+ *     200 { active: false }       one exists and the desk has it switched off
+ *     204                         no campaign row at all, on a project nobody
+ *                                 has configured - and only then does the site
+ *                                 fall back to the campaign in its own bundle
  *
  * It also answers one other question, on the same address:
  *
@@ -32,6 +39,35 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
   { auth: { persistSession: false } },
 )
+
+/**
+ * The row as it comes back, so the mapping below type-checks.
+ *
+ * `select()` is given a string built at runtime from `COLUMNS`, which supabase-js
+ * cannot read - it infers nothing and falls back to an error shape, so every
+ * `data.image_alt` in this file was a type error even though the query has
+ * always been right. One cast at the boundary, and the mapping is checked
+ * against something real.
+ */
+interface OfferRow {
+  active: boolean
+  eyebrow: string
+  headline: string
+  headline_accent: string | null
+  badge_value: string | null
+  badge_label: string | null
+  description: string
+  code: string | null
+  discount_percent: number
+  image: string
+  image_alt: string
+  perks: string[] | null
+  cta_label: string
+  cta_href: string
+  note: string | null
+  expires_on: string | null
+  delay_ms: number
+}
 
 /** Only the columns the popup renders. `select *` would ship the timestamps too. */
 const COLUMNS = [
@@ -103,15 +139,41 @@ Deno.serve(async (request) => {
   const asked = new URL(request.url).searchParams.get('code')
   if (asked !== null) return await checkCode(request, asked)
 
-  const { data, error } = await supabase
+  /**
+   * Deliberately not `.eq('active', true)`.
+   *
+   * A filtered query answers nothing once the desk switches the campaign off -
+   * and nothing is also what a project with no campaign row at all answers. The
+   * site could not tell the two apart, so "switched off" arrived looking like
+   * "this deployment has no backend" and it kept showing the campaign compiled
+   * into its own bundle. The toggle in the panel did nothing.
+   *
+   * Ordering instead of filtering keeps it one query: `offers_one_active_idx`
+   * allows at most one active row, so that row always sorts first.
+   */
+  const { data: row, error } = await supabase
     .from('offers')
     .select(COLUMNS)
-    .eq('active', true)
+    .order('active', { ascending: false })
+    .order('updated_at', { ascending: false })
+    .limit(1)
     .maybeSingle()
 
-  // A failure here must never take the popup down with it: the site falls back
-  // to the campaign compiled into the bundle whenever this answers no content.
+  // The cast, at the one boundary where it belongs - see `OfferRow` above.
+  const data = row as unknown as OfferRow | null
+
+  // No campaign row at all - an unconfigured project. The site keeps the
+  // campaign compiled into the bundle, which is what it ships for exactly this.
   if (error || !data) return empty(request, 204)
+
+  // A campaign exists and the desk has it switched off. Say that, and say only
+  // that: a campaign being drafted for next month must not have its copy served
+  // to every visitor before it runs.
+  if (!data.active) {
+    return json(request, { active: false }, {
+      headers: { 'Cache-Control': 'public, max-age=300, s-maxage=300, stale-while-revalidate=3600' },
+    })
+  }
 
   const offer = {
     active: data.active,

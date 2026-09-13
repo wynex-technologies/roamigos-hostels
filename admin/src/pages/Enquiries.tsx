@@ -1,19 +1,45 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Download, MessageCircle, RefreshCw } from 'lucide-react'
+import { Download, MessageCircle, RefreshCw, Search, X } from 'lucide-react'
 import { ExportPanel, type ExportRequest } from '@/components/ExportPanel'
 import { downloadXlsx, rangeLabel, type Column } from '@/lib/xlsx'
 import { supabase } from '@/lib/supabase'
+import { useMarkSeen } from '@/lib/notifications'
 import {
   COLUMNS,
   PAGE_SIZE,
   formatDate,
   formatWhen,
+  rangeEnd,
+  searchFilter,
+  type DateBasis,
   type EnquiryRow,
   type EnquiryStatus,
 } from '@/lib/db'
-import { Badge, Button, Card, Empty, ErrorNote, Loading, PageHeader, Select } from '@/components/ui'
+import {
+  Badge,
+  Button,
+  Card,
+  DateText,
+  Empty,
+  ErrorNote,
+  Field,
+  Loading,
+  PageHeader,
+  Select,
+  Text,
+} from '@/components/ui'
 
 const STATUSES: EnquiryStatus[] = ['new', 'answered', 'closed']
+
+/**
+ * What a search looks in.
+ *
+ * The message is in the list, unlike the bookings search - an enquiry *is* its
+ * message, and "the one asking about airport pickup" is how the desk remembers
+ * it. A chat opened from a WhatsApp button carries no name or number at all, so
+ * the topic is often the only thing there is to match on.
+ */
+const SEARCH_COLUMNS = ['name', 'phone', 'topic', 'message']
 
 const tone: Record<EnquiryStatus, 'warn' | 'live' | 'neutral'> = {
   new: 'warn',
@@ -48,16 +74,47 @@ const EXPORT_COLUMNS: Column<EnquiryRow>[] = [
     discipline as the bookings list - see the note there for why neither is
     loaded whole. */
 export default function Enquiries() {
+  // On screen is read: opening this clears the badge beside it in the nav.
+  useMarkSeen('enquiry')
+
   const [rows, setRows] = useState<EnquiryRow[]>([])
   // Everything, for the same reason the bookings list does: answering one
   // should not make it vanish off the screen the moment you act on it.
   const [filter, setFilter] = useState<EnquiryStatus | 'all'>('all')
+
+  /** In the box, and what the query uses - see the note on the bookings search. */
+  const [typed, setTyped] = useState('')
+  const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      setSearch(typed.trim())
+      setPage(0)
+    }, 300)
+    return () => window.clearTimeout(id)
+  }, [typed])
+
+  /** Empty at both ends means no range, so the page still opens on everything. */
+  const [basis, setBasis] = useState<DateBasis>('created_at')
+  const [from, setFrom] = useState('')
+  const [to, setTo] = useState('')
+
   const [page, setPage] = useState(0)
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [exporting, setExporting] = useState(false)
   const [exportOpen, setExportOpen] = useState(false)
+
+  /** Narrowing the list always returns to page one. */
+  function narrow(apply: () => void) {
+    apply()
+    setPage(0)
+  }
+
+  const dateFiltered = Boolean(from || to)
+  const backwards = Boolean(from && to && from > to)
+  const narrowed = Boolean(search || dateFiltered || filter !== 'all')
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -71,6 +128,13 @@ export default function Enquiries() {
 
     if (filter !== 'all') query = query.eq('status', filter)
 
+    // One `or()` group, ANDed with everything else - a search inside a date
+    // range stays inside it.
+    if (search) query = query.or(searchFilter(SEARCH_COLUMNS, search))
+
+    if (from) query = query.gte(basis, from)
+    if (to) query = query.lte(basis, rangeEnd(basis, to))
+
     const { data, error: failure, count } = await query
 
     if (failure) setError(failure.message)
@@ -79,7 +143,7 @@ export default function Enquiries() {
       setTotal(count ?? 0)
     }
     setLoading(false)
-  }, [filter, page])
+  }, [filter, page, search, basis, from, to])
 
   useEffect(() => {
     load()
@@ -110,7 +174,7 @@ export default function Enquiries() {
           .gte(basis, from)
           // Inclusive: `created_at` is a timestamp, so the To date means the
           // end of that day rather than midnight at the start of it.
-          .lte(basis, basis === 'created_at' ? `${to}T23:59:59.999Z` : to)
+          .lte(basis, rangeEnd(basis, to))
           .order(basis, { ascending: false })
           .range(page * BATCH, page * BATCH + BATCH - 1)
 
@@ -149,15 +213,17 @@ export default function Enquiries() {
     <>
       <PageHeader
         title="Enquiries"
-        note={`${total} ${filter === 'all' ? 'in total' : filter}`}
+        note={
+          `${total} ${filter === 'all' ? '' : `${filter} `}` +
+          (narrowed
+            ? `matching${dateFiltered ? ` in that ${basis === 'check_in' ? 'arrival' : 'date'} range` : ''}`
+            : 'in total')
+        }
         actions={
           <>
             <Select
               value={filter}
-              onChange={(event) => {
-                setFilter(event.target.value as EnquiryStatus | 'all')
-                setPage(0)
-              }}
+              onChange={(event) => narrow(() => setFilter(event.target.value as EnquiryStatus | 'all'))}
               className="w-auto"
             >
               <option value="all">All</option>
@@ -179,6 +245,73 @@ export default function Enquiries() {
         }
       />
 
+      {/* Search first, then the range - the same order and the same controls as
+          the Bookings screen, because it is the same job on a different table. */}
+      <div className="relative mb-3">
+        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" />
+        <Text
+          type="search"
+          value={typed}
+          onChange={(event) => setTyped(event.target.value)}
+          placeholder="Search by name, phone, topic or message"
+          aria-label="Search enquiries"
+          className="pl-9"
+        />
+      </div>
+
+      <div className="mb-5 grid gap-3 sm:grid-cols-[auto_1fr_1fr_auto] sm:items-end">
+        <Field label="Dates are" className="sm:w-40">
+          <Select
+            value={basis}
+            onChange={(event) => narrow(() => setBasis(event.target.value as DateBasis))}
+          >
+            <option value="created_at">When it came in</option>
+            <option value="check_in">Check-in date</option>
+          </Select>
+        </Field>
+
+        <Field label="From">
+          <DateText
+            label="From"
+            placeholder="Any date"
+            value={from}
+            max={to || undefined}
+            onChange={(iso) => narrow(() => setFrom(iso))}
+          />
+        </Field>
+
+        <Field label="To">
+          <DateText
+            label="To"
+            placeholder="Any date"
+            value={to}
+            min={from || undefined}
+            onChange={(iso) => narrow(() => setTo(iso))}
+          />
+        </Field>
+
+        {dateFiltered && (
+          <Button
+            variant="ghost"
+            onClick={() =>
+              narrow(() => {
+                setFrom('')
+                setTo('')
+              })
+            }
+          >
+            <X className="size-4" />
+            Clear dates
+          </Button>
+        )}
+      </div>
+
+      {backwards && (
+        <p className="mb-5 text-[0.8125rem] text-maroon">
+          The From date is after the To date, so nothing can match.
+        </p>
+      )}
+
       <ExportPanel
         open={exportOpen}
         onClose={() => setExportOpen(false)}
@@ -194,7 +327,11 @@ export default function Enquiries() {
       {loading ? (
         <Loading />
       ) : rows.length === 0 ? (
-        <Empty>No enquiries in this view.</Empty>
+        <Empty>
+          {narrowed
+            ? 'Nothing matches those filters. Widen the dates, or clear the search.'
+            : 'No enquiries yet. New ones land at the top of this list.'}
+        </Empty>
       ) : (
         <div className="space-y-3">
           {rows.map((row) => (

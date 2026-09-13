@@ -15,6 +15,14 @@
  * a router path that works at :5173/admin works the same way live, which is
  * exactly what was easy to get wrong before.
  *
+ * Anything after `--` is handed to the site's server, so
+ *
+ *   npm run dev -- --host
+ *
+ * puts the site on the LAN for a real phone. The panel stays on localhost: the
+ * `/admin` proxy is made by the site's own server, not by the browser, so it
+ * reaches 5174 over the loopback whatever address the phone used.
+ *
  * Both children share this terminal. Ctrl+C stops both.
  */
 import { spawn, type ChildProcess } from 'node:child_process'
@@ -81,13 +89,16 @@ process.on('SIGTERM', () => {
   process.exit(0)
 })
 
+/** Everything after `--`, forwarded to the site's Vite server. */
+const passthrough = process.argv.slice(2)
+
 // The panel first, so it is listening by the time the site starts proxying to it.
 start('panel', adminDir, ['run', 'dev'], '[35m')
-start('site', root, ['run', 'dev:site'], '[36m')
+start('site', root, ['run', 'dev:site', '--', ...passthrough], '[36m')
 
 console.log(`
   [36mSite[0m   http://localhost:5173
   [35mPanel[0m  http://localhost:5173/admin
 
   Same addresses as production. Ctrl+C stops both.
-`)
+${passthrough.includes('--host') ? '  Exposed on the LAN - the site prints its Network address below.' : ''}`)

@@ -1,5 +1,12 @@
 @import 'tailwindcss';
 
+/* `shared/` sits above this app's root, so Tailwind's automatic source
+   detection stops short of it and every class in `shared/DateField.tsx`
+   would be dropped from this stylesheet - the calendar would render with no
+   styling at all, and only in the panel. The site's CSS reaches it already,
+   its root being the repository. */
+@source '../../shared';
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ---------------------------------------------------------------------------

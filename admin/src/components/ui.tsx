@@ -1,7 +1,8 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { Loader2 } from 'lucide-react'
+import { CalendarDays, Loader2 } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { DateField, type DateFieldProps } from '@shared/DateField'
 
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs))
 
@@ -69,6 +70,26 @@ export function Field({
 
 export function Text(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={cn('field', props.className)} />
+}
+
+/**
+ * `<Text type="date">` with the browser's own picker taken out of the way.
+ *
+ * Chrome on Android draws a Clear / Cancel / OK row under a native date input
+ * and will not commit the tapped day until OK is pressed - the desk was
+ * pressing two buttons to enter one date. `DateField` in `shared/` draws the
+ * calendar itself and a tapped day is the answer, so this is the only date
+ * control the panel uses. It wears the same `.field` skin as `Text`, and the
+ * `<Field>` above it still supplies the visible label; the `label` prop here
+ * only names the control for assistive tech.
+ */
+export function DateText({ className, ...props }: DateFieldProps) {
+  return (
+    <span className="relative block">
+      <DateField {...props} className={cn('field pr-9', className)} />
+      <CalendarDays className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted" />
+    </span>
+  )
 }
 
 export function Area(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {

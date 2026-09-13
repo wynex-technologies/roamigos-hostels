@@ -4,7 +4,14 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#B3313A" />
+    <!-- The phone's browser chrome - the strip the URL sits in - takes its
+         colour from here. It used to be Adventure Red, which made the top of
+         the screen a maroon band that nothing on the page continued. It is the
+         header's own ground instead, so the bar appears to start at the very
+         top of the device. `--header-ground` in src/index.css is the authority;
+         the script below corrects this for dark before the first paint, and
+         `ThemeProvider` re-reads it straight off the stylesheet after that. -->
+    <meta name="theme-color" content="#e8ddcb" />
     <title>Roamigos Hostel - Stay. Explore. Connect.</title>
 
     <!-- Share card, canonical link and the site-wide schema. Generated from
@@ -27,6 +34,11 @@
             (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)
           document.documentElement.classList.toggle('dark', dark)
           document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+          // The stylesheet has not loaded yet, so these two cannot be read from
+          // `--header-ground` the way ThemeProvider reads them. They are the
+          // first frame only - keep them equal to the two values in index.css.
+          var bar = document.querySelector('meta[name="theme-color"]')
+          if (bar) bar.setAttribute('content', dark ? '#262626' : '#e8ddcb')
         } catch (e) {}
       })()
     </script>

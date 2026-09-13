@@ -119,8 +119,57 @@ export interface SettingsRow {
   socials: { label: string; href: string; icon: string; handle: string }[]
 }
 
+/**
+ * Which date a range is measured against.
+ *
+ * The two questions a hostel asks of the same table are different ones: "what
+ * came in last month" is accounting, and "who is arriving in December" is the
+ * rota. `created_at` is the safer default of the two - every row has one, and
+ * some have no stay dates on them at all.
+ */
+export type DateBasis = 'created_at' | 'check_in'
+
+/**
+ * The upper bound of an inclusive date range, for whichever basis.
+ *
+ * `created_at` is a timestamp, so `lte('2026-09-04')` means midnight at the
+ * *start* of the 4th and silently drops everything that came in that day.
+ * `check_in` is a plain date and needs no such help. Getting this wrong loses a
+ * day off the end of every range, which is exactly the kind of bug nobody
+ * notices until they are closing their books - so it is written once, here,
+ * and both exports and the list filter call it.
+ */
+export function rangeEnd(basis: DateBasis, to: string) {
+  return basis === 'created_at' ? `${to}T23:59:59.999Z` : to
+}
+
+/**
+ * A PostgREST `or()` filter matching one typed term against any of `columns`.
+ *
+ * The values are quoted, and that is the whole reason this is a function.
+ * `or()` takes its arguments as one comma-separated string, so a guest called
+ * `Smith, J` or a note containing a bracket would otherwise be read as filter
+ * syntax and the query would fail - on the one search somebody actually needed.
+ * Inside the quotes only a backslash and a quote have to be escaped.
+ *
+ * `%` and `_` are still LIKE wildcards and are left alone: PostgREST offers no
+ * ESCAPE clause to turn them off, and a desk typing either into a search box
+ * gets a slightly wide match rather than an error, which is the better failure.
+ */
+export function searchFilter(columns: string[], term: string) {
+  // JSON's string escaping is exactly the rule PostgREST wants inside quotes -
+  // a backslash and a double quote escaped, everything else literal - and it
+  // puts the quotes on for us.
+  const value = JSON.stringify(`*${term.trim()}*`)
+  return columns.map((column) => `${column}.ilike.${value}`).join(',')
+}
+
 export interface BookingRow {
   id: string
+  /** The reference the desk and the guest both quote - `RMG-001`. Unique, and
+      issued by the database; `id` is still the primary key everything updates
+      and deletes by. Also on the WhatsApp message, the email and the sheet. */
+  reference: string
   room_slug: string | null
   room_name: string | null
   guest_name: string
@@ -182,7 +231,7 @@ export const COLUMNS = {
     'id,whatsapp_number,phone_display,email,address_line1,address_line2,address_line3,coords,' +
     'map_url,check_in,check_out,stat_guests,stat_rating,stat_reviews,socials',
   booking:
-    'id,room_slug,room_name,guest_name,guest_phone,guest_email,check_in,check_out,nights,guests,' +
+    'id,reference,room_slug,room_name,guest_name,guest_phone,guest_email,check_in,check_out,nights,guests,' +
     'coupon_code,coupon_percent,subtotal,discount,total,note,status,admin_note,created_at',
   enquiry:
     'id,name,phone,topic,source,check_in,check_out,guests,message,status,admin_note,created_at',

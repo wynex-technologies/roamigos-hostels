@@ -15,7 +15,7 @@
  * Egress: the request is about a kilobyte and the answer has no body at all.
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.47.10'
-import { date, empty, int, preflight, str } from '../_shared/http.ts'
+import { date, empty, int, json, preflight, str } from '../_shared/http.ts'
 import { afterResponse, notify } from '../_shared/mail.ts'
 import { appendBooking, appendEnquiry } from '../_shared/sheet.ts'
 
@@ -54,6 +54,9 @@ function inr(value: number | null) {
  */
 function bookingEmail(row: Record<string, unknown>) {
   const lines = [
+    // First, because a phone notification shows two lines and this is the one
+    // the desk quotes back - in the chat, on the sheet and in the panel.
+    String(row.reference ?? ''),
     `${row.room_name ?? 'No room'}  -  ${row.check_in ?? 'no date'} to ${row.check_out ?? 'no date'}`,
     `${row.nights} night(s), ${row.guests} guest(s)`,
     '',
@@ -81,7 +84,9 @@ function bookingEmail(row: Record<string, unknown>) {
     'desk copy - it is also on the panel under Bookings.',
   )
 
-  return lines.join('\n')
+  // A booking with no reference on it should not open with a blank line -
+  // only the first entry may be empty, and only then is it dropped.
+  return lines.filter((line, i) => i > 0 || line).join('\n')
 }
 
 /**
@@ -279,7 +284,7 @@ function bookingEmailHtml(r: Record<string, unknown>) {
     </td></tr>`
 
   return page({
-    preheader: `${r.room_name ?? 'Booking'}, ${r.check_in ?? ''}, ${r.nights} night(s), ${inr(r.total as number)}`,
+    preheader: `${r.reference ?? 'Booking'} - ${r.room_name ?? 'no room'}, ${r.check_in ?? ''}, ${r.nights} night(s), ${inr(r.total as number)}`,
     eyebrow: 'New booking request',
     title: String(r.room_name ?? 'No room selected'),
     lines: [
@@ -288,7 +293,8 @@ function bookingEmailHtml(r: Record<string, unknown>) {
     ],
     blocks:
       whoBlock(
-        detail('Guest', esc(r.guest_name), true) +
+        (r.reference ? detail('Booking', esc(r.reference), true) : '') +
+          detail('Guest', esc(r.guest_name), true) +
           detail('Phone', tel(r.guest_phone)) +
           detail('Email', mailto(r.guest_email)),
       ) +
@@ -407,7 +413,16 @@ Deno.serve(async (request) => {
 
     if (recent?.length) return empty(request, 202)
 
+    // The reference the page reserved when the guest details dialog opened, so
+    // the number quoted in WhatsApp is the number the desk sees. Anything that
+    // is not one of ours is dropped rather than trusted - the column default
+    // then issues a fresh one, which is also what happens when the reservation
+    // never arrived in time.
+    const asked = str(payload.reference, 24)
+    const reserved = asked && /^RMG-\d{3,}$/.test(asked) ? asked : null
+
     const row = {
+      ...(reserved ? { reference: reserved } : {}),
       room_slug: roomSlug,
       room_name: str(payload.roomName, 160),
       guest_name: guestName,
@@ -425,7 +440,17 @@ Deno.serve(async (request) => {
       note: str(payload.note, 2000),
     }
 
-    const { error } = await supabase.from('bookings').insert(row)
+    // Read the reference back rather than assuming it: when the page did not
+    // reserve one, the column default issued it inside this insert and the
+    // database is the only thing that knows what it is. The email and the sheet
+    // both print it, so neither may guess.
+    const { data: saved, error } = await supabase
+      .from('bookings')
+      .insert(row)
+      .select('reference')
+      .single()
+
+    const copy = { ...row, reference: saved?.reference ?? reserved ?? null }
 
     // The row is the record; the email and the spreadsheet line are courtesies
     // on top of it. Both run only once the insert has actually succeeded, and
@@ -436,12 +461,12 @@ Deno.serve(async (request) => {
       const pending = afterResponse(
         Promise.allSettled([
           notify(
-            `New booking: ${row.guest_name}, ${row.room_name ?? 'no room'}`,
-            bookingEmail(row),
-            bookingEmailHtml(row),
-            row.guest_email,
+            `New booking ${copy.reference ?? ''}: ${copy.guest_name}, ${copy.room_name ?? 'no room'}`,
+            bookingEmail(copy),
+            bookingEmailHtml(copy),
+            copy.guest_email,
           ),
-          appendBooking(row),
+          appendBooking(copy),
         ]),
       )
       if (pending) await pending
@@ -504,6 +529,34 @@ Deno.serve(async (request) => {
     }
 
     return empty(request, error ? 500 : 204)
+  }
+
+  // ------------------------------------------------------------ reserve ----
+  /**
+   * A booking reference, handed out before the booking exists.
+   *
+   * The guest's WhatsApp message has to carry the same reference the desk sees,
+   * and that message is built and opened inside the tap that sends it - a tab
+   * opened outside a user gesture is blocked, so there is no room to wait for a
+   * round trip there. The page therefore asks for the number earlier, when the
+   * guest details dialog opens, which is seconds ahead of the send.
+   *
+   * Nothing is written here. If the guest closes the dialog the number is spent
+   * and no row ever claims it, which is why the migration says gaps are not a
+   * fault. And if this call is slow or fails, the page sends the booking with
+   * no reference on it and the insert's own default issues one - the desk still
+   * gets a reference, it just is not in the chat.
+   *
+   * The browser cannot call the function directly: `anon` has no execute on it.
+   * This runs with the service_role key, and answers one string.
+   */
+  if (kind === 'reserve') {
+    const { data, error } = await supabase.rpc('next_booking_reference')
+    if (error || typeof data !== 'string') return empty(request, 204)
+    return json(request, { reference: data }, {
+      // Reserved for one guest and never for the next one. Nothing may hold it.
+      headers: { 'Cache-Control': 'no-store' },
+    })
   }
 
   // --------------------------------------------------------------- chat ----

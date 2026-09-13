@@ -1,18 +1,45 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Check, ChevronDown, Download, MessageCircle, RefreshCw, Trash2 } from 'lucide-react'
+import {
+  Check,
+  ChevronDown,
+  Download,
+  MessageCircle,
+  Plus,
+  RefreshCw,
+  Search,
+  Trash2,
+  X,
+} from 'lucide-react'
 import { ExportPanel, type ExportRequest } from '@/components/ExportPanel'
+import { NewBooking } from '@/components/NewBooking'
 import { downloadXlsx, rangeLabel, type Column } from '@/lib/xlsx'
 import { supabase } from '@/lib/supabase'
+import { useMarkSeen } from '@/lib/notifications'
 import {
   COLUMNS,
   PAGE_SIZE,
   formatDate,
   formatWhen,
   inr,
+  rangeEnd,
+  searchFilter,
   type BookingRow,
+  type DateBasis,
   type Status,
 } from '@/lib/db'
-import { Badge, Button, Card, Empty, ErrorNote, Loading, PageHeader, Select } from '@/components/ui'
+import {
+  Badge,
+  Button,
+  Card,
+  DateText,
+  Empty,
+  ErrorNote,
+  Field,
+  Loading,
+  PageHeader,
+  Select,
+  Text,
+} from '@/components/ui'
 
 const STATUSES: Status[] = ['new', 'confirmed', 'cancelled', 'stayed']
 
@@ -31,6 +58,33 @@ const LABEL: Record<Status, string> = {
   stayed: 'stayed',
 }
 
+/**
+ * `long-stay` -> `Long stay`.
+ *
+ * Categories are free text the desk types on the Rooms screen - there is no
+ * fixed list in the code, deliberately, so that adding one needs no deploy.
+ * That also means there is nowhere to look a pretty name up, so the slug is
+ * tidied rather than translated.
+ */
+/** A slug no room can have, so a category with no rooms in it matches nothing.
+    An empty `in()` is not valid PostgREST, hence a value rather than no filter. */
+const NO_SUCH_ROOM = '__no_such_room__'
+
+function typeLabel(value: string) {
+  const words = value.replace(/-/g, ' ')
+  return words.charAt(0).toUpperCase() + words.slice(1)
+}
+
+/**
+ * What a search looks in.
+ *
+ * The fields somebody would have in front of them when they go looking: a
+ * reference off a chat, a name, the number that rang, the room. Not the notes -
+ * a desk searching for "Anita" wants the booking, not every request that
+ * mentioned one.
+ */
+const SEARCH_COLUMNS = ['reference', 'guest_name', 'guest_phone', 'guest_email', 'room_name']
+
 const tone: Record<Status, 'warn' | 'live' | 'alert' | 'neutral'> = {
   new: 'warn',
   confirmed: 'live',
@@ -47,6 +101,9 @@ const tone: Record<Status, 'warn' | 'live' | 'alert' | 'neutral'> = {
  * percent rather than one string nobody can filter on.
  */
 const EXPORT_COLUMNS: Column<BookingRow>[] = [
+  // First, to match the Google Sheet and the email - one reference, read the
+  // same way wherever the desk happens to be looking.
+  { header: 'Booking ID', value: (row) => row.reference, width: 12 },
   { header: 'Received', value: (row) => row.created_at, type: 'datetime', width: 18 },
   { header: 'Status', value: (row) => LABEL[row.status], width: 11 },
   { header: 'Guest', value: (row) => row.guest_name, width: 22 },
@@ -82,6 +139,9 @@ const EXPORT_COLUMNS: Column<BookingRow>[] = [
  * month it works.
  */
 export default function Bookings() {
+  // On screen is read: opening this clears the badge beside it in the nav.
+  useMarkSeen('booking')
+
   const [rows, setRows] = useState<BookingRow[]>([])
   // Everything, not just the pending ones.
   //
@@ -91,6 +151,73 @@ export default function Bookings() {
   // filter is still here and still one click away; it just is not the default
   // any more.
   const [filter, setFilter] = useState<Status | 'all'>('all')
+
+  /**
+   * The date range the list is narrowed to. Both ends start empty, so the page
+   * still opens on everything - a filter nobody set should not be hiding rows.
+   *
+   * `basis` is the same choice the export offers, and for the same reason: the
+   * desk asks "what came in last month" and "who is arriving in December" of
+   * the same table. Note that measuring by `check_in` drops every row that has
+   * no stay dates on it, which is correct - a booking with no arrival cannot be
+   * in December - but it is why the default is when the request arrived.
+   */
+  const [basis, setBasis] = useState<DateBasis>('created_at')
+  const [from, setFrom] = useState('')
+  const [to, setTo] = useState('')
+
+  /**
+   * Which room, or which kind of room. `''` is any; otherwise `slug:pod-bunk`
+   * for one room or `cat:dorm` for every room carrying that category.
+   *
+   * A booking row stores the room's slug and its name, not its categories, so a
+   * category has to be turned into the slugs that were in it - which is what
+   * `roomList` below is for. It is eight rows, fetched once when the screen
+   * opens, and it is the whole cost of this filter.
+   */
+  /**
+   * What is in the box, and what the query is actually using.
+   *
+   * They are two values on purpose: typing `RMG-012` is six keystrokes and six
+   * queries, on a table this page is otherwise careful not to over-fetch. The
+   * second one catches up a third of a second after the typing stops.
+   */
+  const [typed, setTyped] = useState('')
+  const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      setSearch(typed.trim())
+      setPage(0)
+    }, 300)
+    return () => window.clearTimeout(id)
+  }, [typed])
+
+  const [room, setRoom] = useState('')
+  const [roomList, setRoomList] = useState<{ slug: string; name: string; categories: string[] }[]>(
+    [],
+  )
+
+  // Unpublished rooms are included on purpose: a room the hostel has since
+  // taken off the site still has last winter's bookings against it, and they
+  // have to stay findable.
+  useEffect(() => {
+    let alive = true
+    supabase
+      .from('rooms')
+      .select('slug,name,categories')
+      .order('sort_order')
+      .then(({ data }) => {
+        if (alive) setRoomList((data ?? []) as { slug: string; name: string; categories: string[] }[])
+      })
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  /** Every category actually in use, in the order the rooms are sorted. */
+  const categories = [...new Set(roomList.flatMap((entry) => entry.categories))]
+
   const [page, setPage] = useState(0)
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -98,6 +225,23 @@ export default function Bookings() {
   const [openId, setOpenId] = useState<string | null>(null)
   const [exporting, setExporting] = useState(false)
   const [exportOpen, setExportOpen] = useState(false)
+  const [addOpen, setAddOpen] = useState(false)
+  const [saved, setSaved] = useState('')
+
+  /** Bumped to force a refetch when nothing else about the query changed. */
+  const [tick, setTick] = useState(0)
+
+  /** Narrowing the list always returns to page one - page 3 of the old result
+      is usually past the end of the new one, which just reads as "no bookings". */
+  function narrow(apply: () => void) {
+    apply()
+    setPage(0)
+  }
+
+  /** Anything narrowing the list, for the count line and the empty state. */
+  const narrowed = Boolean(search || from || to || room || filter !== 'all')
+  const dateFiltered = Boolean(from || to)
+  const backwards = Boolean(from && to && from > to)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -111,6 +255,26 @@ export default function Bookings() {
 
     if (filter !== 'all') query = query.eq('status', filter)
 
+    // One `or()` group, which PostgREST ANDs with every other filter - so a
+    // search inside a date range stays inside it.
+    if (search) query = query.or(searchFilter(SEARCH_COLUMNS, search))
+
+    if (room.startsWith('slug:')) {
+      query = query.eq('room_slug', room.slice(5))
+    } else if (room.startsWith('cat:')) {
+      const slugs = roomList
+        .filter((entry) => entry.categories.includes(room.slice(4)))
+        .map((entry) => entry.slug)
+      query = slugs.length
+        ? query.in('room_slug', slugs)
+        : query.eq('room_slug', NO_SUCH_ROOM)
+    }
+
+    if (from) query = query.gte(basis, from)
+    // Inclusive, and `rangeEnd` is what knows that a timestamp needs the end of
+    // the day rather than the start of it.
+    if (to) query = query.lte(basis, rangeEnd(basis, to))
+
     const { data, error: failure, count } = await query
 
     if (failure) setError(failure.message)
@@ -119,7 +283,7 @@ export default function Bookings() {
       setTotal(count ?? 0)
     }
     setLoading(false)
-  }, [filter, page])
+  }, [filter, page, basis, from, to, room, roomList, search, tick])
 
   useEffect(() => {
     load()
@@ -185,7 +349,7 @@ export default function Bookings() {
           .gte(basis, from)
           // The To date is inclusive, and `created_at` is a timestamp - so the
           // 4th means up to the end of the 4th, not midnight at the start of it.
-          .lte(basis, basis === 'created_at' ? `${to}T23:59:59.999Z` : to)
+          .lte(basis, rangeEnd(basis, to))
           .order(basis, { ascending: false })
           .range(page * BATCH, page * BATCH + BATCH - 1)
 
@@ -229,15 +393,47 @@ export default function Bookings() {
     <>
       <PageHeader
         title="Bookings"
-        note={`${total} ${filter === 'all' ? 'in total' : LABEL[filter]}`}
+        note={
+          `${total} ${filter === 'all' ? '' : `${LABEL[filter]} `}` +
+          (narrowed
+            ? `matching${dateFiltered ? ` in that ${basis === 'check_in' ? 'arrival' : 'date'} range` : ''}`
+            : 'in total')
+        }
         actions={
           <>
+            {/* One select for both questions the desk asks: "the dorms" and
+                "that one room". A category resolves to the slugs in it, a room
+                filters on its own slug. */}
+            <Select
+              value={room}
+              onChange={(event) => narrow(() => setRoom(event.target.value))}
+              className="w-auto"
+              aria-label="Room type"
+            >
+              <option value="">Any room</option>
+              {categories.length > 0 && (
+                <optgroup label="Type">
+                  {categories.map((value) => (
+                    <option key={value} value={`cat:${value}`}>
+                      {typeLabel(value)}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              {roomList.length > 0 && (
+                <optgroup label="Room">
+                  {roomList.map((entry) => (
+                    <option key={entry.slug} value={`slug:${entry.slug}`}>
+                      {entry.name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+            </Select>
+
             <Select
               value={filter}
-              onChange={(event) => {
-                setFilter(event.target.value as Status | 'all')
-                setPage(0)
-              }}
+              onChange={(event) => narrow(() => setFilter(event.target.value as Status | 'all'))}
               className="w-auto"
             >
               <option value="all">All</option>
@@ -247,6 +443,15 @@ export default function Bookings() {
                 </option>
               ))}
             </Select>
+            <Button
+              onClick={() => {
+                setAddOpen((on) => !on)
+                setExportOpen(false)
+              }}
+            >
+              <Plus className="size-4" />
+              Add booking
+            </Button>
             <Button variant="ghost" onClick={() => setExportOpen((on) => !on)}>
               <Download className="size-4" />
               Export
@@ -258,6 +463,105 @@ export default function Bookings() {
           </>
         }
       />
+
+      <NewBooking
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        onSaved={(message) => {
+          setAddOpen(false)
+          setSaved(message)
+          // Straight back to page one and no filters in the way, or the row just
+          // added is somewhere behind a search nobody remembers typing. `tick`
+          // is what guarantees the refetch: with every filter already clear,
+          // none of these change and the query would not otherwise re-run.
+          narrow(() => {
+            setTyped('')
+            setSearch('')
+            setFrom('')
+            setTo('')
+            setRoom('')
+            setFilter('all')
+            setTick((current) => current + 1)
+          })
+        }}
+      />
+
+      {saved && (
+        <p className="mb-5 rounded-xl border border-green/30 bg-green/8 px-4 py-3 text-sm text-green">
+          {saved}
+        </p>
+      )}
+
+      {/* Search first, because it is the one control that answers "this exact
+          booking" - a reference read off a chat, or the name the guest gave. */}
+      <div className="relative mb-3">
+        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" />
+        <Text
+          type="search"
+          value={typed}
+          onChange={(event) => setTyped(event.target.value)}
+          placeholder="Search by booking ID, name, phone, email or room"
+          aria-label="Search bookings"
+          className="pl-9"
+        />
+      </div>
+
+      {/* The date range, always on screen rather than behind a toggle: it is a
+          question the desk asks the list constantly ("who is arriving this
+          week"), and a filter hidden behind a button is a filter nobody
+          remembers is set. Both ends empty is the default and means no range. */}
+      <div className="mb-5 grid gap-3 sm:grid-cols-[auto_1fr_1fr_auto] sm:items-end">
+        <Field label="Dates are" className="sm:w-40">
+          <Select
+            value={basis}
+            onChange={(event) => narrow(() => setBasis(event.target.value as DateBasis))}
+          >
+            <option value="created_at">When it came in</option>
+            <option value="check_in">Check-in date</option>
+          </Select>
+        </Field>
+
+        <Field label="From">
+          <DateText
+            label="From"
+            placeholder="Any date"
+            value={from}
+            max={to || undefined}
+            onChange={(iso) => narrow(() => setFrom(iso))}
+          />
+        </Field>
+
+        <Field label="To">
+          <DateText
+            label="To"
+            placeholder="Any date"
+            value={to}
+            min={from || undefined}
+            onChange={(iso) => narrow(() => setTo(iso))}
+          />
+        </Field>
+
+        {dateFiltered && (
+          <Button
+            variant="ghost"
+            onClick={() =>
+              narrow(() => {
+                setFrom('')
+                setTo('')
+              })
+            }
+          >
+            <X className="size-4" />
+            Clear dates
+          </Button>
+        )}
+      </div>
+
+      {backwards && (
+        <p className="mb-5 text-[0.8125rem] text-maroon">
+          The From date is after the To date, so nothing can match.
+        </p>
+      )}
 
       <ExportPanel
         open={exportOpen}
@@ -274,7 +578,11 @@ export default function Bookings() {
       {loading ? (
         <Loading />
       ) : rows.length === 0 ? (
-        <Empty>Nothing here. New booking requests land at the top of this list.</Empty>
+        <Empty>
+          {narrowed
+            ? 'Nothing matches those filters. Widen the dates, or clear the search.'
+            : 'Nothing here. New booking requests land at the top of this list.'}
+        </Empty>
       ) : (
         <div className="space-y-3">
           {rows.map((row) => {
@@ -297,7 +605,10 @@ export default function Bookings() {
                         <span className="ml-2 font-normal text-muted">{row.guest_phone}</span>
                       </span>
                       <span className="block truncate text-[0.8125rem] text-muted">
-                        {row.room_name ?? 'No room'} &middot; {formatDate(row.check_in)} to{' '}
+                        <span className="font-semibold tabular-nums text-heading">
+                          {row.reference}
+                        </span>{' '}
+                        &middot; {row.room_name ?? 'No room'} &middot; {formatDate(row.check_in)} to{' '}
                         {formatDate(row.check_out)} &middot; {row.nights}n
                       </span>
                     </span>

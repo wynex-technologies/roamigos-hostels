@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Check, MessageCircle, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Container, Eyebrow, SectionTitle } from '@/components/ui/primitives'
+import { DateField } from '@shared/DateField'
 import { enquiryTopics } from '@/data/contact'
 import { site } from '@/data/site'
 import { buildContactUrl, contactMessage, type ContactDraft } from '@/lib/whatsapp'
@@ -159,21 +160,23 @@ export function ContactForm() {
               <div className="grid gap-3">
                 <div className="relative">
                   <span className={label}>Check-in</span>
-                  <input
-                    type="date"
+                  <DateField
+                    label="Check-in"
                     min={today}
                     value={draft.checkIn}
-                    onChange={(event) => set('checkIn', event.target.value)}
+                    onChange={(iso) => set('checkIn', iso)}
+                    placeholder="Optional"
                     className={field}
                   />
                 </div>
                 <div className="relative">
                   <span className={label}>Check-out</span>
-                  <input
-                    type="date"
+                  <DateField
+                    label="Check-out"
                     min={minCheckOut}
                     value={draft.checkOut}
-                    onChange={(event) => set('checkOut', event.target.value)}
+                    onChange={(iso) => set('checkOut', iso)}
+                    placeholder="Optional"
                     className={field}
                   />
                 </div>

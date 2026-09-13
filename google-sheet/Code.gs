@@ -9,7 +9,7 @@
  */
 
 /** Must match SHEETS_WEBHOOK_TOKEN on the Supabase project. Change both together. */
-var TOKEN = 'PASTE_THE_SAME_TOKEN_HERE';
+var TOKEN = '23ab2ee266c090e105bee05b0a7766c90656540d5072f7c5';
 
 /**
  * One tab per kind of submission, and the columns each one gets.
@@ -38,6 +38,10 @@ var SHEETS = {
     tab: 'Bookings',
     monthly: true,
     columns: [
+      // First column, because it is what the desk searches the sheet by and
+      // what a guest quotes on the phone. The same reference is on the WhatsApp
+      // message, the desk's email and the Bookings tab in the panel.
+      ['Booking ID', function (r) { return r.reference || ''; }],
       ['Received', function (r) { return new Date(); }],
       ['Guest', function (r) { return r.guest_name; }],
       ['Phone', function (r) { return r.guest_phone; }],

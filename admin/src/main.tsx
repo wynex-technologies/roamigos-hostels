@@ -4,12 +4,16 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { AuthProvider } from './lib/auth'
 import { ThemeProvider } from './lib/theme'
+import { NotificationsProvider } from './lib/notifications'
 import './index.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
       <AuthProvider>
+        {/* Inside AuthProvider, because it only opens its socket once somebody
+            is signed in and on the allowlist. */}
+        <NotificationsProvider>
         {/* The panel lives at /admin on the site's own domain, so the router
             has to be told where its own root is - otherwise every NavLink
             resolves against / and lands on the marketing site. Vite is told
@@ -17,6 +21,7 @@ createRoot(document.getElementById('root')!).render(
         <BrowserRouter basename="/admin">
           <App />
         </BrowserRouter>
+        </NotificationsProvider>
       </AuthProvider>
     </ThemeProvider>
   </StrictMode>,

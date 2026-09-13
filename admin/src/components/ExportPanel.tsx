@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Download, X } from 'lucide-react'
-import { Button, Field, Select, Text, cn } from './ui'
+import { Button, DateText, Field, Select, cn } from './ui'
 import { isoMonthStart, isoToday } from '@/lib/xlsx'
+import type { DateBasis } from '@/lib/db'
 
-export type DateBasis = 'created_at' | 'check_in'
+// Declared beside `rangeEnd`, which is the thing that has to agree with it.
+export type { DateBasis }
 
 export interface ExportRequest {
   from: string
@@ -75,11 +77,11 @@ export function ExportPanel({
         </Field>
 
         <Field label="From">
-          <Text type="date" value={from} onChange={(event) => setFrom(event.target.value)} />
+          <DateText label="From" placeholder="Any date" value={from} onChange={setFrom} />
         </Field>
 
         <Field label="To" hint="Included.">
-          <Text type="date" value={to} onChange={(event) => setTo(event.target.value)} />
+          <DateText label="To" placeholder="Any date" value={to} onChange={setTo} />
         </Field>
 
         <Field label="Status">

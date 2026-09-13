@@ -95,12 +95,20 @@ export function offerIsLive(current: Offer) {
  * Reads the campaign from the panel, merged over the local defaults so a partial
  * payload (only `image` and `code`, say) is still renderable. Any failure - no
  * endpoint, network down, malformed JSON - quietly keeps the shipped offer.
+ *
+ * A switched-off campaign is **not** a failure, and the difference matters: the
+ * endpoint answers `{ active: false }` for it, which merges over the defaults
+ * and turns the popup off. Only a 204 - no campaign configured at all - keeps
+ * the shipped one, which is what 204 is for. Falling back on both is what made
+ * the panel's own off switch look broken.
  */
 export async function fetchOffer(signal?: AbortSignal): Promise<Offer> {
   if (!OFFER_ENDPOINT) return offer
   try {
     const response = await fetch(OFFER_ENDPOINT, { signal, headers: { Accept: 'application/json' } })
-    if (!response.ok) return offer
+    // `ok` is true for a 204, whose empty body would throw in `json()` below and
+    // land in the catch by accident. Only a 200 carries a campaign.
+    if (response.status !== 200) return offer
     const payload = (await response.json()) as Partial<Offer> | null
     if (!payload || typeof payload !== 'object') return offer
     return { ...offer, ...payload }

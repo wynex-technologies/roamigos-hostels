@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { ArrowUpRight, X } from 'lucide-react'
 import type { Room } from '@/data/rooms'
 import { bookingTotals, buildWhatsAppUrl } from '@/lib/whatsapp'
-import { recordBooking } from '@/lib/intake'
+import { recordBooking, reserveBookingReference } from '@/lib/intake'
 import { formatDate, formatINR } from '@/lib/utils'
 import { toDraft, type BookingState } from './BookingWidget'
 
@@ -34,6 +34,34 @@ export function GuestDetailsModal({
   const [errors, setErrors] = useState<Partial<Record<Field, string>>>({})
   const nameRef = useRef<HTMLInputElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
+
+  /**
+   * The booking reference, asked for the moment this dialog opens.
+   *
+   * It is a database sequence, so it has to be fetched - and `submit` below has
+   * nowhere to wait: `window.open` must run inside the tap that triggered it or
+   * the browser blocks the tab. Opening this dialog is the gesture before that
+   * one, and filling in three fields is seconds, so the number is in hand long
+   * before it is needed.
+   *
+   * A ref rather than state: nothing renders it, and re-rendering the dialog
+   * mid-typing for a value only `submit` reads would be noise. Left undefined
+   * when the reservation fails, in which case the chat simply goes without the
+   * line and the recorded row still gets a reference of its own.
+   */
+  const reference = useRef<string | undefined>(undefined)
+
+  useEffect(() => {
+    if (!open) return
+    let alive = true
+    reference.current = undefined
+    reserveBookingReference().then((next) => {
+      if (alive) reference.current = next
+    })
+    return () => {
+      alive = false
+    }
+  }, [open])
 
   // The guest's answers live in the room page, so every keystroke in here
   // re-renders the parent and hands this component a fresh `onClose`. Anything
@@ -94,7 +122,7 @@ export function GuestDetailsModal({
       document.getElementById(`guest-${first}`)?.focus()
       return
     }
-    const draft = toDraft(room, state)
+    const draft = { ...toDraft(room, state), reference: reference.current }
 
     // The desk's carbon copy, so a request that never gets sent in WhatsApp is
     // still on the board. It cannot fail loudly and it cannot delay the line

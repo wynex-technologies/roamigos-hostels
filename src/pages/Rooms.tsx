@@ -5,7 +5,6 @@ import {
   ArrowUpRight,
   Bath,
   BedDouble,
-  ChevronRight,
   Images,
   MessageCircle,
   RotateCcw,
@@ -36,13 +35,8 @@ import { enquiryUrl } from '@/lib/whatsapp'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { breadcrumbs, roomListSchema } from '@/lib/structuredData'
-import { useReveal } from '@/lib/useReveal'
 import { cn, formatDate, formatINR } from '@/lib/utils'
 
-/** Inline `--lag`, so the reveal order stays readable at the call site. */
-const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
-
-const cheapest = Math.min(...allRooms.map((room) => room.pricePerNight))
 
 /** Both selects in the quick bar - room type on mobile, sort everywhere. */
 const selectClass =
@@ -50,16 +44,6 @@ const selectClass =
   'text-[0.8125rem] font-semibold text-heading transition-colors hover:border-line-strong ' +
   'focus:border-primary focus:outline-none sm:w-auto sm:px-4 sm:text-sm'
 
-/** The four numbers worth printing under the masthead. */
-const marquee = [
-  { value: String(allRooms.length), label: 'Rooms & dorms' },
-  { value: formatINR(cheapest), label: 'Cheapest bed' },
-  {
-    value: `${site.stats.rating}/5`,
-    label: `${site.stats.reviews.toLocaleString('en-IN')} reviews`,
-  },
-  { value: 'On arrival', label: 'Pay at check-in' },
-]
 
 /**
  * Reset, printed beside the Refine heading in both the rail and the drawer -
@@ -92,13 +76,12 @@ export default function Rooms() {
 
   const [filters, setFilters] = useState<FilterState>(emptyFilters)
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const masthead = useReveal<HTMLDivElement>(0.15)
 
   const visible = useMemo(() => applyFilters(filters, guests), [filters, guests])
   const active = activeFilterCount(filters)
   const total = applyFilters(emptyFilters).length
 
-  /** Carry the hero's dates through to the room detail page. */
+  /** Carry the searched dates through to the room detail page. */
   const query = params.toString()
 
   return (
@@ -106,96 +89,10 @@ export default function Rooms() {
       <JsonLd id="rooms" data={roomListSchema(allRooms)} />
       <JsonLd id="rooms-crumbs" data={breadcrumbs([{ name: 'Rooms & Beds', path: '/rooms' }])} />
 
-      {/* The masthead is hidden on phones, so this carries the page's heading
-          for screen readers and search engines when it is not on screen. */}
-      <h1 className="sr-only md:hidden">Rooms &amp; beds at {site.legalName}, Guwahati</h1>
-
-      {/* ============================== masthead ============================== */}
-      <section className="relative isolate hidden min-h-[38rem] flex-col justify-end overflow-hidden pt-14 pb-12 sm:min-h-[46rem] sm:pt-16 md:flex lg:min-h-[calc(100svh-5rem)] lg:pb-20">
-        <Photo
-          id={heroSlides[1].image}
-          width={2000}
-          widths={[900, 1400, 2000]}
-          sizes="100vw"
-          alt=""
-          className="absolute inset-0 -z-20 size-full object-cover object-[55%_center]"
-        />
-        <div
-          aria-hidden
-          className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/75 to-ink/45"
-        />
-
-        <Container>
-          <div ref={masthead}>
-            <nav
-              aria-label="Breadcrumb"
-              style={lag(0)}
-              className="reveal-rise flex items-center gap-1.5 text-[0.75rem] font-semibold tracking-wide text-gray-200/60 uppercase"
-            >
-              <Link to="/" className="transition-colors hover:text-mustard">
-                Home
-              </Link>
-              <ChevronRight className="size-3.5" />
-              <span className="text-gray-200">Rooms &amp; Beds</span>
-            </nav>
-
-            <h1 className="mt-8 max-w-3xl font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.02] font-semibold text-white">
-              <span style={lag(0.12)} className="reveal-line">
-                <span>Eight ways to sleep</span>
-              </span>
-              <span style={lag(0.24)} className="reveal-line">
-                <span>
-                  in <em className="font-normal text-mustard italic">Guwahati</em>.
-                </span>
-              </span>
-            </h1>
-
-            <p
-              style={lag(0.4)}
-              className="reveal-rise mt-7 max-w-xl text-[1.0625rem] leading-relaxed text-gray-200 text-pretty"
-            >
-              From a curtained pod bunk at {formatINR(cheapest)} to a family room that takes four.
-              Same warm floor, same front desk, same hot showers at six in the morning.
-            </p>
-
-            {(checkIn || checkOut) && (
-              <p
-                style={lag(0.48)}
-                className="reveal-rise mt-7 inline-flex flex-wrap items-center gap-2 rounded-full border border-cream/20 bg-ink/45 px-4 py-2 text-[0.8125rem] text-cream backdrop-blur-md"
-              >
-                <span className="font-semibold">Your dates:</span>
-                <span className="text-gray-200/75">
-                  {formatDate(checkIn) || 'Any'} → {formatDate(checkOut) || 'Any'}
-                  {guests ? ` · ${guests} ${guests === 1 ? 'guest' : 'guests'}` : ''}
-                </span>
-                <Link
-                  to="/rooms"
-                  className="font-semibold text-mustard underline-offset-4 hover:underline"
-                >
-                  Clear
-                </Link>
-              </p>
-            )}
-
-            {/* The numbers, on the hairline that closes the masthead. */}
-            <ul
-              style={lag(0.56)}
-              className="reveal-rise mt-12 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-cream/15 pt-8 sm:grid-cols-4"
-            >
-              {marquee.map((item) => (
-                <li key={item.label}>
-                  <p className="font-display text-[1.625rem] leading-none font-semibold text-white">
-                    {item.value}
-                  </p>
-                  <p className="mt-2 text-[0.75rem] tracking-[0.14em] text-gray-200/60 uppercase">
-                    {item.label}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Container>
-      </section>
+      {/* The page opens straight into the filter bar, so nothing on screen is a
+          heading - this carries the page's h1 for screen readers and search
+          engines at every width. */}
+      <h1 className="sr-only">Rooms &amp; beds at {site.legalName}, Guwahati</h1>
 
       {/* ============================== quick bar ============================= */}
       <div className="sticky top-18 z-30 border-b border-line bg-canvas/90 backdrop-blur-xl sm:top-20">
@@ -347,6 +244,22 @@ export default function Rooms() {
 
           {/* The rooms. */}
           <div className="min-w-0">
+            {(checkIn || checkOut) && (
+              <p className="mb-5 inline-flex flex-wrap items-center gap-2 rounded-full border border-line bg-surface-2 px-4 py-2 text-[0.8125rem] text-heading">
+                <span className="font-semibold">Your dates:</span>
+                <span className="text-muted">
+                  {formatDate(checkIn) || 'Any'} → {formatDate(checkOut) || 'Any'}
+                  {guests ? ` · ${guests} ${guests === 1 ? 'guest' : 'guests'}` : ''}
+                </span>
+                <Link
+                  to="/rooms"
+                  className="font-semibold text-primary underline-offset-4 hover:underline"
+                >
+                  Clear
+                </Link>
+              </p>
+            )}
+
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-5">
               <p className="text-[0.9375rem] text-muted">
                 Showing{' '}

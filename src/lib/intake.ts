@@ -113,11 +113,48 @@ function beacon(body: string) {
   }
 }
 
+/**
+ * Reserves the booking reference the guest's WhatsApp message will quote.
+ *
+ * The reference is a database sequence (`RMG-001`, `RMG-002`) so that two
+ * bookings a second apart cannot be handed the same one - which means it has to
+ * be asked for, and asking takes a round trip. The send itself has no room for
+ * one: it builds the message and opens WhatsApp inside the tap, and a tab
+ * opened outside a user gesture is blocked. So the page asks earlier, when the
+ * guest details dialog opens, and by the time anyone has typed a name and an
+ * email the number is already in hand.
+ *
+ * Unlike everything else in this file, this one is awaited - but nothing waits
+ * on it. It resolves to `undefined` on any failure, and `recordBooking` sends
+ * the booking without a reference, whereupon the row's own column default
+ * issues one. A slow or missing endpoint costs a line in a chat message, never
+ * a booking and never a delay.
+ */
+export async function reserveBookingReference(): Promise<string | undefined> {
+  if (!ENDPOINT) return undefined
+  try {
+    const response = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kind: 'reserve' }),
+    })
+    if (response.status !== 200) return undefined
+    const payload = (await response.json()) as { reference?: unknown } | null
+    return typeof payload?.reference === 'string' ? payload.reference : undefined
+  } catch {
+    return undefined
+  }
+}
+
 export function recordBooking(room: Room, draft: BookingDraft) {
   const { nights, subtotal, discount, total } = bookingTotals(draft)
 
   send({
     kind: 'booking',
+    // What the chat quotes, so the row, the email and the sheet all say the
+    // same thing. Omitted when the reservation did not arrive - the database
+    // then issues the reference itself.
+    reference: draft.reference,
     roomSlug: room.slug,
     roomName: room.name,
     guestName: draft.guestName,

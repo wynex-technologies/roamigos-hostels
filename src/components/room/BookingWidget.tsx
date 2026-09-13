@@ -9,6 +9,7 @@ import { useOffer } from '@/lib/useOffer'
 import { bookingTotals, type AppliedCoupon, type BookingDraft } from '@/lib/whatsapp'
 import { addDaysISO, formatINR, todayISO } from '@/lib/utils'
 import { Icon } from '@/components/ui/Icon'
+import { DateField } from '@shared/DateField'
 
 export interface BookingState {
   checkIn: string
@@ -129,33 +130,30 @@ export function BookingWidget({
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <div className="relative">
             <span className={label}>Check-in</span>
-            <input
-              type="date"
+            <DateField
+              label="Check-in"
               required
               min={today}
               value={state.checkIn}
-              onChange={(e) => {
-                const checkIn = e.target.value
+              onChange={(checkIn) => {
                 const checkOut =
                   state.checkOut && checkIn >= state.checkOut ? addDaysISO(checkIn, 1) : state.checkOut
                 setState({ ...state, checkIn, checkOut })
               }}
-              className={`${field} [color-scheme:light] dark:[color-scheme:dark]`}
-              aria-label="Check-in date"
+              className={field}
             />
             <CalendarDays className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-accent" />
           </div>
 
           <div className="relative">
             <span className={label}>Check-out</span>
-            <input
-              type="date"
+            <DateField
+              label="Check-out"
               required
               min={state.checkIn ? addDaysISO(state.checkIn, 1) : addDaysISO(today, 1)}
               value={state.checkOut}
-              onChange={(e) => setState({ ...state, checkOut: e.target.value })}
-              className={`${field} [color-scheme:light] dark:[color-scheme:dark]`}
-              aria-label="Check-out date"
+              onChange={(checkOut) => setState({ ...state, checkOut })}
+              className={field}
             />
             <CalendarDays className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-accent" />
           </div>
