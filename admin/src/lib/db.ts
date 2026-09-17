@@ -35,6 +35,8 @@ export interface RoomRow {
   images: string[]
   total_photos: number
   max_guests_note: string
+  discount_coupon_code: string | null
+  discount_coupon_percent: number | null
   sort_order: number
   published: boolean
 }
@@ -214,7 +216,7 @@ export const COLUMNS = {
   room:
     'id,slug,name,categories,badge,capacity,capacity_label,bathroom,short_description,subtitle,' +
     'price_per_night,rating,review_count,highlights,about,inclusions,amenities,images,' +
-    'total_photos,max_guests_note,sort_order,published',
+    'total_photos,max_guests_note,discount_coupon_code,discount_coupon_percent,sort_order,published',
   // `body` is a whole article per row, so it is deliberately not in the list
   // set - the list prints titles. `has_body` is not a column, so whether a post
   // has a page is answered when the row is opened, not on every list load.

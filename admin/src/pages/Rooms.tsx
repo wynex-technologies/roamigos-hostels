@@ -56,6 +56,8 @@ const blank: Omit<RoomRow, 'id'> = {
   images: [],
   total_photos: 0,
   max_guests_note: '',
+  discount_coupon_code: null,
+  discount_coupon_percent: null,
   sort_order: 99,
   published: true,
 }
@@ -248,6 +250,22 @@ export default function Rooms() {
                     type="number"
                     value={room.capacity}
                     onChange={(e) => set('capacity', Number(e.target.value))}
+                  />
+                </Field>
+
+                <Field label="Discount Coupon Code" hint="Optional. A code specific to this room (e.g. SUMMER20)">
+                  <Text
+                    value={room.discount_coupon_code ?? ''}
+                    onChange={(e) => set('discount_coupon_code', e.target.value || null)}
+                    className="uppercase"
+                  />
+                </Field>
+
+                <Field label="Discount Percent" hint="How much % this coupon gives off.">
+                  <Text
+                    type="number"
+                    value={room.discount_coupon_percent ?? ''}
+                    onChange={(e) => set('discount_coupon_percent', Number(e.target.value) || null)}
                   />
                 </Field>
 

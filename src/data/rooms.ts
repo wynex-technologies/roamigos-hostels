@@ -59,6 +59,8 @@ export interface Room {
   images: string[]
   totalPhotos: number
   maxGuestsNote: string
+  discountCouponCode?: string | null
+  discountCouponPercent?: number | null
 }
 
 /**

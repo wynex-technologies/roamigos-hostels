@@ -29,7 +29,7 @@ export const QUERIES = {
   rooms:
     'rooms?select=slug,name,categories,badge,capacity,capacity_label,bathroom,' +
     'short_description,subtitle,price_per_night,rating,review_count,highlights,about,' +
-    'inclusions,amenities,images,total_photos,max_guests_note' +
+    'inclusions,amenities,images,total_photos,max_guests_note,discount_coupon_code,discount_coupon_percent' +
     '&published=is.true&order=sort_order.asc',
   reviews:
     'reviews?select=name,date_label,rating,text' +
@@ -86,6 +86,8 @@ export const shape: Record<ContentKey, (rows: Row[]) => unknown> = {
       images: row.images ?? [],
       totalPhotos: row.total_photos,
       maxGuestsNote: row.max_guests_note,
+      discountCouponCode: row.discount_coupon_code,
+      discountCouponPercent: row.discount_coupon_percent,
     })),
 
   reviews: (rows) =>

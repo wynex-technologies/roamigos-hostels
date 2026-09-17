@@ -78,9 +78,11 @@ export function BookingWidget({
   const today = todayISO()
   const isDorm = room.categories.includes('dorm')
 
-  // The same campaign the welcome popup shows - one code, one percent, one source.
+  // The room's own coupon, falling back to the global campaign coupon.
   const offer = useOffer()
-  const liveCode = offer?.code && couponValue(offer, offer.code) ? offer.code : ''
+  const globalCode = offer?.code && couponValue(offer, offer.code) ? offer.code : ''
+  const liveCode = (room.discountCouponCode && room.discountCouponPercent) ? room.discountCouponCode : globalCode
+  const livePercent = (room.discountCouponCode && room.discountCouponPercent) ? room.discountCouponPercent : offer?.discountPercent
 
   const { nights, subtotal, discount, total } = bookingTotals(toDraft(room, state))
   const ready = Boolean(state.checkIn && state.checkOut && nights > 0)
@@ -93,11 +95,22 @@ export function BookingWidget({
     'pointer-events-none absolute top-2.5 left-4 text-[0.625rem] font-bold tracking-[0.14em] text-muted uppercase'
 
   async function applyCode(raw: string) {
-    const code = raw.trim()
+    const code = raw.trim().toUpperCase()
     if (!code || checking) return
 
-    setChecking(true)
     setCodeError('')
+    
+    // 1. Check if the code matches the room's specific coupon
+    if (room.discountCouponCode && code === room.discountCouponCode.toUpperCase()) {
+      const percent = room.discountCouponPercent || 0
+      if (percent > 0) {
+        setCodeInput('')
+        setState({ ...state, coupon: { code, percent } })
+        return
+      }
+    }
+
+    setChecking(true)
     const percent = await checkCoupon(offer, code)
     setChecking(false)
 
@@ -106,7 +119,7 @@ export function BookingWidget({
       return
     }
     setCodeInput('')
-    setState({ ...state, coupon: { code: code.toUpperCase(), percent } })
+    setState({ ...state, coupon: { code, percent } })
   }
 
   function submit(event: React.FormEvent) {
@@ -267,7 +280,7 @@ export function BookingWidget({
                 >
                   <Tag className="size-3.5 text-accent" />
                   Use <span className="font-semibold text-heading">{liveCode}</span> for{' '}
-                  {offer?.discountPercent}% off
+                  {livePercent}% off
                 </button>
               ) : null}
             </>
