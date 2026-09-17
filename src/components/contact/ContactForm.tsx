@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/Button'
 import { Container, Eyebrow, SectionTitle } from '@/components/ui/primitives'
 import { DateField } from '@shared/DateField'
 import { enquiryTopics } from '@/data/contact'
-import { site } from '@/data/site'
-import { buildContactUrl, contactMessage, type ContactDraft } from '@/lib/whatsapp'
+
+import { buildContactUrl, type ContactDraft } from '@/lib/whatsapp'
 import { recordEnquiry } from '@/lib/intake'
 import { addDaysISO, todayISO } from '@/lib/utils'
 
@@ -22,7 +22,6 @@ const label =
 
 const steps = [
   { title: 'Fill in the short version', note: 'Only the name, number and question are required.' },
-  { title: 'Read what we will receive', note: 'The exact message is written out below as you type.' },
   { title: 'Send it yourself', note: 'It opens in your own WhatsApp - nothing is sent behind your back.' },
 ]
 
@@ -78,7 +77,7 @@ export function ContactForm() {
 
             <p className="mt-6 text-[1.0625rem] leading-relaxed text-pretty">
               Most contact forms drop your message into an inbox nobody has opened since March. This
-              one builds a WhatsApp message, shows it to you, and lets you press send - so you know
+              one builds a WhatsApp message and lets you press send - so you know
               exactly where it went and you have the thread on your own phone.
             </p>
 
@@ -237,33 +236,10 @@ export function ContactForm() {
 
               <p className="!mt-3 flex items-center justify-center gap-1.5 text-center text-[0.75rem] text-muted">
                 <Check className="size-3.5 text-green-deep dark:text-green" />
-                Opens your own WhatsApp with the message below, ready to send
+                Opens your own WhatsApp with the message ready to send
               </p>
             </form>
 
-            {/* ------------------------- live preview ------------------------- */}
-            <div className="mt-6 overflow-hidden rounded-xl2 border border-line bg-surface">
-              <div className="flex items-center gap-3 border-b border-line px-5 py-3.5">
-                <span className="grid size-8 place-items-center rounded-full bg-green-deep text-cream">
-                  <MessageCircle className="size-4" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block truncate text-[0.875rem] font-semibold text-heading">
-                    {site.legalName}
-                  </span>
-                  <span className="block text-[0.75rem] text-muted">{site.phoneDisplay}</span>
-                </span>
-                <span className="ml-auto text-[0.625rem] font-bold tracking-[0.16em] text-muted uppercase">
-                  Preview
-                </span>
-              </div>
-
-              <div className="bg-surface-2 p-5">
-                <p className="max-w-[92%] rounded-2xl rounded-br-md bg-green-deep/10 px-4 py-3 text-[0.875rem] leading-relaxed whitespace-pre-line text-body dark:bg-green/15">
-                  {contactMessage(draft)}
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </Container>
