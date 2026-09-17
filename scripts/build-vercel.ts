@@ -40,7 +40,7 @@
  * the service_role key is not, and does not belong on any deploy platform that
  * builds a browser bundle - see `.env.example`.
  */
-import { access, cp, rm } from 'node:fs/promises'
+import { access, cp, rm, readFile, writeFile } from 'node:fs/promises'
 import { spawnSync } from 'node:child_process'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -93,5 +93,11 @@ run('npm', ['run', 'build'], admin, { VITE_PUBLISH_MODE: 'redeploy' })
 
 await rm(out, { recursive: true, force: true })
 await cp(resolve(admin, 'dist'), out, { recursive: true })
+
+const baked = JSON.parse(await readFile(resolve(root, 'src/data/generated/content.json'), 'utf8'))
+if (baked.syncedAt && Array.isArray(baked.rooms) && baked.rooms.length > 0) {
+  await writeFile(resolve(root, 'dist/content.json'), JSON.stringify(baked), 'utf8')
+  console.log(`\n[vercel] content.json seeded with ${baked.rooms.length} rooms.`)
+}
 
 console.log('\n[vercel] site at /, panel at /admin, both in dist/.')
