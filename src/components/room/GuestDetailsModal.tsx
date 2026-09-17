@@ -222,25 +222,66 @@ export function GuestDetailsModal({
           <div className="mt-5 grid gap-3">
             {rows.map((row) => (
               <div key={row.key}>
-                <div className="relative">
-                  <span className={labelClass}>{row.label}</span>
-                  <input
-                    id={`guest-${row.key}`}
-                    ref={row.key === 'name' ? nameRef : undefined}
-                    type={row.type}
-                    inputMode={row.mode}
-                    autoComplete={row.autoComplete}
-                    required
-                    aria-invalid={Boolean(errors[row.key])}
-                    aria-describedby={errors[row.key] ? `guest-${row.key}-error` : undefined}
-                    value={state[row.key]}
-                    onChange={(e) => {
-                      setState({ ...state, [row.key]: e.target.value })
-                      if (errors[row.key]) setErrors({ ...errors, [row.key]: undefined })
-                    }}
-                    className={`${field} ${errors[row.key] ? 'border-primary' : ''}`}
-                  />
-                </div>
+                {row.key === 'name' ? (
+                  <div className="flex gap-2">
+                    <div className="relative w-24 shrink-0">
+                      <span className={labelClass}>Title</span>
+                      <select
+                        value={state.salutation}
+                        onChange={(e) => setState({ ...state, salutation: e.target.value })}
+                        className={`${field} appearance-none pr-7`}
+                      >
+                        <option value=""></option>
+                        <option value="Mr.">Mr.</option>
+                        <option value="Ms.">Ms.</option>
+                        <option value="Mrs.">Mrs.</option>
+                        <option value="Dr.">Dr.</option>
+                      </select>
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute right-3.5 bottom-[1.1rem] size-2 rotate-135 border-t border-r border-muted"
+                      />
+                    </div>
+                    <div className="relative flex-1">
+                      <span className={labelClass}>{row.label}</span>
+                      <input
+                        id={`guest-${row.key}`}
+                        ref={nameRef}
+                        type={row.type}
+                        inputMode={row.mode}
+                        autoComplete={row.autoComplete}
+                        required
+                        aria-invalid={Boolean(errors[row.key])}
+                        aria-describedby={errors[row.key] ? `guest-${row.key}-error` : undefined}
+                        value={state[row.key]}
+                        onChange={(e) => {
+                          setState({ ...state, [row.key]: e.target.value })
+                          if (errors[row.key]) setErrors({ ...errors, [row.key]: undefined })
+                        }}
+                        className={`${field} ${errors[row.key] ? 'border-primary' : ''}`}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <span className={labelClass}>{row.label}</span>
+                    <input
+                      id={`guest-${row.key}`}
+                      type={row.type}
+                      inputMode={row.mode}
+                      autoComplete={row.autoComplete}
+                      required
+                      aria-invalid={Boolean(errors[row.key])}
+                      aria-describedby={errors[row.key] ? `guest-${row.key}-error` : undefined}
+                      value={state[row.key]}
+                      onChange={(e) => {
+                        setState({ ...state, [row.key]: e.target.value })
+                        if (errors[row.key]) setErrors({ ...errors, [row.key]: undefined })
+                      }}
+                      className={`${field} ${errors[row.key] ? 'border-primary' : ''}`}
+                    />
+                  </div>
+                )}
                 {errors[row.key] && (
                   <p
                     id={`guest-${row.key}-error`}

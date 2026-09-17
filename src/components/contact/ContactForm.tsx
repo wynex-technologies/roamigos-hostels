@@ -34,7 +34,8 @@ const steps = [
  */
 export function ContactForm() {
   const today = todayISO()
-  const [draft, setDraft] = useState<ContactDraft>({
+  const [draft, setDraft] = useState<ContactDraft & { salutation: string }>({
+    salutation: '',
     name: '',
     phone: '',
     topic: enquiryTopics[0],
@@ -44,7 +45,7 @@ export function ContactForm() {
     message: '',
   })
 
-  const set = <K extends keyof ContactDraft>(key: K, value: ContactDraft[K]) =>
+  const set = <K extends keyof (ContactDraft & { salutation: string })>(key: K, value: (ContactDraft & { salutation: string })[K]) =>
     setDraft((current) => ({ ...current, [key]: value }))
 
   // Check-out can never fall on or before check-in.
@@ -53,11 +54,13 @@ export function ContactForm() {
   function send(event: React.FormEvent) {
     event.preventDefault()
 
+    const finalDraft = { ...draft, name: draft.name.trim() ? (draft.salutation ? `${draft.salutation} ${draft.name.trim()}` : draft.name.trim()) : '' }
+
     // Same carbon copy as a booking: recorded for the desk, never allowed to
     // get between the visitor and the WhatsApp thread they were promised.
-    recordEnquiry(draft)
+    recordEnquiry(finalDraft)
 
-    window.open(buildContactUrl(draft), '_blank', 'noopener,noreferrer')
+    window.open(buildContactUrl(finalDraft), '_blank', 'noopener,noreferrer')
   }
 
   return (
@@ -108,17 +111,37 @@ export function ContactForm() {
           <div>
             <form onSubmit={send} className="card-raised space-y-3 p-6 sm:p-8">
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className="relative">
-                  <span className={label}>Your name</span>
-                  <input
-                    type="text"
-                    required
-                    autoComplete="name"
-                    value={draft.name}
-                    onChange={(event) => set('name', event.target.value)}
-                    placeholder="Priya Sharma"
-                    className={`${field} placeholder:font-normal placeholder:text-muted/60`}
-                  />
+                <div className="flex gap-2">
+                  <div className="relative w-24 shrink-0">
+                    <span className={label}>Title</span>
+                    <select
+                      value={draft.salutation}
+                      onChange={(event) => set('salutation', event.target.value)}
+                      className={`${field} appearance-none pr-7`}
+                    >
+                      <option value=""></option>
+                      <option value="Mr.">Mr.</option>
+                      <option value="Ms.">Ms.</option>
+                      <option value="Mrs.">Mrs.</option>
+                      <option value="Dr.">Dr.</option>
+                    </select>
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute right-3.5 bottom-[1.35rem] size-2 rotate-135 border-t border-r border-muted"
+                    />
+                  </div>
+                  <div className="relative flex-1">
+                    <span className={label}>Your name</span>
+                    <input
+                      type="text"
+                      required
+                      autoComplete="name"
+                      value={draft.name}
+                      onChange={(event) => set('name', event.target.value)}
+                      placeholder="Priya Sharma"
+                      className={`${field} placeholder:font-normal placeholder:text-muted/60`}
+                    />
+                  </div>
                 </div>
                 <div className="relative">
                   <span className={label}>Phone or WhatsApp</span>

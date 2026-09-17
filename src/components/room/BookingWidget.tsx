@@ -15,6 +15,7 @@ export interface BookingState {
   checkIn: string
   checkOut: string
   guests: number
+  salutation: string
   name: string
   phone: string
   email: string
@@ -30,6 +31,7 @@ export function useBookingState(room: Room) {
     checkIn: params.get('checkIn') ?? '',
     checkOut: params.get('checkOut') ?? '',
     guests: Math.min(Number(params.get('guests')) || 1, room.capacity),
+    salutation: '',
     name: '',
     phone: '',
     email: '',
@@ -45,7 +47,7 @@ export function toDraft(room: Room, state: BookingState): BookingDraft {
     checkIn: state.checkIn,
     checkOut: state.checkOut,
     guests: state.guests,
-    guestName: state.name.trim() || undefined,
+    guestName: state.name.trim() ? (state.salutation ? `${state.salutation} ${state.name.trim()}` : state.name.trim()) : undefined,
     guestPhone: state.phone.trim() || undefined,
     guestEmail: state.email.trim() || undefined,
     note: state.note.trim() || undefined,

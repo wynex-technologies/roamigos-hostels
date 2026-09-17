@@ -30,7 +30,7 @@ export function ContactChannels() {
     whatsapp: site.phoneDisplay,
     phone: site.phoneDisplay,
     email: site.email,
-    visit: site.address.line2,
+    visit: `${site.address.line1}, ${site.address.line2}`,
   }
 
   return (
@@ -80,7 +80,7 @@ export function ContactChannels() {
                   {channel.note}
                 </p>
 
-                <p className="mt-5 truncate text-[0.875rem] font-semibold text-heading">
+                <p className="mt-5 text-[0.875rem] font-semibold text-heading text-pretty">
                   {values[channel.key]}
                 </p>
 

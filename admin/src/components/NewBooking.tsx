@@ -46,6 +46,7 @@ const BLANK = {
   checkIn: '',
   checkOut: '',
   guests: '1',
+  salutation: '',
   name: '',
   phone: '',
   email: '',
@@ -144,7 +145,7 @@ export function NewBooking({
           kind: 'booking',
           roomSlug: room?.slug,
           roomName: room?.name,
-          guestName: draft.name.trim(),
+          guestName: draft.name.trim() ? (draft.salutation ? `${draft.salutation} ${draft.name.trim()}` : draft.name.trim()) : undefined,
           guestPhone: draft.phone.trim(),
           guestEmail: draft.email.trim(),
           checkIn: draft.checkIn || undefined,
@@ -228,7 +229,25 @@ export function NewBooking({
         </Field>
 
         <Field label="Guest name">
-          <Text value={draft.name} onChange={(event) => set('name', event.target.value)} />
+          <div className="flex gap-2">
+            <Select
+              value={draft.salutation}
+              onChange={(event) => set('salutation', event.target.value)}
+              className="w-24 shrink-0"
+              aria-label="Title"
+            >
+              <option value=""></option>
+              <option value="Mr.">Mr.</option>
+              <option value="Ms.">Ms.</option>
+              <option value="Mrs.">Mrs.</option>
+              <option value="Dr.">Dr.</option>
+            </Select>
+            <Text 
+              value={draft.name} 
+              onChange={(event) => set('name', event.target.value)} 
+              className="flex-1"
+            />
+          </div>
         </Field>
 
         <Field label="Phone">
