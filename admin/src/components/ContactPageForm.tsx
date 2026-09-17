@@ -210,6 +210,67 @@ export function ContactPageForm({
             onChange={(e) => set('visit', { ...visit, copy: e.target.value })}
           />
         </Field>
+
+        <div className="mt-8 space-y-6">
+          <h3 className="font-semibold text-heading">Routes</h3>
+          {visit.routes.map((route, i) => (
+            <div key={route.key} className="space-y-4 rounded-xl border border-line p-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Title">
+                  <Text
+                    value={route.title}
+                    onChange={(e) => {
+                      const copy = [...visit.routes]
+                      copy[i] = { ...route, title: e.target.value }
+                      set('visit', { ...visit, routes: copy })
+                    }}
+                  />
+                </Field>
+                <Field label="Place">
+                  <Text
+                    value={route.place}
+                    onChange={(e) => {
+                      const copy = [...visit.routes]
+                      copy[i] = { ...route, place: e.target.value }
+                      set('visit', { ...visit, routes: copy })
+                    }}
+                  />
+                </Field>
+                <Field label="Distance">
+                  <Text
+                    value={route.distance}
+                    onChange={(e) => {
+                      const copy = [...visit.routes]
+                      copy[i] = { ...route, distance: e.target.value }
+                      set('visit', { ...visit, routes: copy })
+                    }}
+                  />
+                </Field>
+                <Field label="Time">
+                  <Text
+                    value={route.time}
+                    onChange={(e) => {
+                      const copy = [...visit.routes]
+                      copy[i] = { ...route, time: e.target.value }
+                      set('visit', { ...visit, routes: copy })
+                    }}
+                  />
+                </Field>
+              </div>
+              <Field label="Note">
+                <Area
+                  rows={2}
+                  value={route.note}
+                  onChange={(e) => {
+                    const copy = [...visit.routes]
+                    copy[i] = { ...route, note: e.target.value }
+                    set('visit', { ...visit, routes: copy })
+                  }}
+                />
+              </Field>
+            </div>
+          ))}
+        </div>
       </SectionCard>
 
       {/* ------------------------------------------------------------ faq -- */}

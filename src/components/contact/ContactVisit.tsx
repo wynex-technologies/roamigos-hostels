@@ -1,7 +1,6 @@
 import { ArrowUpRight, Bus, Plane, Route, Train } from 'lucide-react'
 import { Container, Eyebrow, SectionTitle } from '@/components/ui/primitives'
 import { contactPage } from '@/data/pages'
-import { reachRoutes } from '@/data/contact'
 import { site } from '@/data/site'
 import { useReveal } from '@/lib/useReveal'
 
@@ -47,7 +46,7 @@ export function ContactVisit() {
           {/* ---------------------------- the routes ---------------------------- */}
           <div>
             <ul ref={list} className="space-y-4">
-              {reachRoutes.map((route, i) => {
+              {visit.routes.map((route, i) => {
                 const Icon = icons[route.key]
                 return (
                   <li

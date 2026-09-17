@@ -304,6 +304,14 @@ export interface ContactContent {
     eyebrow: string
     heading: SplitHeading
     copy: string
+    routes: {
+      key: 'air' | 'rail' | 'bus' | 'onward'
+      title: string
+      place: string
+      distance: string
+      time: string
+      note: string
+    }[]
   }
   faq: {
     eyebrow: string
@@ -642,7 +650,41 @@ export const CONTACT_DEFAULTS: ContactContent = {
   visit: {
     eyebrow: 'Getting here',
     heading: { line1: 'Airport, station, ISBT -', lead: 'then our ', accent: 'door', tail: '' },
-    copy: 'Guwahati is the gateway to the whole Northeast, which means almost everyone arrives from one of three places. Here is what each one costs you in time.'
+    copy: 'Guwahati is the gateway to the whole Northeast, which means almost everyone arrives from one of three places. Here is what each one costs you in time.',
+    routes: [
+      {
+        key: 'air',
+        title: 'By air',
+        place: 'Lokpriya Gopinath Bordoloi International Airport (GAU)',
+        distance: '≈ 23 km',
+        time: '45-60 min by cab',
+        note: 'Prepaid taxis run from the arrivals kerb. Tell us your flight and we will keep the desk expecting you.',
+      },
+      {
+        key: 'rail',
+        title: 'By train',
+        place: 'Guwahati Railway Station (GHY), Paltan Bazaar',
+        distance: '≈ 6 km',
+        time: '20 min by auto',
+        note: 'Autos are metered-ish - agree the fare at the rank before you get in.',
+      },
+      {
+        key: 'bus',
+        title: 'By bus',
+        place: 'ISBT Guwahati, Betkuchi',
+        distance: '≈ 11 km',
+        time: '30 min by cab',
+        note: 'Night buses from Shillong, Siliguri and Jorhat all terminate here.',
+      },
+      {
+        key: 'onward',
+        title: 'Heading onward',
+        place: 'Shillong · Kaziranga · Jorhat for Majuli',
+        distance: '100-190 km',
+        time: '2.5-4 hrs',
+        note: 'We book shared cabs at the desk the night before. Cheaper than the counter, and it picks you up here.',
+      }
+    ]
   },
   faq: {
     eyebrow: 'The questions',
