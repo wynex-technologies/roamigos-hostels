@@ -160,8 +160,8 @@ export function ContactBand() {
                 >
                   <MapPin className="mt-0.5 size-4 shrink-0 text-mustard transition-transform duration-500 group-hover/pin:-translate-y-0.5" />
                   <span>
-                    <span className="block text-gray-200">{site.address.line1}</span>
-                    <span className="text-gray-200/55">
+                    <span className="block text-black dark:text-white">{site.address.line1}</span>
+                    <span className="text-black dark:text-white">
                       {site.address.line2}, {site.address.line3}
                     </span>
                   </span>
