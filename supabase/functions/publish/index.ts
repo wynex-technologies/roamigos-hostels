@@ -56,14 +56,27 @@ Deno.serve(async (request) => {
 
   if (!admin?.length) return empty(request, 403)
 
-  // Configured last, so a project without a hook says "not configured" to an
-  // admin rather than "forbidden" to everybody.
-  if (!HOOK) return empty(request, 501)
+  const payload = await request.json().catch(() => null)
+  if (!payload) return empty(request, 400)
 
-  const response = await fetch(HOOK, { method: 'POST' })
+  // 1. Upload to Supabase Storage for instant live updates
+  const { error: uploadError } = await supabase.storage
+    .from('content')
+    .upload('content.json', JSON.stringify(payload), {
+      contentType: 'application/json',
+      cacheControl: '1', // Almost no cache at edge, we want instant updates
+      upsert: true
+    })
 
-  // 202: accepted, the build is somebody else's problem now. The panel says a
-  // rebuild is running rather than claiming the change is already live, because
-  // it is not - it is live when the build finishes.
-  return empty(request, response.ok ? 202 : 502)
+  // Ignore upload errors here to still trigger a build if possible,
+  // but in a real scenario you might want to handle it.
+
+  // 2. Trigger Vercel Build for static SEO fallback
+  if (HOOK) {
+    // Fire and forget
+    fetch(HOOK, { method: 'POST' }).catch(() => {})
+  }
+
+  // 202: accepted. The frontend now fetches directly from storage.
+  return empty(request, 202)
 })

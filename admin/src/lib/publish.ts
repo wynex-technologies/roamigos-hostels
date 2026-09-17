@@ -106,17 +106,11 @@ export function usePublish() {
         throw new Error('No published rooms to publish. Check the Rooms page.')
       }
 
-      // The rows above are read in both modes, because reading them is what
-      // catches "no published rooms" before anything is published. In redeploy
-      // mode the payload itself is not sent - the build reads the same rows
-      // again on the server - so there is nothing to put in the body.
+      // Always send the payload to the edge function so it can instantly publish to storage
       const response = await fetch(ENDPOINT, {
         method: 'POST',
-        headers:
-          MODE === 'redeploy'
-            ? { Authorization: `Bearer ${token}` }
-            : { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        ...(MODE === 'redeploy' ? {} : { body: JSON.stringify(payload) }),
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       })
 
       if (!response.ok) {
@@ -125,11 +119,7 @@ export function usePublish() {
       }
 
       setState('done')
-      setMessage(
-        MODE === 'redeploy'
-          ? 'Rebuilding the site. It goes live in a minute or two.'
-          : 'Live now. Reload the site to see it.',
-      )
+      setMessage('Live now. Reload the site to see it.')
     } catch (error) {
       setState('error')
       setMessage(error instanceof Error ? error.message : 'Publish failed.')

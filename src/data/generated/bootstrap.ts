@@ -21,8 +21,10 @@ import { useServerContent, type SyncedContent } from './index'
  * logged as an error, because none of it is one.
  */
 
-/** Same origin, so this is Apache reading a file off its own disk. Not Supabase. */
-const CONTENT_URL = '/content.json'
+/** Same origin in dev, but live Storage bucket in production for instant updates. */
+const intake = import.meta.env.VITE_INTAKE_ENDPOINT as string | undefined
+const supabaseUrl = intake ? intake.substring(0, intake.indexOf('.functions.')) + '.supabase.co' : ''
+const CONTENT_URL = supabaseUrl ? `${supabaseUrl}/storage/v1/object/public/content/content.json` : '/content.json'
 
 /** The site should not sit on a blank screen because a static file is slow. */
 const TIMEOUT_MS = 3000
