@@ -2,8 +2,9 @@ import { ArrowUpRight, Mail, MapPin, MessageCircle, Phone } from 'lucide-react'
 import { Container, Eyebrow, SectionTitle } from '@/components/ui/primitives'
 import { contactChannels } from '@/data/contact'
 import { site } from '@/data/site'
-import { enquiryUrl } from '@/lib/whatsapp'
 import { useReveal } from '@/lib/useReveal'
+import { enquiryUrl } from '@/lib/whatsapp'
+import { contactPage } from '@/data/pages'
 import { cn } from '@/lib/utils'
 
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
@@ -18,6 +19,7 @@ const icons = {
 
 export function ContactChannels() {
   const grid = useReveal<HTMLDivElement>(0.2)
+  const ch = contactPage.channels
 
   const hrefs: Record<string, string> = {
     whatsapp: enquiryUrl(),
@@ -25,6 +27,8 @@ export function ContactChannels() {
     email: `mailto:${site.email}`,
     visit: site.address.mapUrl,
   }
+
+
 
   const values: Record<string, string> = {
     whatsapp: site.phoneDisplay,
@@ -37,15 +41,14 @@ export function ContactChannels() {
     <section className="py-16 sm:py-20 lg:py-24">
       <Container>
         <div className="max-w-xl">
-          <Eyebrow>Four ways in</Eyebrow>
-          <SectionTitle className="mt-3" underline="hour">
-            Use whichever one
+          <Eyebrow>{ch.eyebrow}</Eyebrow>
+          <SectionTitle className="mt-3" underline={ch.heading.accent}>
+            {ch.heading.line1}
             <br />
-            suits the
+            {ch.heading.lead}
           </SectionTitle>
           <p className="mt-5 text-[1.0625rem] leading-relaxed text-pretty">
-            All four reach the same desk. WhatsApp is simply the one we answer fastest, at any
-            time of night.
+            {ch.copy}
           </p>
         </div>
 

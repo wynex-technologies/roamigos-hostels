@@ -22,9 +22,11 @@
 import {
   ABOUT_DEFAULTS,
   HOME_DEFAULTS,
+  CONTACT_DEFAULTS,
   mergePage,
   type AboutContent,
   type HomeContent,
+  type ContactContent,
   type ShowcaseEntry,
 } from '@shared/page-content'
 import { content } from '@/data/generated'
@@ -36,6 +38,7 @@ export type {
   GalleryAlbum,
   GalleryShot,
   HomeContent,
+  ContactContent,
   ShowcaseEntry,
   SplitHeading,
 } from '@shared/page-content'
@@ -44,6 +47,7 @@ const publishedPages = (content.pages ?? {}) as Record<string, unknown>
 
 export const homePage: HomeContent = mergePage(HOME_DEFAULTS, publishedPages.home)
 export const aboutPage: AboutContent = mergePage(ABOUT_DEFAULTS, publishedPages.about)
+export const contactPage: ContactContent = mergePage(CONTACT_DEFAULTS, publishedPages.contact)
 
 /** The full deck the destinations carousel rotates: places first, then offers. */
 export const showcaseDeck: ShowcaseEntry[] = [

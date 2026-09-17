@@ -8,6 +8,7 @@ import { usePageMeta } from '@/lib/usePageMeta'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { breadcrumbs, faqSchema } from '@/lib/structuredData'
 import { site } from '@/data/site'
+import { contactPage } from '@/data/pages'
 
 export default function Contact() {
   usePageMeta(
@@ -28,16 +29,16 @@ export default function Contact() {
       <ContactVisit />
       <ContactFaq />
       <CtaBand
-        eyebrow="Still deciding?"
+        eyebrow={contactPage.cta.eyebrow}
         title={
           <>
-            You do not need a plan.
+            {contactPage.cta.titleLine1}
             <br />
-            <span className="text-sheen">You need a bed for Friday.</span>
+            <span className="text-sheen">{contactPage.cta.titleSheen}</span>
           </>
         }
-        copy="Pick one, message us, and we will work the rest out together once you have dropped your bag."
-        chatPrompt="Hi Roamigos! I'd like to check availability for my dates."
+        copy={contactPage.cta.copy}
+        chatPrompt={contactPage.cta.chatPrompt}
       />
     </>
   )

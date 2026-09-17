@@ -3,9 +3,11 @@ import { Lock, Save } from 'lucide-react'
 import {
   ABOUT_DEFAULTS,
   HOME_DEFAULTS,
+  CONTACT_DEFAULTS,
   mergePage,
   type AboutContent,
   type HomeContent,
+  type ContactContent,
 } from '@shared/page-content'
 import { supabase } from '@/lib/supabase'
 import { PAGE_SETTINGS_LOCKED } from '@/lib/flags'
@@ -13,6 +15,7 @@ import { useMediaCleanup } from '@/lib/media'
 import { Button, Card, ErrorNote, Loading, PageHeader, cn } from '@/components/ui'
 import { HomePageForm } from '@/components/HomePageForm'
 import { AboutPageForm } from '@/components/AboutPageForm'
+import { ContactPageForm } from '@/components/ContactPageForm'
 
 /**
  * The words and photographs on the Home and About pages.
@@ -71,9 +74,10 @@ function Locked() {
 }
 
 function PageSettingsForm() {
-  const [tab, setTab] = useState<'home' | 'about'>('home')
+  const [tab, setTab] = useState<'home' | 'about' | 'contact'>('home')
   const [home, setHome] = useState<HomeContent | null>(null)
   const [about, setAbout] = useState<AboutContent | null>(null)
+  const [contact, setContact] = useState<ContactContent | null>(null)
   const [busy, setBusy] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
@@ -94,11 +98,12 @@ function PageSettingsForm() {
         )
         setHome(mergePage(HOME_DEFAULTS, rows.home))
         setAbout(mergePage(ABOUT_DEFAULTS, rows.about))
+        setContact(mergePage(CONTACT_DEFAULTS, rows.contact))
       })
   }, [])
 
   async function save() {
-    if (!home || !about) return
+    if (!home || !about || !contact) return
     setBusy(true)
     setError('')
     setSaved(false)
@@ -107,6 +112,7 @@ function PageSettingsForm() {
     const { error: failure } = await supabase.from('page_content').upsert([
       { page: 'home', data: home, updated_at: stamp },
       { page: 'about', data: about, updated_at: stamp },
+      { page: 'contact', data: contact, updated_at: stamp },
     ])
 
     setBusy(false)
@@ -123,13 +129,13 @@ function PageSettingsForm() {
   }
 
   if (error && !home) return <ErrorNote error={error} />
-  if (!home || !about) return <Loading />
+  if (!home || !about || !contact) return <Loading />
 
   return (
     <>
       <PageHeader
         title="Page settings"
-        note="The copy and photographs on the Home and About pages. Goes live on the next publish."
+        note="The copy and photographs on the Home, About, and Contact pages. Goes live on the next publish."
         actions={
           <>
             {saved && (
@@ -147,9 +153,9 @@ function PageSettingsForm() {
 
       {error && <ErrorNote error={error} />}
 
-      {/* Two pages, same control language as the rooms filter rail on the site. */}
+      {/* Three pages, same control language as the rooms filter rail on the site. */}
       <div className="mb-6 flex gap-2.5">
-        {(['home', 'about'] as const).map((key) => (
+        {(['home', 'about', 'contact'] as const).map((key) => (
           <button
             key={key}
             type="button"
@@ -162,18 +168,21 @@ function PageSettingsForm() {
                 : 'border-line text-body hover:border-line-strong hover:bg-surface-2',
             )}
           >
-            {key === 'home' ? 'Home' : 'About'}
+            {key === 'home' ? 'Home' : key === 'about' ? 'About' : 'Contact'}
           </button>
         ))}
       </div>
 
-      {/* Both forms stay mounted, so switching tab never drops an unsaved edit
+      {/* All forms stay mounted, so switching tab never drops an unsaved edit
           and never re-runs an image field's state. */}
       <div className={tab === 'home' ? '' : 'hidden'}>
         <HomePageForm value={home} onChange={setHome} media={media} />
       </div>
       <div className={tab === 'about' ? '' : 'hidden'}>
         <AboutPageForm value={about} onChange={setAbout} media={media} />
+      </div>
+      <div className={tab === 'contact' ? '' : 'hidden'}>
+        <ContactPageForm value={contact} onChange={setContact} media={media} />
       </div>
     </>
   )

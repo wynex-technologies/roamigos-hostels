@@ -8,6 +8,7 @@ import { enquiryTopics } from '@/data/contact'
 import { buildContactUrl, type ContactDraft } from '@/lib/whatsapp'
 import { recordEnquiry } from '@/lib/intake'
 import { addDaysISO, todayISO } from '@/lib/utils'
+import { contactPage } from '@/data/pages'
 
 /* The label sits inside the field, so the top padding is what makes room for
    it and the bottom padding is what the typed value gets. Both are generous
@@ -32,6 +33,7 @@ const steps = [
  * decorative: it is the payload, character for character.
  */
 export function ContactForm() {
+  const form = contactPage.form
   const today = todayISO()
   const [draft, setDraft] = useState<ContactDraft & { salutation: string }>({
     salutation: '',
@@ -68,17 +70,15 @@ export function ContactForm() {
         <div className="grid gap-12 lg:grid-cols-[1fr_1.08fr] lg:gap-16">
           {/* ------------------------- the explanation ------------------------- */}
           <div className="lg:sticky lg:top-28 lg:self-start">
-            <Eyebrow>Write to us</Eyebrow>
-            <SectionTitle className="mt-3" underline="send">
-              A form that does not
+            <Eyebrow>{form.eyebrow}</Eyebrow>
+            <SectionTitle className="mt-3" underline={form.heading.accent}>
+              {form.heading.line1}
               <br />
-              pretend to
+              {form.heading.lead}
             </SectionTitle>
 
             <p className="mt-6 text-[1.0625rem] leading-relaxed text-pretty">
-              Most contact forms drop your message into an inbox nobody has opened since March. This
-              one builds a WhatsApp message and lets you press send - so you know
-              exactly where it went and you have the thread on your own phone.
+              {form.copy}
             </p>
 
             <ol className="mt-9 space-y-5">
@@ -100,8 +100,7 @@ export function ContactForm() {
             <p className="mt-9 flex gap-3 rounded-2xl border border-line bg-surface p-5 text-[0.875rem] leading-relaxed text-muted">
               <ShieldCheck className="mt-0.5 size-[1.15rem] shrink-0 text-green-deep dark:text-green" />
               <span>
-                Nothing you type here is stored or sent anywhere until you press the button. There
-                is no account, no tracking pixel and no third party in between.
+                {form.guarantee}
               </span>
             </p>
           </div>

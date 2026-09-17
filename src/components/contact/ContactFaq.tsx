@@ -3,6 +3,7 @@ import { Container, Eyebrow, SectionTitle } from '@/components/ui/primitives'
 import { contactFaqs } from '@/data/contact'
 import { enquiryUrl } from '@/lib/whatsapp'
 import { ButtonAnchor } from '@/components/ui/Button'
+import { contactPage } from '@/data/pages'
 
 /**
  * Built on `<details>` rather than state, so every answer is present in the
@@ -10,16 +11,18 @@ import { ButtonAnchor } from '@/components/ui/Button'
  * opened before React has hydrated anything.
  */
 export function ContactFaq() {
+  const faq = contactPage.faq
+
   return (
     <section id="faq" className="scroll-mt-24 border-t border-line bg-surface-2 py-16 sm:py-20 lg:py-24">
       <Container>
         <div className="grid gap-12 lg:grid-cols-[1fr_1.35fr] lg:gap-16">
           <div className="lg:sticky lg:top-28 lg:self-start">
-            <Eyebrow>Before you ask</Eyebrow>
-            <SectionTitle className="mt-3" underline="asked">
-              The six we get
+            <Eyebrow>{faq.eyebrow}</Eyebrow>
+            <SectionTitle className="mt-3" underline={faq.heading.accent}>
+              {faq.heading.line1}
               <br />
-              most
+              {faq.heading.lead}
             </SectionTitle>
             <p className="mt-6 text-[1.0625rem] leading-relaxed text-pretty">
               If the answer is not here, it is a two-tap message away - and it will probably end up

@@ -1,5 +1,6 @@
 import { ArrowUpRight, Bus, Plane, Route, Train } from 'lucide-react'
 import { Container, Eyebrow, SectionTitle } from '@/components/ui/primitives'
+import { contactPage } from '@/data/pages'
 import { reachRoutes } from '@/data/contact'
 import { site } from '@/data/site'
 import { useReveal } from '@/lib/useReveal'
@@ -10,6 +11,7 @@ const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProper
 const icons = { air: Plane, rail: Train, bus: Bus, onward: Route }
 
 export function ContactVisit() {
+  const visit = contactPage.visit
   const list = useReveal<HTMLUListElement>(0.15)
 
   /** The pin, not a search - both the embed and the directions link use it. */
@@ -19,15 +21,14 @@ export function ContactVisit() {
     <section id="visit" className="scroll-mt-24 py-16 sm:py-20 lg:py-24">
       <Container>
         <div className="max-w-xl">
-          <Eyebrow>Getting here</Eyebrow>
-          <SectionTitle className="mt-3" underline="door">
-            Airport, station, ISBT -
+          <Eyebrow>{visit.eyebrow}</Eyebrow>
+          <SectionTitle className="mt-3" underline={visit.heading.accent}>
+            {visit.heading.line1}
             <br />
-            then our
+            {visit.heading.lead}
           </SectionTitle>
           <p className="mt-5 text-[1.0625rem] leading-relaxed text-pretty">
-            Guwahati is the gateway to the whole Northeast, which means almost everyone arrives from
-            one of three places. Here is what each one costs you in time.
+            {visit.copy}
           </p>
         </div>
 

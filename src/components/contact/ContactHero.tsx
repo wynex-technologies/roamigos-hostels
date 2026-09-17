@@ -6,6 +6,7 @@ import { Photo } from '@/components/ui/Photo'
 import { deskFacts } from '@/data/contact'
 import { site } from '@/data/site'
 import { enquiryUrl } from '@/lib/whatsapp'
+import { contactPage } from '@/data/pages'
 
 /**
  * The page opens on the two things somebody looking for "contact" actually
@@ -13,6 +14,8 @@ import { enquiryUrl } from '@/lib/whatsapp'
  * other end. Everything else on the page is detail.
  */
 export function ContactHero() {
+  const hero = contactPage.hero
+
   return (
     <section className="relative overflow-hidden border-b border-line bg-surface-2 pt-10 pb-16 sm:pt-12 sm:pb-20">
       {/* Warm ambient wash, kept subtle - this section is a workspace, not a poster. */}
@@ -40,17 +43,15 @@ export function ContactHero() {
         <div className="mt-8 grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16">
           {/* ---------------------------- the ask ---------------------------- */}
           <div>
-            <Eyebrow>Say hello</Eyebrow>
-            <SectionTitle as="h1" className="mt-3" underline="desk">
-              There is always
+            <Eyebrow>{hero.eyebrow}</Eyebrow>
+            <SectionTitle as="h1" className="mt-3" underline={hero.heading.accent}>
+              {hero.heading.line1}
               <br />
-              someone on the
+              {hero.heading.lead}
             </SectionTitle>
 
             <p className="mt-6 max-w-lg text-[1.0625rem] leading-relaxed text-pretty">
-              No ticket numbers, no hold music, no bot that asks for your booking reference three
-              times. Message us and a person who has actually stood at the Nimati Ghat ferry queue
-              will answer you.
+              {hero.copy}
             </p>
 
             {/* Live-ish signal - the one claim worth putting above the buttons. */}
@@ -59,7 +60,7 @@ export function ContactHero() {
                 <span className="absolute size-2.5 animate-ping rounded-full bg-green/60 motion-reduce:animate-none" />
                 <span className="size-2 rounded-full bg-green-deep dark:bg-green" />
               </span>
-              Front desk online - usually replies in under 10 minutes
+              {hero.status}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -98,7 +99,7 @@ export function ContactHero() {
                 which is also the only way it stays readable on both grounds. */}
             <div className="h-40 sm:h-48">
               <Photo
-                id="photo-1648960456182-00643d5d20eb"
+                id={hero.image}
                 width={900}
                 widths={[560, 900, 1200]}
                 sizes="(min-width: 1024px) 32rem, 100vw"
