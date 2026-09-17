@@ -16,6 +16,7 @@ import Faqs from '@/pages/Faqs'
 import PageSettings from '@/pages/PageSettings'
 import Settings from '@/pages/Settings'
 import Profile from '@/pages/Profile'
+import Users from '@/pages/Users'
 
 /**
  * Three gates before any screen renders, in this order: the panel has to be
@@ -31,19 +32,28 @@ export default function App() {
   if (!session) return <Login />
   if (!admin) return <NoAccess />
 
+  const isOwner = admin.role === 'owner'
+  const can = (tab: string) => isOwner || admin.tabs?.includes(tab)
+
   return (
     <Routes>
       <Route element={<Shell />}>
         <Route index element={<Dashboard />} />
-        <Route path="bookings" element={<Bookings />} />
-        <Route path="enquiries" element={<Enquiries />} />
-        <Route path="rooms" element={<Rooms />} />
-        <Route path="blog" element={<Blog />} />
-        <Route path="offer" element={<Offer />} />
-        <Route path="faqs" element={<Faqs />} />
-        <Route path="pages" element={<PageSettings />} />
+        
+        {can('Bookings') && <Route path="bookings" element={<Bookings />} />}
+        {can('Enquiries') && <Route path="enquiries" element={<Enquiries />} />}
+        {can('Rooms') && <Route path="rooms" element={<Rooms />} />}
+        {can('Journal') && <Route path="blog" element={<Blog />} />}
+        {can('Offer') && <Route path="offer" element={<Offer />} />}
+        {can('FAQs') && <Route path="faqs" element={<Faqs />} />}
+        {can('Page settings') && <Route path="pages" element={<PageSettings />} />}
+        
+        {isOwner && <Route path="users" element={<Users />} />}
+        
         <Route path="settings" element={<Settings />} />
         <Route path="profile" element={<Profile />} />
+        
+        {/* If a route isn't rendered above, this catch-all sends them to dashboard */}
         <Route path="*" element={<Dashboard />} />
       </Route>
     </Routes>

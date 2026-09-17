@@ -32,19 +32,15 @@ import { Button, cn } from './ui'
 
 const links = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  // `watch` ties a row to the notification counter it shows - the two screens
-  // something can arrive on while nobody is looking at them.
   { to: '/bookings', label: 'Bookings', icon: CalendarCheck, watch: 'booking' as Kind },
   { to: '/enquiries', label: 'Enquiries', icon: MessageSquare, watch: 'enquiry' as Kind },
   { to: '/rooms', label: 'Rooms', icon: BedDouble },
   { to: '/blog', label: 'Journal', icon: Newspaper },
   { to: '/offer', label: 'Offer', icon: Tag },
   { to: '/faqs', label: 'FAQs', icon: HelpCircle },
-  // Built, not open yet - see `lib/flags.ts`. It stays in the list rather than
-  // being dropped from it, so the panel does not appear to grow a screen later:
-  // it is visibly there and visibly closed.
   { to: '/pages', label: 'Page settings', icon: LayoutTemplate, locked: PAGE_SETTINGS_LOCKED },
   { to: '/settings', label: 'Settings', icon: Settings },
+  { to: '/users', label: 'Users', icon: UserRound, adminOnly: true },
 ]
 
 /**
@@ -108,9 +104,20 @@ export function Shell() {
 
   const row = 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors'
 
+  const visibleLinks = links.filter((link) => {
+    if (admin?.role === 'owner') return true
+    if (link.adminOnly) return false // Only owners see Users tab
+    
+    // For editors, always show Dashboard and Settings
+    if (link.to === '/' || link.to === '/settings') return true
+    
+    // Otherwise, check if the tab is in their allowed list
+    return admin?.tabs?.includes(link.label)
+  })
+
   const nav = (
     <nav className="flex flex-col gap-1">
-      {links.map(({ to, label, icon: Icon, end, locked, watch }) =>
+      {visibleLinks.map(({ to, label, icon: Icon, end, locked, watch }) =>
         locked ? (
           // Present, dimmed and not a link. `aria-disabled` rather than a
           // disabled button so it is still read out - a screen reader user

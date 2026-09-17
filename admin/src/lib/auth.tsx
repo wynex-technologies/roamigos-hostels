@@ -7,6 +7,7 @@ interface Admin {
   email: string
   fullName: string | null
   role: 'owner' | 'editor'
+  tabs: string[]
 }
 
 interface AuthValue {
@@ -71,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let alive = true
     supabase
       .from('admin_users')
-      .select('id,email,full_name,role')
+      .select('id,email,full_name,role,tabs')
       .eq('id', session.user.id)
       .maybeSingle()
       .then(({ data }) => {
@@ -83,6 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 email: data.email,
                 fullName: data.full_name,
                 role: data.role as Admin['role'],
+                tabs: data.tabs || [],
               }
             : null,
         )
