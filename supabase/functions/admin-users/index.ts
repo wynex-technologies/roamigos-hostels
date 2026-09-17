@@ -11,7 +11,7 @@ Deno.serve(async (request) => {
   const cors = preflight(request)
   if (cors) return cors
 
-  if (request.method !== 'POST') {
+  if (!['POST', 'DELETE', 'PATCH'].includes(request.method)) {
     return new Response('Method not allowed', { status: 405 })
   }
 
@@ -32,7 +32,7 @@ Deno.serve(async (request) => {
     .single()
 
   if (!admin || admin.role !== 'owner') {
-    return new Response('Forbidden: Only owners can create users.', { status: 403 })
+    return new Response('Forbidden: Only owners can manage users.', { status: 403 })
   }
 
   let body
@@ -42,41 +42,72 @@ Deno.serve(async (request) => {
     return new Response('Bad request', { status: 400 })
   }
 
-  const { email, password, fullName, tabs } = body
-  if (!email || !password) {
-    return new Response('Email and password required', { status: 400 })
-  }
+  if (request.method === 'POST') {
+    const { email, password, fullName, tabs } = body
+    if (!email || !password) {
+      return new Response('Email and password required', { status: 400 })
+    }
 
-  // 1. Create auth user
-  const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true
-  })
-
-  if (createError) {
-    return new Response(createError.message, { status: 400 })
-  }
-
-  // 2. Add to admin_users allowlist
-  const { error: insertError } = await supabase
-    .from('admin_users')
-    .insert({
-      id: newUser.user.id,
+    // 1. Create auth user
+    const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
       email,
-      full_name: fullName || null,
-      role: 'editor',
-      tabs: tabs || []
+      password,
+      email_confirm: true
     })
 
-  if (insertError) {
-    // Attempt rollback
-    await supabase.auth.admin.deleteUser(newUser.user.id)
-    return new Response('Failed to add to allowlist: ' + insertError.message, { status: 500 })
+    if (createError) {
+      return new Response(createError.message, { status: 400 })
+    }
+
+    // 2. Add to admin_users allowlist
+    const { error: insertError } = await supabase
+      .from('admin_users')
+      .insert({
+        id: newUser.user.id,
+        email,
+        full_name: fullName || null,
+        role: 'editor',
+        tabs: tabs || []
+      })
+
+    if (insertError) {
+      // Attempt rollback
+      await supabase.auth.admin.deleteUser(newUser.user.id)
+      return new Response('Failed to add to allowlist: ' + insertError.message, { status: 500 })
+    }
+
+    return new Response(JSON.stringify({ success: true, user: newUser.user }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 
-  return new Response(JSON.stringify({ success: true, user: newUser.user }), {
-    status: 201,
-    headers: { 'Content-Type': 'application/json' },
-  })
+  if (request.method === 'DELETE') {
+    const { id } = body
+    if (!id) return new Response('User ID required', { status: 400 })
+    if (id === auth.user.id) return new Response('Cannot delete yourself', { status: 400 })
+
+    const { error } = await supabase.auth.admin.deleteUser(id)
+    if (error) return new Response(error.message, { status: 400 })
+
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  if (request.method === 'PATCH') {
+    const { id, password } = body
+    if (!id || !password) return new Response('User ID and password required', { status: 400 })
+
+    const { error } = await supabase.auth.admin.updateUserById(id, { password })
+    if (error) return new Response(error.message, { status: 400 })
+
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  return new Response('Method not implemented', { status: 501 })
 })

@@ -101,6 +101,59 @@ export default function Users() {
       .eq('id', userId)
   }
 
+  async function handleDeleteUser(userId: string) {
+    if (!window.confirm('Are you sure you want to delete this user?')) return
+
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.access_token) return
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-users`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ id: userId })
+      })
+
+      if (!res.ok) throw new Error(await res.text())
+      
+      setUsers(users.filter(u => u.id !== userId))
+    } catch (err: any) {
+      alert(err.message)
+    }
+  }
+
+  async function handleUpdatePassword(userId: string) {
+    const newPassword = window.prompt('Enter new password for this user (min 6 characters):')
+    if (!newPassword) return
+    if (newPassword.length < 6) {
+      alert('Password must be at least 6 characters.')
+      return
+    }
+
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.access_token) return
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-users`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ id: userId, password: newPassword })
+      })
+
+      if (!res.ok) throw new Error(await res.text())
+      
+      alert('Password updated successfully.')
+    } catch (err: any) {
+      alert(err.message)
+    }
+  }
+
   if (admin?.role !== 'owner') {
     return (
       <div className="p-8 text-center text-muted">You do not have permission to view this page.</div>
@@ -132,7 +185,21 @@ export default function Users() {
                     <div>
                       <h3 className="font-medium text-heading">{user.full_name || 'No Name'}</h3>
                       <p className="text-sm text-muted">{user.email}</p>
-                      <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-accent">{user.role}</p>
+                      <p className="mt-1 flex items-center gap-2">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-accent">{user.role}</span>
+                        {user.id !== admin.id && (
+                          <>
+                            <span className="text-muted/30">•</span>
+                            <button onClick={() => handleUpdatePassword(user.id)} className="text-xs font-medium text-muted hover:text-primary transition-colors">
+                              Change Password
+                            </button>
+                            <span className="text-muted/30">•</span>
+                            <button onClick={() => handleDeleteUser(user.id)} className="text-xs font-medium text-maroon hover:text-maroon/80 transition-colors">
+                              Remove
+                            </button>
+                          </>
+                        )}
+                      </p>
                     </div>
                   </div>
 
