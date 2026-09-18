@@ -3,6 +3,7 @@ import { UserPlus, Shield, UserRound } from 'lucide-react'
 import { Button, Field, Text } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
+import { MANAGED_TABS } from '@/lib/tabs'
 
 interface AdminUser {
   id: string
@@ -12,7 +13,18 @@ interface AdminUser {
   tabs: string[]
 }
 
-const ALL_TABS = ['Bookings', 'Enquiries', 'Rooms', 'Journal', 'Offer', 'FAQs', 'Page settings']
+/**
+ * The tabs an owner can switch on and off, straight off the rail's own list -
+ * spelled there once, so a checkbox cannot grant a tab the rail never draws.
+ *
+ * Dashboard is in here now. It used to be forced on for everybody, which meant
+ * a member hired to answer enquiries still opened onto the night's takings.
+ * Settings is not: everyone keeps their own account screen.
+ */
+const ALL_TABS = MANAGED_TABS.map((tab) => tab.label)
+
+/** What a new member starts with, unless the owner says otherwise. */
+const DEFAULT_TABS = ['Dashboard']
 
 export default function Users() {
   const { admin } = useAuth()
@@ -22,7 +34,7 @@ export default function Users() {
   const [newUserEmail, setNewUserEmail] = useState('')
   const [newUserFullName, setNewUserFullName] = useState('')
   const [newUserPassword, setNewUserPassword] = useState('')
-  const [newUserTabs, setNewUserTabs] = useState<string[]>([])
+  const [newUserTabs, setNewUserTabs] = useState<string[]>(DEFAULT_TABS)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -31,12 +43,14 @@ export default function Users() {
   }, [])
 
   async function fetchUsers() {
+    // Named columns, like every other query in the panel - `select('*')` here
+    // would also start shipping whatever column `admin_users` gains next.
     const { data, error: fetchErr } = await supabase
       .from('admin_users')
-      .select('*')
+      .select('id,email,full_name,role,tabs')
       .order('created_at', { ascending: false })
-    
-    if (fetchErr) console.error(fetchErr)
+
+    if (fetchErr) setError(fetchErr.message)
     if (data) setUsers(data)
     setLoading(false)
   }
@@ -77,7 +91,7 @@ export default function Users() {
       setNewUserEmail('')
       setNewUserPassword('')
       setNewUserFullName('')
-      setNewUserTabs([])
+      setNewUserTabs(DEFAULT_TABS)
       
       // Refresh list
       fetchUsers()
@@ -88,17 +102,50 @@ export default function Users() {
     }
   }
 
+  /**
+   * Tick a tab on or off for one member.
+   *
+   * This goes through the edge function, not through the table. `admin_users`
+   * has a read policy and no write policy - the allowlist is deliberately the
+   * one thing the panel cannot edit directly, so that nobody can grant
+   * themselves a role through the panel they are signed into. A direct
+   * `update()` here matched no rows, returned no error, and left the checkbox
+   * looking saved until the next reload put it back.
+   *
+   * The box moves first because it should feel immediate, and moves back if
+   * the write does not land - a checkbox that lies about what somebody can see
+   * is worse than a slow one.
+   */
   async function handleUpdateTabs(userId: string, currentTabs: string[], tab: string) {
     const nextTabs = currentTabs.includes(tab)
       ? currentTabs.filter((t) => t !== tab)
       : [...currentTabs, tab]
-    
-    setUsers(users.map(u => u.id === userId ? { ...u, tabs: nextTabs } : u))
 
-    await supabase
-      .from('admin_users')
-      .update({ tabs: nextTabs })
-      .eq('id', userId)
+    setUsers((list) => list.map((u) => (u.id === userId ? { ...u, tabs: nextTabs } : u)))
+    setError(null)
+
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.access_token) {
+      setUsers((list) => list.map((u) => (u.id === userId ? { ...u, tabs: currentTabs } : u)))
+      setError('Session expired. Sign in again.')
+      return
+    }
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-users`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ id: userId, tabs: nextTabs })
+      })
+
+      if (!res.ok) throw new Error(await res.text())
+    } catch (err: any) {
+      setUsers((list) => list.map((u) => (u.id === userId ? { ...u, tabs: currentTabs } : u)))
+      setError(err.message || 'Could not save that change.')
+    }
   }
 
   async function handleDeleteUser(userId: string) {
@@ -167,6 +214,10 @@ export default function Users() {
         <p className="mt-2 text-muted">Manage who can access the front desk and what tabs they can see.</p>
       </header>
 
+      {/* A failed tab change happens up here, so it has to be able to say so
+          up here - the only error line used to live inside the invite form. */}
+      {error && <p className="text-sm font-medium text-maroon">{error}</p>}
+
       {/* List of existing users */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-heading">Team Members</h2>
@@ -219,7 +270,7 @@ export default function Users() {
                           </label>
                         ))}
                       </div>
-                      <p className="mt-2 text-[0.6875rem] text-muted">Dashboard and Settings are always allowed.</p>
+                      <p className="mt-2 text-[0.6875rem] text-muted">Settings and their own profile are always allowed. Unticking every box leaves them with just those.</p>
                     </div>
                   )}
                 </div>
@@ -232,7 +283,6 @@ export default function Users() {
       <section className="card-raised p-6 sm:p-8">
         <h2 className="text-xl font-semibold text-heading mb-6">Invite Member</h2>
         <form onSubmit={handleCreateUser} className="max-w-xl space-y-6">
-          {error && <p className="text-maroon text-sm font-medium">{error}</p>}
           
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Full Name">
@@ -264,7 +314,7 @@ export default function Users() {
             />
           </Field>
 
-          <Field label="Assign Tabs" hint="What sections of the panel should this user see? (Dashboard and Settings are always allowed)">
+          <Field label="Assign Tabs" hint="What sections of the panel should this user see? Settings and their own profile are always allowed.">
             <div className="flex flex-wrap gap-2 mt-2">
               {ALL_TABS.map(tab => (
                 <label key={tab} className="flex items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-3 py-1.5 text-sm cursor-pointer hover:border-primary">

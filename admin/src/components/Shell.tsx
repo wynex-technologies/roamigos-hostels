@@ -1,47 +1,25 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import {
-  BedDouble,
-  CalendarCheck,
-  HelpCircle,
-  LayoutDashboard,
-  LayoutTemplate,
   Lock,
   LogOut,
   Bell,
   BellRing,
   Menu,
-  MessageSquare,
   Moon,
-  Newspaper,
-  Settings,
   Sun,
-  Tag,
   UploadCloud,
   UserRound,
   X,
 } from 'lucide-react'
 import { LogoMark } from './Logo'
 import { useAuth } from '@/lib/auth'
-import { PAGE_SETTINGS_LOCKED } from '@/lib/flags'
 import { usePublish } from '@/lib/publish'
 import { useTheme } from '@/lib/theme'
-import { useNotifications, type Kind } from '@/lib/notifications'
+import { useNotifications } from '@/lib/notifications'
+import { TABS, canSee } from '@/lib/tabs'
 import { Toasts } from './Toasts'
 import { Button, cn } from './ui'
-
-const links = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/bookings', label: 'Bookings', icon: CalendarCheck, watch: 'booking' as Kind },
-  { to: '/enquiries', label: 'Enquiries', icon: MessageSquare, watch: 'enquiry' as Kind },
-  { to: '/rooms', label: 'Rooms', icon: BedDouble },
-  { to: '/blog', label: 'Journal', icon: Newspaper },
-  { to: '/offer', label: 'Offer', icon: Tag },
-  { to: '/faqs', label: 'FAQs', icon: HelpCircle },
-  { to: '/pages', label: 'Page settings', icon: LayoutTemplate, locked: PAGE_SETTINGS_LOCKED },
-  { to: '/settings', label: 'Settings', icon: Settings },
-  { to: '/users', label: 'Users', icon: UserRound, adminOnly: true },
-]
 
 /**
  * The publish control.
@@ -104,20 +82,19 @@ export function Shell() {
 
   const row = 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors'
 
-  const visibleLinks = links.filter((link) => {
-    if (admin?.role === 'owner') return true
-    if (link.adminOnly) return false // Only owners see Users tab
-    
-    // For editors, always show Dashboard and Settings
-    if (link.to === '/' || link.to === '/settings') return true
-    
-    // Otherwise, check if the tab is in their allowed list
-    return admin?.tabs?.includes(link.label)
+  // Settings stays on for everybody, and Users is owners-only. Everything
+  // else - Dashboard now included - is whatever the owner has granted on the
+  // Users screen. `App` gates the routes off the same answer, so a tab that is
+  // not in the rail is not reachable by typing its address either.
+  const visibleLinks = TABS.filter((tab) => {
+    if (tab.ownerOnly) return admin?.role === 'owner'
+    if (tab.always) return true
+    return canSee(admin, tab.label)
   })
 
   const nav = (
     <nav className="flex flex-col gap-1">
-      {visibleLinks.map(({ to, label, icon: Icon, end, locked, watch }) =>
+      {visibleLinks.map(({ path: to, label, icon: Icon, end, locked, watch }) =>
         locked ? (
           // Present, dimmed and not a link. `aria-disabled` rather than a
           // disabled button so it is still read out - a screen reader user
