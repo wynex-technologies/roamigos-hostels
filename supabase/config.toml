@@ -19,6 +19,20 @@ verify_jwt = false
 [functions.intake]
 verify_jwt = false
 
+# Team members: invite, remove, reset a password. It needs the service_role key,
+# so it cannot be a table write - and it does its own auth exactly like
+# `publish` does, only stricter: the caller's token must resolve to a user who
+# is a row in `admin_users` AND whose role is `owner`.
+#
+# `verify_jwt` is off for the same reason it is off on the others, and there is
+# a second one here. The browser sends an OPTIONS preflight before a DELETE or
+# a PATCH, and a preflight carries no Authorization header - the gateway turns
+# it away with a 401 before the function runs, and the panel sees only
+# `Failed to fetch`. Nothing is opened up by this: the checks above run on
+# every request that is not a preflight.
+[functions.admin-users]
+verify_jwt = false
+
 # Publish, on a host that builds. Not used on Hostinger, where `publish.php`
 # writes the file directly. It does its own auth: the caller's token must
 # resolve to a user who is a row in `admin_users`, checked in the function.

@@ -142,9 +142,17 @@ It upserts on slugs, so running it twice changes nothing.
 ```sh
 supabase functions deploy offer
 supabase functions deploy intake
+supabase functions deploy admin-users
 
 supabase secrets set ALLOWED_ORIGINS="https://your-domain.com"
 ```
+
+`admin-users` is what the panel's Users screen calls to invite a member, remove
+one and reset a password - all three need the service_role key, which the panel
+does not hold. It is deployed like the others and needs no secret of its own.
+
+Note that `ALLOWED_ORIGINS` has to name the panel's origin as well as the
+site's, since the panel is the only thing that calls this one.
 
 On Hostinger there is no build to trigger - the panel writes the content file
 directly through `hostinger/api/publish.php`, and the `publish` function is not
