@@ -54,17 +54,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let alive = true
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (alive) setSession(data.session)
+    /**
+     * Stop waiting, whatever happened.
+     *
+     * `loading` is what holds the whole panel on its spinner, so the one thing
+     * that must never happen is for it to stay true - and it could. The read
+     * below had no failure path at all: no `catch`, and nothing to end the wait
+     * if the promise simply never settled, which `getSession` can do when the
+     * auth lock is held by another tab or when storage is unavailable. The
+     * panel then showed "Loading" on every refresh, for good, with nothing on
+     * screen to say why and no way out but clearing site data.
+     *
+     * Ending the wait is safe on its own. Nothing is being decided here except
+     * whether to keep showing the spinner: with no session the panel shows its
+     * sign-in screen, and if the session does turn up later - late, or restored
+     * by another tab - `onAuthStateChange` below delivers it and the panel
+     * carries on from there.
+     */
+    const settle = () => {
       if (alive) setLoading(false)
-    })
+    }
 
+    // Eight seconds is far longer than this takes when it works, so reaching it
+    // means something is wrong rather than slow.
+    const giveUp = window.setTimeout(settle, 8000)
+
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (alive) setSession(data.session)
+      })
+      .catch(() => {
+        // Storage blocked, a corrupt stored session, no network. The sign-in
+        // screen is the right answer to all three.
+      })
+      .finally(() => {
+        window.clearTimeout(giveUp)
+        settle()
+      })
+
+    // Fires INITIAL_SESSION on load as well as on every later change, so this
+    // is also how a session that resolved after the timeout gets picked up.
     const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
       setSession(next)
+      settle()
     })
 
     return () => {
       alive = false
+      window.clearTimeout(giveUp)
       sub.subscription.unsubscribe()
     }
   }, [])
@@ -95,7 +133,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               }
             : null,
         )
-      })
+      },
+      // A failed read is not a membership: the allowlist screen is the honest
+      // answer, rather than leaving the panel on a promise that never came
+      // back. `then` here returns a PromiseLike, not a Promise, so the second
+      // argument is the only way to catch it.
+      () => {
+        if (alive) setAdmin(null)
+      },
+    )
 
     return () => {
       alive = false
