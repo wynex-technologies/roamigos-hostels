@@ -73,7 +73,29 @@ function run(command: string, args: string[], cwd: string, env: NodeJS.ProcessEn
 
 // The site first, because this writes `dist/` and would wipe the panel out of
 // it if it ran second.
-run('npm', ['run', 'build'], root)
+//
+// `VITE_CONTENT_URL` points the site at the Storage bucket, because that is
+// where Publish puts the file on a host with no writable disk. Set here rather
+// than in `.env` for the same reason `VITE_PUBLISH_MODE` is: this script *is*
+// the build for that host, so it is the one place that already knows. An
+// Apache host leaves it unset and the site reads `/content.json` beside
+// `index.html`.
+const intake = process.env.VITE_INTAKE_ENDPOINT ?? ''
+const project = intake.includes('.functions.')
+  ? intake.slice(0, intake.indexOf('.functions.')) + '.supabase.co'
+  : ''
+const contentUrl = project ? `${project}/storage/v1/object/public/content/content.json` : ''
+
+if (!contentUrl) {
+  console.warn(
+    '
+[vercel] VITE_INTAKE_ENDPOINT is not set, so the site will read /content.json
+' +
+      '          from the bundle instead of the Storage bucket. Publish will need a rebuild.',
+  )
+}
+
+run('npm', ['run', 'build'], root, contentUrl ? { VITE_CONTENT_URL: contentUrl } : {})
 
 // A fresh checkout on a build machine has no `admin/node_modules`. `ci` rather
 // than `install`, so the build gets the locked versions and never resolves a

@@ -21,10 +21,24 @@ import { useServerContent, type SyncedContent } from './index'
  * logged as an error, because none of it is one.
  */
 
-/** Same origin in dev, but live Storage bucket in production for instant updates. */
-const intake = import.meta.env.VITE_INTAKE_ENDPOINT as string | undefined
-const supabaseUrl = intake ? intake.substring(0, intake.indexOf('.functions.')) + '.supabase.co' : ''
-const CONTENT_URL = supabaseUrl ? `${supabaseUrl}/storage/v1/object/public/content/content.json` : '/content.json'
+/**
+ * Where the published file is, which depends on what kind of host this is.
+ *
+ * Same origin by default - a file sitting next to `index.html`, written there
+ * by `api/publish.php`. That is the arrangement the whole egress strategy is
+ * built on: the file is served by the same Apache that served the page, so a
+ * visit costs Supabase nothing at all.
+ *
+ * A host with no writable disk cannot do that, and publishes to Supabase
+ * Storage instead. Those builds set `VITE_CONTENT_URL` to the bucket's public
+ * URL - `scripts/build-vercel.ts` does exactly that, which is the one place
+ * that knows it is building for such a host.
+ *
+ * Getting this wrong is quiet and nasty: the desk presses Publish, the panel
+ * says it worked, and the site keeps serving the old content because it is
+ * reading a different copy from the one that was written.
+ */
+const CONTENT_URL = (import.meta.env.VITE_CONTENT_URL as string | undefined)?.trim() || '/content.json'
 
 /** The site should not sit on a blank screen because a static file is slow. */
 const TIMEOUT_MS = 3000
