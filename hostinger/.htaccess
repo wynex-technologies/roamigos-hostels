@@ -17,8 +17,22 @@ DirectoryIndex index.html
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  # --------------------------------------------------------------- https ---
-  # First, because everything below terminates the rewrite chain.
+  # ------------------------------------------------- canonical host + https ---
+  # Both first, because everything below terminates the rewrite chain.
+  #
+  # The bare domain is the canonical one - it is what `site.url` in
+  # src/data/site.ts names, so it is what every canonical link, every schema
+  # `@id` and the whole sitemap points at. A `www` that does not come here
+  # leaves the site telling Google one thing while the server does another.
+  #
+  # The www rule runs before the https one and sends the visitor straight to
+  # the final URL, so `http://www.example.com/rooms` is one redirect rather
+  # than two. Do NOT also add a www redirect through cPanel's Redirects
+  # screen: that writes its own rules into this same file, usually above
+  # these, and two sets of host rules is how a redirect loop happens.
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
   RewriteCond %{HTTPS} !=on
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
