@@ -34,5 +34,8 @@ public/content.json.bak
 deploy
 hostinger/api/config.php
 
+# Kept on this machine, not in the repo.
+CLAUDE.md
+
 # Local state the Supabase CLI writes. Not the project's.
 supabase/.temp
