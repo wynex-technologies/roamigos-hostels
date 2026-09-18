@@ -54,11 +54,20 @@ const defaults: {
   /**
    * The canonical origin, no trailing slash. Every share card, canonical link
    * and schema `@id` is built off this, so a wrong value here silently points
-   * the whole site at another domain.
-   * TODO: confirm the live domain before launch - `index.html`, `robots.txt`
-   * and `sitemap.xml` are static files and carry their own copy of it.
+   * the whole site at another domain - which is exactly what it did: this said
+   * `roamigos.in` while the site was served from `roamigoshostel.com`, so every
+   * canonical and every `@id` named a domain that does not resolve.
+   *
+   * The bare domain, not `www`. That is the main one, so it is the one the
+   * sitemap lists and the one a search result should show - and `www` has to
+   * redirect here rather than the other way round, or every canonical link
+   * points at a URL that immediately bounces.
+   *
+   * `index.html`, `robots.txt` and `sitemap.xml` carry their own copy of this,
+   * written from here by the `roamigos-seo` plugin at build - so changing it
+   * needs a rebuild, not just a publish.
    */
-  url: 'https://roamigos.in',
+  url: 'https://roamigoshostel.com',
 
   /**
    * The picture that shows up when the site is pasted into WhatsApp, Instagram
@@ -76,7 +85,7 @@ const defaults: {
    */
   whatsappNumber: '919876543210',
   phoneDisplay: '+91 98765 43210',
-  email: 'stay@roamigos.in',
+  email: 'stay@roamigoshostel.com',
 
   /**
    * The flagship property, as Google Maps has it listed. `mapUrl` is the share
