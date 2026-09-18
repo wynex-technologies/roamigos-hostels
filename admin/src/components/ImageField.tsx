@@ -21,6 +21,14 @@ import { cn } from './ui'
  * A field that already holds an Unsplash id or somebody else's URL keeps
  * working and says so - those cost nothing to serve and there is no reason to
  * make anybody re-upload one.
+ *
+ * **The alt box is part of the field, not a separate one.** Pass `alt` and
+ * `onAltChange` and it appears under the picker, because a description belongs
+ * to the photograph rather than to the form - somebody who has just chosen an
+ * image is the person who knows what is in it, and asking three fields later is
+ * how every image on a site ends up undescribed. It is drawn only when the
+ * caller passes the pair, so a slot the site renders decoratively can leave it
+ * off entirely.
  */
 export function ImageField({
   label,
@@ -32,6 +40,9 @@ export function ImageField({
   onUploaded,
   onRemoved,
   aspect = 'aspect-16/10',
+  alt,
+  onAltChange,
+  altHint,
 }: {
   label: string
   value: string
@@ -44,6 +55,11 @@ export function ImageField({
   onUploaded?: (url: string) => void
   onRemoved?: (url: string) => void
   aspect?: string
+  /** The image described in words. Pass with `onAltChange` to draw the box. */
+  alt?: string
+  onAltChange?: (next: string) => void
+  /** Replaces the standard line under the alt box, where a slot needs its own. */
+  altHint?: string
 }) {
   const inputId = useId()
   const input = useRef<HTMLInputElement>(null)
@@ -184,6 +200,25 @@ export function ImageField({
       </p>
 
       {error && <p className="mt-2 text-[0.8125rem] font-medium text-maroon">{error}</p>}
+
+      {onAltChange && (
+        <label className="mt-3 block">
+          <span className="mb-1.5 block text-[0.6875rem] font-bold tracking-[0.12em] text-muted uppercase">
+            Alt text
+          </span>
+          <input
+            value={alt ?? ''}
+            onChange={(event) => onAltChange(event.target.value)}
+            maxLength={160}
+            placeholder="What is in the picture"
+            className="field"
+          />
+          <span className="mt-1.5 block text-[0.75rem] leading-relaxed text-muted">
+            {altHint ??
+              'Read out to somebody who cannot see the image, and read by search engines. Describe what is in it, not that it is a photo. Leave it empty if the picture is purely decorative - an empty alt is the right answer there, not a gap.'}
+          </span>
+        </label>
+      )}
     </div>
   )
 }

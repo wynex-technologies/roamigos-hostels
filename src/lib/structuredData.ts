@@ -46,7 +46,7 @@ export function roomSchema(room: Room) {
     name: room.name,
     description: room.about,
     url: absoluteUrl(`/rooms/${room.slug}`),
-    image: room.images.slice(0, 4).map((id) => shareImage(id)),
+    image: room.images.slice(0, 4).map((item) => shareImage(item.src)),
     brand: { '@type': 'Brand', name: site.legalName },
     containedInPlace: HOSTEL,
     occupancy: {
@@ -151,8 +151,11 @@ export function articleSchema(post: BlogPost) {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     '@id': `${url}#article`,
+    // `headline` stays the real one: schema.org's headline is the article's
+    // title, not the line written to be clicked. The description is the one a
+    // search result prints, so that one takes the desk's version when set.
     headline: post.title,
-    description: post.excerpt,
+    description: post.metaDescription ?? post.excerpt,
     datePublished: post.date,
     author: { '@type': 'Person', name: post.author },
     image: shareImage(post.image),

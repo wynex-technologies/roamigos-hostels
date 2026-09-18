@@ -27,6 +27,8 @@
  * node and both apps compile it through Vite.
  */
 
+import type { PictureLike } from './media.ts'
+
 /* ---------------------------------------------------------------- shapes --- */
 
 /**
@@ -56,6 +58,8 @@ export interface ShowcaseEntry {
   tag: string
   note: string
   image: string
+  /** The picture in words. Empty falls back to the card's title. */
+  imageAlt?: string
   /** Mustard ribbon. Present only on a promotional card. */
   offer?: string
   /** Where the card leads. Defaults to the rooms listing. */
@@ -107,6 +111,13 @@ export interface GalleryShot {
   id: string
   album: AlbumKey
   caption: string
+  /**
+   * The photograph in words. The caption is printed beside the picture, so it
+   * is the fallback rather than the answer - a caption says what is notable
+   * about a shot, an alt says what is in it, and they are often not the same
+   * sentence.
+   */
+  alt?: string
   place: string
   /** Drives the tile height in the wall - the mix is what stops it reading as a grid. */
   span: 'tall' | 'wide' | 'square'
@@ -132,6 +143,9 @@ export interface HomeContent {
       place: string
       note: string
       image: string
+      /** The slide photograph in words. Empty renders it decorative, which is
+          what a full-bleed background behind a headline usually should be. */
+      imageAlt?: string
       /** Crop focus for the full-bleed background. A component decision - the
           panel round-trips it rather than offering it. */
       focus: string
@@ -163,8 +177,8 @@ export interface HomeContent {
     eyebrow: string
     heading: SplitHeading
     copy: string
-    /** Three plates - one lead and two stacked beside it. */
-    images: string[]
+    /** Three plates - one lead and two stacked beside it, each described. */
+    images: PictureLike[]
     perks: { title: string; icon: string }[]
     askLabel: string
     ctaLabel: string
@@ -174,7 +188,7 @@ export interface HomeContent {
     eyebrow: string
     heading: SplitHeading
     copy: string
-    items: { title: string; note: string; image: string; icon: string }[]
+    items: { title: string; note: string; image: string; imageAlt?: string; icon: string }[]
   }
   why: {
     eyebrow: string
@@ -255,7 +269,13 @@ export interface AboutContent {
     titleLine2: string
     underline: string
     copy: string
-    moments: { time: string; title: string; note: string; image: string }[]
+    moments: {
+      time: string
+      title: string
+      note: string
+      image: string
+      imageAlt?: string
+    }[]
   }
   guests: {
     eyebrow: string
@@ -267,7 +287,7 @@ export interface AboutContent {
     handle: string
     copyAfter: string
     ctaLabel: string
-    frames: { id: string; handle: string }[]
+    frames: { id: string; handle: string; alt?: string }[]
   }
   cta: {
     eyebrow: string
@@ -288,6 +308,7 @@ export interface ContactContent {
     copy: string
     status: string
     image: string
+    imageAlt?: string
   }
   channels: {
     eyebrow: string

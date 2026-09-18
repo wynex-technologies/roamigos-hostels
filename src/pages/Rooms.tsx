@@ -36,6 +36,7 @@ import { usePageMeta } from '@/lib/usePageMeta'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { breadcrumbs, roomListSchema } from '@/lib/structuredData'
 import { cn, formatDate, formatINR } from '@/lib/utils'
+import { altOf } from '@shared/media'
 
 
 /** Both selects in the quick bar - room type on mobile, sort everywhere. */
@@ -463,11 +464,11 @@ function RoomRow({
       className="group relative isolate block h-[19rem] animate-rise overflow-hidden rounded-xl2 border border-line shadow-warm transition-[transform,box-shadow] duration-500 ease-[var(--ease-out-soft)] hover:-translate-y-1.5 hover:shadow-warm-lg sm:h-[22rem] lg:h-[27rem]"
     >
       <Photo
-        id={room.images[0]}
+        id={room.images[0]?.src ?? ''}
         width={1400}
         widths={[700, 1000, 1400]}
         sizes="(min-width: 1024px) 46rem, 100vw"
-        alt={room.name}
+        alt={altOf(room.images[0], room.name)}
         loading="lazy"
         decoding="async"
         className="absolute inset-0 -z-10 size-full object-cover transition-transform duration-[1400ms] ease-[var(--ease-out-soft)] group-hover:scale-[1.06]"

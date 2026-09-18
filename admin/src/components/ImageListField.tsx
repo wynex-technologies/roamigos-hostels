@@ -2,6 +2,7 @@ import { useId, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, ImagePlus, Loader2, Trash2 } from 'lucide-react'
 import { ACCEPT, formatBytes, isManaged, upload, type MediaFolder } from '@/lib/media'
 import { cn } from './ui'
+import type { Picture } from '@shared/media'
 
 /**
  * A gallery field: several images, in an order that matters.
@@ -18,6 +19,12 @@ import { cn } from './ui'
  *
  * Like `ImageField`, removing a tile does not delete the object - it reports it
  * upward, and the record's Save is what settles it.
+ *
+ * **Each tile carries its own alt box.** A gallery is the place where
+ * descriptions are most likely to go unwritten - there are eight of them and
+ * they all look the same in a form - so the box sits on the tile, under the
+ * picture it describes, rather than in a list of eight boxes somewhere below
+ * that nobody can match to a photograph.
  */
 export function ImageListField({
   label,
@@ -28,15 +35,19 @@ export function ImageListField({
   note,
   onUploaded,
   onRemoved,
+  describable = true,
 }: {
   label: string
-  values: string[]
-  onChange: (next: string[]) => void
+  values: Picture[]
+  onChange: (next: Picture[]) => void
   folder: MediaFolder
   dimensions: string
   note?: string
   onUploaded?: (url: string) => void
   onRemoved?: (url: string) => void
+  /** Off for a strip the site renders decoratively, where a description would
+      be noise rather than help. */
+  describable?: boolean
 }) {
   const inputId = useId()
   const input = useRef<HTMLInputElement>(null)
@@ -51,14 +62,16 @@ export function ImageListField({
     setSaved('')
 
     const list = Array.from(files)
-    const added: string[] = []
+    const added: Picture[] = []
     let bytes = 0
 
     for (const [index, file] of list.entries()) {
       setBusy(list.length - index)
       try {
         const result = await upload(file, folder)
-        added.push(result.url)
+        // No description yet - the desk writes it on the tile. An empty alt is
+        // a valid end state, so nothing is invented from the file name.
+        added.push({ src: result.url })
         onUploaded?.(result.url)
         bytes += result.blob.size
       } catch (failure) {
@@ -74,7 +87,8 @@ export function ImageListField({
       // Duplicates are dropped: the object name is the hash of the bytes, so
       // the same photograph picked twice is the same URL, and the gallery
       // should not print it twice.
-      onChange([...values, ...added.filter((url) => !values.includes(url))])
+      const have = new Set(values.map((item) => item.src))
+      onChange([...values, ...added.filter((item) => !have.has(item.src))])
       setSaved(`${added.length} added, ${formatBytes(bytes)} in total`)
     }
   }
@@ -89,9 +103,12 @@ export function ImageListField({
 
   const drop = (index: number) => {
     const value = values[index]
-    onRemoved?.(value)
+    if (value) onRemoved?.(value.src)
     onChange(values.filter((_, i) => i !== index))
   }
+
+  const describe = (index: number, alt: string) =>
+    onChange(values.map((item, i) => (i === index ? { ...item, alt } : item)))
 
   return (
     <div>
@@ -108,11 +125,11 @@ export function ImageListField({
         <ul className="mb-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {values.map((value, index) => (
             <li
-              key={value}
+              key={value.src}
               className="group relative overflow-hidden rounded-xl border border-line bg-surface-2"
             >
               <span className="block aspect-4/3">
-                <img src={value} alt="" className="size-full object-cover" />
+                <img src={value.src} alt="" className="size-full object-cover" />
               </span>
 
               {index === 0 && (
@@ -121,7 +138,7 @@ export function ImageListField({
                 </span>
               )}
 
-              {!isManaged(value) && (
+              {!isManaged(value.src) && (
                 <span className="absolute top-2 right-2 rounded-full bg-ink/75 px-2 py-0.5 text-[0.625rem] font-bold tracking-wide text-white uppercase">
                   Linked
                 </span>
@@ -157,6 +174,19 @@ export function ImageListField({
                   <Trash2 className="size-4" />
                 </button>
               </div>
+
+              {describable && (
+                <div className="border-t border-line bg-surface px-1.5 pt-1 pb-1.5">
+                  <input
+                    value={value.alt ?? ''}
+                    onChange={(event) => describe(index, event.target.value)}
+                    maxLength={160}
+                    placeholder="Alt text"
+                    aria-label={`Alt text for image ${index + 1}`}
+                    className="w-full rounded-lg border border-line bg-surface-2 px-2 py-1 text-[0.75rem] text-heading transition-colors focus:border-primary focus:outline-none"
+                  />
+                </div>
+              )}
             </li>
           ))}
         </ul>

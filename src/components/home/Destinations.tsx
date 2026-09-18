@@ -364,7 +364,7 @@ export function Destinations() {
                         width={720}
                         widths={[360, 560, 720, 1080]}
                         sizes="(max-width: 640px) 84vw, (max-width: 1024px) 42vw, 20rem"
-                        alt={item.title}
+                        alt={item.imageAlt ?? item.title}
                         className="aspect-[5/7] w-full object-cover transition-transform duration-[1100ms] ease-[var(--ease-out-soft)] group-hover:scale-[1.09]"
                       />
 

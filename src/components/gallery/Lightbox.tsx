@@ -98,7 +98,7 @@ export function Lightbox({ shots, index, onClose, onStep }: LightboxProps) {
             width={1600}
             widths={[900, 1400, 1900]}
             sizes="90vw"
-            alt={shot.caption}
+            alt={shot.alt ?? shot.caption}
             className="max-h-[70vh] w-auto max-w-full rounded-xl2 object-contain shadow-lift"
           />
         </figure>

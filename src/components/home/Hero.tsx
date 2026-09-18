@@ -139,7 +139,9 @@ export function Hero() {
           width={1920}
           widths={[640, 960, 1400, 1920, 2400]}
           sizes="100vw"
-          alt=""
+          // Decorative unless the desk has described it: this runs full-bleed
+          // behind the headline, and the headline is the content.
+          alt={slide.imageAlt ?? ''}
           aria-hidden
           loading={i === 0 ? 'eager' : 'lazy'}
           fetchPriority={i === 0 ? 'high' : 'low'}

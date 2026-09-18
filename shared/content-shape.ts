@@ -25,6 +25,8 @@
  * everything, and dragging bookkeeping columns and timestamps across the wire
  * on every publish is exactly the habit this project avoids everywhere else.
  */
+import { pictures } from './media.ts'
+
 export const QUERIES = {
   rooms:
     'rooms?select=slug,name,categories,badge,capacity,capacity_label,bathroom,' +
@@ -35,7 +37,8 @@ export const QUERIES = {
     'reviews?select=name,date_label,rating,text' +
     '&published=is.true&room_id=is.null&order=sort_order.asc',
   blogPosts:
-    'blog_posts?select=slug,title,excerpt,category,author,published_on,read_time,image,featured,facts,body' +
+    'blog_posts?select=slug,title,excerpt,category,author,published_on,read_time,image,image_alt,' +
+    'meta_title,meta_description,featured,facts,body' +
     '&published=is.true&order=published_on.desc',
   faqs: 'faqs?select=question,answer&published=is.true&order=sort_order.asc',
   pages: 'page_content?select=page,data&order=page.asc',
@@ -83,7 +86,9 @@ export const shape: Record<ContentKey, (rows: Row[]) => unknown> = {
       about: row.about,
       inclusions: row.inclusions ?? [],
       amenities: row.amenities ?? [],
-      images: row.images ?? [],
+      // Either shape: the column is jsonb `[{src, alt}]` now, and `pictures`
+      // still reads a row that predates the conversion.
+      images: pictures(row.images),
       totalPhotos: row.total_photos,
       maxGuestsNote: row.max_guests_note,
       discountCouponCode: row.discount_coupon_code,
@@ -108,6 +113,18 @@ export const shape: Record<ContentKey, (rows: Row[]) => unknown> = {
       date: row.published_on,
       readTime: row.read_time,
       image: row.image,
+      // Left out when blank rather than published as '', so the site's
+      // `?? fallback` reaches the headline and the standfirst - an empty
+      // string would win over them and print nothing.
+      ...(typeof row.image_alt === 'string' && row.image_alt.trim()
+        ? { imageAlt: row.image_alt.trim() }
+        : {}),
+      ...(typeof row.meta_title === 'string' && row.meta_title.trim()
+        ? { metaTitle: row.meta_title.trim() }
+        : {}),
+      ...(typeof row.meta_description === 'string' && row.meta_description.trim()
+        ? { metaDescription: row.meta_description.trim() }
+        : {}),
       ...(row.featured ? { featured: true } : {}),
       ...(Array.isArray(row.facts) && row.facts.length ? { facts: row.facts } : {}),
       // An empty body is a post with no article page, and the site checks for

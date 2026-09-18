@@ -8,6 +8,7 @@ import { Photo } from '@/components/ui/Photo'
 import { Badge, Container, Section } from '@/components/ui/primitives'
 import { useReveal } from '@/lib/useReveal'
 import { cn, formatINR } from '@/lib/utils'
+import { altOf } from '@shared/media'
 
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
@@ -181,11 +182,11 @@ export function RoomsPreview() {
                 {visible.map((room, i) => (
                   <Photo
                     key={room.id}
-                    id={room.images[0]}
+                    id={room.images[0]?.src ?? ''}
                     width={1200}
                     widths={[700, 1000, 1400]}
                     sizes="(min-width: 1280px) 46rem, 42rem"
-                    alt={room.name}
+                    alt={altOf(room.images[0], room.name)}
                     loading="lazy"
                     decoding="async"
                     aria-hidden={i !== index}
@@ -407,11 +408,11 @@ function RoomPlate({ room, index }: { room: Room; index: number }) {
       className="group relative isolate flex h-[27rem] w-[78vw] max-w-[21rem] shrink-0 snap-start flex-col justify-end overflow-hidden rounded-xl2 border border-line shadow-warm"
     >
       <Photo
-        id={room.images[0]}
+        id={room.images[0]?.src ?? ''}
         width={800}
         widths={[420, 700, 900]}
         sizes="78vw"
-        alt={room.name}
+        alt={altOf(room.images[0], room.name)}
         loading="lazy"
         decoding="async"
         className="absolute inset-0 -z-10 size-full object-cover"

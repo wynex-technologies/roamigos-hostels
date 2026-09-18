@@ -46,6 +46,9 @@ const blank: Omit<BlogRow, 'id'> = {
   published_on: isoDate(),
   read_time: '6 min read',
   image: '',
+  image_alt: '',
+  meta_title: '',
+  meta_description: '',
   featured: false,
   facts: [],
   body: '',
@@ -56,6 +59,26 @@ const blank: Omit<BlogRow, 'id'> = {
 /** The site is served from the same domain in production and proxied to the
     same one in development, so a story's page is always one path away. */
 const siteUrl = (slug: string) => `${window.location.origin}/blog/${slug}`
+
+/**
+ * The hint under a meta field: what is being used, and how much of it survives.
+ *
+ * Google does not cut at a character count - it cuts at a pixel width, and the
+ * number moves. So this says "past about 60" rather than counting down to a
+ * limit that does not exist, and it never blocks: a description that runs long
+ * is still saved, it is just told that the tail may not be shown.
+ */
+function metaHint(value: string, about: number, fallback: string, fallbackName: string) {
+  const text = value.trim()
+  if (!text) {
+    return fallback.trim()
+      ? `Empty - the ${fallbackName} is used.`
+      : `Empty, and the ${fallbackName} is empty too, so nothing is set.`
+  }
+  return text.length > about
+    ? `${text.length} characters - past about ${about}, so the end may be cut off in a result.`
+    : `${text.length} characters.`
+}
 
 /** Roughly what the site will print if Read time is left empty. */
 const readingTime = (body: string) => {
@@ -245,6 +268,47 @@ export default function Blog() {
             </div>
           </Card>
 
+          {/* What a search result and a pasted link say.
+              Both are optional and both fall back to what the page already
+              prints - a post nobody fills these in for is not worse off than it
+              was. They exist because the two jobs are different: a headline is
+              written to be read once the reader is here, and a meta title is
+              written to make them click in a list of ten. */}
+          <Card className="space-y-4">
+            <div>
+              <h2 className="text-sm font-semibold text-heading">Search listing</h2>
+              <p className="mt-1 text-[0.8125rem] text-muted">
+                How this story reads in Google and when the link is pasted into WhatsApp. Leave
+                either empty to use the headline and the standfirst.
+              </p>
+            </div>
+
+            <Field
+              label="Meta title"
+              hint={metaHint(post.meta_title ?? '', 60, post.title, 'headline')}
+            >
+              <Text
+                value={post.meta_title ?? ''}
+                onChange={(e) => set('meta_title', e.target.value)}
+                maxLength={120}
+                placeholder={post.title || 'The headline, rewritten to be clicked'}
+              />
+            </Field>
+
+            <Field
+              label="Meta description"
+              hint={metaHint(post.meta_description ?? '', 155, post.excerpt, 'standfirst')}
+            >
+              <Area
+                rows={3}
+                value={post.meta_description ?? ''}
+                onChange={(e) => set('meta_description', e.target.value)}
+                maxLength={320}
+                placeholder={post.excerpt || 'One or two sentences on what the reader gets'}
+              />
+            </Field>
+          </Card>
+
           <Card className="space-y-4">
             <ImageField
               label="Image"
@@ -257,6 +321,18 @@ export default function Blog() {
               onRemoved={media.trackRemoval}
               aspect="aspect-16/9"
             />
+
+            <Field
+              label="Image alt text"
+              hint="The photograph in words, for somebody who cannot see it and for search. Leave empty if it is purely decorative - an empty alt is the correct answer there, not a failing."
+            >
+              <Text
+                value={post.image_alt ?? ''}
+                onChange={(e) => set('image_alt', e.target.value)}
+                maxLength={160}
+                placeholder="A ferry crossing the Brahmaputra at dusk"
+              />
+            </Field>
 
             <Field
               label="Facts"

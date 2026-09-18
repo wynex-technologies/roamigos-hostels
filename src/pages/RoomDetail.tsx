@@ -30,6 +30,7 @@ import { breadcrumbs, roomSchema } from '@/lib/structuredData'
 import { useMediaQuery } from '@/lib/useMediaQuery'
 import { useReveal } from '@/lib/useReveal'
 import { cn, formatINR } from '@/lib/utils'
+import { altOf } from '@shared/media'
 
 /** The jump links across the top of the page body. */
 const sections = [
@@ -176,7 +177,7 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
     `${room.name} - ${site.legalName}`,
     `${room.shortDescription} From ${formatINR(room.pricePerNight)} per night at ${site.legalName}.`,
     // A shared room link has to show that room, not the site's default photo.
-    { image: room.images[0] },
+    { image: room.images[0]?.src },
   )
 
   const [booking, setBooking] = useBookingState(room)
@@ -544,11 +545,11 @@ function RoomDetailView({ room }: { room: NonNullable<ReturnType<typeof getRoom>
                       className="group relative isolate flex h-72 flex-col justify-end overflow-hidden rounded-xl2 border border-line shadow-warm transition-[transform,box-shadow] duration-500 ease-[var(--ease-out-soft)] hover:-translate-y-1.5 hover:shadow-warm-lg"
                     >
                       <Photo
-                        id={item.images[0]}
+                        id={item.images[0]?.src ?? ''}
                         width={700}
                         widths={[400, 700, 900]}
                         sizes="(min-width: 640px) 22rem, 90vw"
-                        alt={item.name}
+                        alt={altOf(item.images[0], item.name)}
                         loading="lazy"
                         decoding="async"
                         className="absolute inset-0 -z-10 size-full object-cover transition-transform duration-[1100ms] ease-[var(--ease-out-soft)] group-hover:scale-[1.08]"

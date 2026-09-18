@@ -460,6 +460,9 @@ export function AboutPageForm({
                 value={shot.id}
                 onChange={(id) => setShot({ ...shot, id })}
                 dimensions="1400 x 1000"
+                alt={shot.alt ?? ''}
+                onAltChange={(next) => setShot({ ...shot, alt: next })}
+                altHint="Left empty, the caption below is used. Write one here when the caption says what is notable about the shot rather than what is in it."
                 {...image}
               />
               <Field label="Caption">
@@ -549,7 +552,7 @@ export function AboutPageForm({
           items={day.moments}
           onChange={(moments) => set('day', { ...day, moments })}
           title={(moment) => `${moment.time} - ${moment.title}`}
-          blank={() => ({ time: '', title: '', note: '', image: '' })}
+          blank={() => ({ time: '', title: '', note: '', image: '', imageAlt: '' })}
           addLabel="Add a moment"
           max={4}
         >
@@ -581,6 +584,8 @@ export function AboutPageForm({
                 onChange={(next) => setMoment({ ...moment, image: next })}
                 dimensions="900 x 675"
                 aspect="aspect-4/3"
+                alt={moment.imageAlt ?? ''}
+                onAltChange={(next) => setMoment({ ...moment, imageAlt: next })}
                 {...image}
               />
             </>
@@ -661,7 +666,7 @@ export function AboutPageForm({
           items={guests.frames}
           onChange={(frames) => set('guests', { ...guests, frames })}
           title={(frame) => frame.handle}
-          blank={() => ({ id: '', handle: '' })}
+          blank={() => ({ id: '', handle: '', alt: '' })}
           addLabel="Add a frame"
         >
           {(frame, setFrame) => (
@@ -672,6 +677,9 @@ export function AboutPageForm({
                 onChange={(id) => setFrame({ ...frame, id })}
                 dimensions="800 x 800"
                 aspect="aspect-square"
+                alt={frame.alt ?? ''}
+                onAltChange={(next) => setFrame({ ...frame, alt: next })}
+                altHint="A guest's own photograph. The handle printed on the frame is not a description of what is in it."
                 {...image}
               />
               <Field label="Handle" hint="Printed in the corner of the frame.">

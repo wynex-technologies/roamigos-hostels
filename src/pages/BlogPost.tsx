@@ -34,9 +34,15 @@ export default function BlogPost() {
   const post = getPost(slug)
 
   // Every hook above the guard, so the early return cannot change hook order.
+  //
+  // The desk's own meta title and description win when they are set, and the
+  // headline and standfirst are the fallback - which is what every post that
+  // predates those fields still uses. A meta title is taken as written, with no
+  // " - The Journal" appended: somebody who bothered to write one has already
+  // decided how the whole line should read.
   usePageMeta(
-    post ? `${post.title} - The Journal` : `Page not found - ${site.legalName}`,
-    post?.excerpt,
+    post ? (post.metaTitle ?? `${post.title} - The Journal`) : `Page not found - ${site.legalName}`,
+    post?.metaDescription ?? post?.excerpt,
     { image: post?.image, type: 'article' },
   )
 
@@ -109,12 +115,15 @@ export default function BlogPost() {
 
         {/* ------------------------------ the photo ------------------------ */}
         <div className="relative mt-10 aspect-16/10 overflow-hidden bg-surface-2 sm:aspect-21/9">
+          {/* Described when the desk has described it, decorative when they
+              have not - an empty alt is the right answer for a photograph that
+              only sets the mood, and a wrong sentence is worse than none. */}
           <Photo
             id={post.image}
             width={2000}
             widths={[760, 1200, 1800, 2400]}
             sizes="100vw"
-            alt=""
+            alt={post.imageAlt ?? ''}
             className="size-full object-cover"
           />
           {post.featured && (

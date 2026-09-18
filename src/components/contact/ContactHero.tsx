@@ -103,7 +103,9 @@ export function ContactHero() {
                 width={900}
                 widths={[560, 900, 1200]}
                 sizes="(min-width: 1024px) 32rem, 100vw"
-                alt="The Roamigos common room, just past reception"
+                // Was hardcoded here, which meant the picture could be changed
+                // in the panel and keep a description of the old one.
+                alt={hero.imageAlt ?? ''}
                 className="size-full object-cover"
               />
             </div>

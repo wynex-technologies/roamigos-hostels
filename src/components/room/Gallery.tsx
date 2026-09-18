@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Expand, X } from 'lucide-react'
 import { Photo } from '@/components/ui/Photo'
 import { Badge } from '@/components/ui/primitives'
 import { cn } from '@/lib/utils'
+import { altOf, type Picture } from '@shared/media'
 
 /**
  * The room's photographs, staged the way a hotel stages them: one cinematic
@@ -22,7 +23,7 @@ export function Gallery({
   topSlot,
   children,
 }: {
-  images: string[]
+  images: Picture[]
   name: string
   badge?: string
   totalPhotos: number
@@ -67,12 +68,17 @@ export function Gallery({
       <section className="group/stage relative isolate flex min-h-[29.5rem] flex-col justify-between gap-10 overflow-hidden pt-8 pb-12 sm:min-h-[35rem] sm:pt-10 lg:min-h-[40rem] lg:pb-16">
         {images.map((image, i) => (
           <Photo
-            key={image}
-            id={image}
+            key={image.src}
+            id={image.src}
             width={2000}
             widths={[900, 1400, 2000]}
             sizes="100vw"
-            alt={i === index ? `${name} - photo ${i + 1}` : ''}
+            // The desk's description when there is one. The fallback is still
+            // the counted one - "photo 3 of 6" says where you are in a gallery
+            // you are stepping through, which is the one place a position is
+            // genuinely the useful thing to say. Only the visible slide is
+            // described; the rest are `aria-hidden`.
+            alt={i === index ? altOf(image, `${name} - photo ${i + 1}`) : ''}
             aria-hidden={i !== index}
             className={cn(
               'absolute inset-0 -z-20 size-full object-cover',
@@ -112,7 +118,7 @@ export function Gallery({
             <div className="no-scrollbar -mx-5 flex min-w-0 flex-1 gap-3 overflow-x-auto px-5 sm:mx-0 sm:px-0">
               {images.map((image, i) => (
                 <button
-                  key={`${image}-${i}`}
+                  key={`${image.src}-${i}`}
                   type="button"
                   onClick={() => setIndex(i)}
                   aria-label={`Show photo ${i + 1}`}
@@ -124,8 +130,10 @@ export function Gallery({
                   )}
                 >
                   <Photo
-                    id={image}
+                    id={image.src}
                     width={300}
+                    // The button around it is already labelled "Show photo 3",
+                    // so a description here would be read out twice.
                     alt=""
                     loading="lazy"
                     decoding="async"
@@ -193,9 +201,9 @@ export function Gallery({
             onClick={() => setLightbox(false)}
           >
             <Photo
-              id={images[index]}
+              id={images[index]?.src ?? ''}
               width={1920}
-              alt={`${name} - photo ${index + 1}`}
+              alt={altOf(images[index], `${name} - photo ${index + 1}`)}
               className="max-h-full max-w-full animate-rise rounded-xl object-contain"
               onClick={(e) => e.stopPropagation()}
             />

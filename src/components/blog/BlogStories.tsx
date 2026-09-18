@@ -99,7 +99,11 @@ export function BlogStories() {
                       width={800}
                       widths={[420, 700, 1000]}
                       sizes="(min-width: 1024px) 24rem, (min-width: 640px) 45vw, 90vw"
-                      alt=""
+                      // Empty unless the desk described it. The card is a link
+                      // whose headline is already read out, so a photograph
+                      // nobody has described is decorative here rather than
+                      // unlabelled.
+                      alt={post.imageAlt ?? ''}
                       loading="lazy"
                       decoding="async"
                       className="size-full object-cover transition-transform duration-[900ms] ease-[var(--ease-out-soft)] group-hover:scale-105"

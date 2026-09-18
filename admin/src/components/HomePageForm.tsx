@@ -4,6 +4,7 @@ import type { useMediaCleanup } from '@/lib/media'
 import { ImageField } from './ImageField'
 import { HeadingFields, Repeater, SectionCard } from './PageFields'
 import { Area, Field, Select, Text, Toggle } from './ui'
+import { pictures } from '@shared/media'
 
 type Media = ReturnType<typeof useMediaCleanup>
 
@@ -132,6 +133,9 @@ export function HomePageForm({
               dimensions="2400 x 1400"
               note="Full-bleed behind the headline, cropped hard on phones."
               aspect="aspect-16/9"
+              alt={slide.imageAlt ?? ''}
+              onAltChange={(next) => setSlide({ ...slide, imageAlt: next })}
+              altHint="This one sits behind the headline, so leaving it empty is usually right - the words on top are what the page is saying."
               {...image}
             />
           )}
@@ -210,6 +214,9 @@ export function HomePageForm({
             dimensions="1600 x 500"
             note="Used from tablet up."
             aspect="aspect-[16/5]"
+            alt={offers.banner.alt}
+            onAltChange={(next) => setOffers({ banner: { ...offers.banner, alt: next } })}
+            altHint="The offer is painted into the artwork, so this is the only way somebody using a screen reader learns what it says. Write out the offer."
             {...image}
           />
 
@@ -218,7 +225,7 @@ export function HomePageForm({
             value={offers.banner.imageMobile ?? ''}
             onChange={(next) => setOffers({ banner: { ...offers.banner, imageMobile: next } })}
             dimensions="1200 x 900"
-            note="A 3:1 banner shrinks to unreadable on a phone, so give it its own crop whenever the artwork carries type. Left empty, the wide one is used."
+            note="A 3:1 banner shrinks to unreadable on a phone, so give it its own crop whenever the artwork carries type. Left empty, the wide one is used. It is the same banner, so it shares the description above."
             aspect="aspect-4/3"
             {...image}
           />
@@ -313,7 +320,7 @@ export function HomePageForm({
           items={destinations.cards}
           onChange={(cards) => set('destinations', { ...destinations, cards })}
           title={(card) => card.title}
-          blank={() => ({ key: `card-${Date.now()}`, title: '', tag: '', note: '', image: '' })}
+          blank={() => ({ key: `card-${Date.now()}`, title: '', tag: '', note: '', image: '', imageAlt: '' })}
           addLabel="Add a place"
         >
           {(card, setCard) => (
@@ -339,6 +346,9 @@ export function HomePageForm({
                 dimensions="900 x 1200"
                 note="Cropped tall in the deck."
                 aspect="aspect-3/4"
+                alt={card.imageAlt ?? ''}
+                onAltChange={(next) => setCard({ ...card, imageAlt: next })}
+                altHint="Left empty, the card's title is used - which is usually close enough, so only write one when the picture shows something the title does not."
                 {...image}
               />
             </>
@@ -396,6 +406,9 @@ export function HomePageForm({
                 onChange={(next) => setCard({ ...card, image: next })}
                 dimensions="900 x 1200"
                 aspect="aspect-3/4"
+                alt={card.imageAlt ?? ''}
+                onAltChange={(next) => setCard({ ...card, imageAlt: next })}
+                altHint="Left empty, the card's title is used."
                 {...image}
               />
             </>
@@ -428,19 +441,23 @@ export function HomePageForm({
         <Repeater
           label="Photographs"
           hint="Three plates: the first takes the tall half, the other two stack beside it. The layout is built for exactly three."
-          items={stay.images}
+          // Normalised on read: these were plain ids before they could be
+          // described, so a document saved back then still holds strings.
+          items={pictures(stay.images)}
           onChange={(images) => set('stay', { ...stay, images })}
           title={(_, index) => (index === 0 ? 'The large plate' : `Small plate ${index}`)}
-          blank={() => ''}
+          blank={() => ({ src: '', alt: '' })}
           addLabel="Add a photograph"
           max={3}
         >
-          {(src, setSrc) => (
+          {(plate, setPlate) => (
             <ImageField
               label="Photograph"
-              value={src}
-              onChange={setSrc}
+              value={plate.src}
+              onChange={(next) => setPlate({ ...plate, src: next })}
               dimensions="1200 x 900"
+              alt={plate.alt ?? ''}
+              onAltChange={(next) => setPlate({ ...plate, alt: next })}
               {...image}
             />
           )}
@@ -541,7 +558,7 @@ export function HomePageForm({
           items={experiences.items}
           onChange={(items) => set('experiences', { ...experiences, items })}
           title={(item) => item.title}
-          blank={() => ({ title: '', note: '', image: '', icon: 'sparkles' })}
+          blank={() => ({ title: '', note: '', image: '', imageAlt: '', icon: 'sparkles' })}
           addLabel="Add an experience"
         >
           {(item, setItem) => (
@@ -567,6 +584,8 @@ export function HomePageForm({
                 value={item.image}
                 onChange={(next) => setItem({ ...item, image: next })}
                 dimensions="1200 x 800"
+                alt={item.imageAlt ?? ''}
+                onAltChange={(next) => setItem({ ...item, imageAlt: next })}
                 {...image}
               />
             </>

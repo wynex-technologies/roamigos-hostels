@@ -92,7 +92,10 @@ export function GalleryWall() {
                   width={800}
                   widths={[400, 640, 900, 1300]}
                   sizes="(min-width: 1024px) 22rem, (min-width: 640px) 32vw, 46vw"
-                  alt={shot.caption}
+                  // The caption is the fallback, not the answer: it is printed
+                  // beside the picture and says what is notable about it, which
+                  // is rarely the sentence that describes what is in it.
+                  alt={shot.alt ?? shot.caption}
                   loading="lazy"
                   decoding="async"
                   className="size-full object-cover transition-transform duration-[900ms] ease-[var(--ease-out-soft)] group-hover:scale-107"

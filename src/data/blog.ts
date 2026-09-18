@@ -64,6 +64,19 @@ export interface BlogPost {
   date: string
   readTime: string
   image: string
+  /**
+   * The post image described in words. Absent means decorative, and the image
+   * is given an empty `alt` - which is the right answer for a photograph that
+   * only sets a mood, and the wrong one for a photograph that carries meaning.
+   */
+  imageAlt?: string
+  /**
+   * What search results and share cards say, when the desk wants them to differ
+   * from the page. A headline is written to be read; a meta title is written to
+   * be clicked. Absent falls back to the headline and the standfirst.
+   */
+  metaTitle?: string
+  metaDescription?: string
   /** Pulled out into the lead slot at the top of the page. */
   featured?: boolean
   /** Three hard facts printed under the lead story. */

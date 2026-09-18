@@ -76,7 +76,7 @@ export function GuestWall() {
                 width={420}
                 widths={[280, 420, 620]}
                 sizes="13rem"
-                alt=""
+                alt={frame.alt ?? ''}
                 loading="lazy"
                 decoding="async"
                 className="aspect-square w-full object-cover transition-transform duration-700 ease-[var(--ease-out-soft)] group-hover:scale-108"

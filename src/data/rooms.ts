@@ -12,6 +12,7 @@ import {
 // Relative, not `@shared`: `vite.config.ts` imports this module for the
 // sitemap, and a config file is loaded before its own aliases exist.
 import { toLabel } from '../../shared/amenity-icons'
+import { pictures, type Picture, type PictureLike } from '../../shared/media'
 import { content } from './generated'
 
 /**
@@ -55,8 +56,12 @@ export interface Room {
   about: string
   inclusions: string[]
   amenities: AmenityKey[]
-  /** At least 5 - the detail gallery shows one main image plus a 2x2 thumbnail block. */
-  images: string[]
+  /**
+   * At least 5 - the detail gallery shows one main image plus a 2x2 thumbnail
+   * block. Each carries its own description; an entry with no `alt` renders
+   * decoratively, which is what every room did before the desk could write one.
+   */
+  images: Picture[]
   totalPhotos: number
   maxGuestsNote: string
   discountCouponCode?: string | null
@@ -107,7 +112,16 @@ export const hostelAmenities = [
   { label: 'Rooftop Café', icon: Coffee },
 ]
 
-const shippedRooms: Room[] = [
+/**
+ * The shipped list, with the galleries still written as plain ids.
+ *
+ * They are normalised into `Picture`s on export below rather than spelled out
+ * as `{ src, alt }` here. Writing an `alt` for each would mean inventing forty
+ * descriptions of photographs nobody in this file has looked at, and an
+ * invented description is worse than none - it is read out with confidence and
+ * is wrong. Empty is honest, and the desk can write the real ones in the panel.
+ */
+const shippedRooms: (Omit<Room, 'images'> & { images: PictureLike[] })[] = [
   {
     id: 1,
     slug: '8-bed-mixed-dorm',
@@ -402,7 +416,8 @@ const shippedRooms: Room[] = [
  * import either way and nothing downstream - the listing, the filters, the
  * detail page, the sitemap - has to know the difference.
  */
-export const rooms: Room[] = content.rooms ?? shippedRooms
+export const rooms: Room[] = (content.rooms ??
+  shippedRooms.map((room) => ({ ...room, images: pictures(room.images) }))) as Room[]
 
 const shippedReviews: Review[] = [
   {

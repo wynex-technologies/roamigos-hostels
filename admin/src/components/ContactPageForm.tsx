@@ -83,6 +83,8 @@ export function ContactPageForm({
           value={hero.image}
           onChange={(img) => set('hero', { ...hero, image: img })}
           dimensions="900 x 600"
+          alt={hero.imageAlt ?? ''}
+          onAltChange={(next) => set('hero', { ...hero, imageAlt: next })}
           {...image}
         />
       </SectionCard>

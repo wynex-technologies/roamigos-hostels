@@ -5,6 +5,7 @@ import { ImageListField } from '@/components/ImageListField'
 import { KeyChips } from '@/components/KeyChips'
 import { COLUMNS, fromList, inr, toList, type RoomRow } from '@/lib/db'
 import { useMediaCleanup } from '@/lib/media'
+import { pictures } from '@shared/media'
 import {
   Area,
   Badge,
@@ -107,7 +108,14 @@ export default function Rooms() {
       .single()
 
     if (failure) setError(failure.message)
-    else setEditing(data as unknown as RoomRow)
+    else {
+      // Normalised on the way in, so the form works against a row whether the
+      // gallery column has been converted to jsonb yet or is still a text[] of
+      // bare ids. Without this the panel and the migration have to land in one
+      // order, and the wrong order is a rooms screen with no photographs in it.
+      const row = data as unknown as RoomRow
+      setEditing({ ...row, images: pictures(row.images) })
+    }
   }
 
   async function save() {
@@ -140,7 +148,7 @@ export default function Rooms() {
     if (failure) setError(failure.message)
     else {
       // The row is gone, so the whole gallery has nothing pointing at it.
-      await media.purge(images)
+      await media.purge(images.map((item) => item.src))
       setEditing(null)
       load()
     }

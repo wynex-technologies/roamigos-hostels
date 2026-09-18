@@ -63,7 +63,7 @@ export function GalleryDay() {
                       width={640}
                       widths={[380, 640, 900]}
                       sizes="(min-width: 1024px) 18rem, (min-width: 640px) 45vw, 90vw"
-                      alt=""
+                      alt={moment.imageAlt ?? ''}
                       loading="lazy"
                       decoding="async"
                       className="aspect-4/3 w-full object-cover transition-transform duration-[900ms] ease-[var(--ease-out-soft)] group-hover:scale-105"

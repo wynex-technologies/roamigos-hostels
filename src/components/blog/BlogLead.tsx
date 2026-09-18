@@ -50,7 +50,7 @@ export function BlogLead() {
                 width={1200}
                 widths={[640, 900, 1400]}
                 sizes="(min-width: 1024px) 46rem, 100vw"
-                alt=""
+                alt={post.imageAlt ?? ''}
                 className="absolute inset-0 size-full object-cover transition-transform duration-[1200ms] ease-[var(--ease-out-soft)] group-hover:scale-105"
               />
               <span

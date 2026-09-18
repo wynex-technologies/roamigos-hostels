@@ -11,6 +11,8 @@
  * single record is actually opened for editing.
  */
 
+import type { Picture } from '@shared/media'
+
 export type Status = 'new' | 'confirmed' | 'cancelled' | 'stayed'
 export type EnquiryStatus = 'new' | 'answered' | 'closed'
 
@@ -32,7 +34,8 @@ export interface RoomRow {
   about: string
   inclusions: string[]
   amenities: string[]
-  images: string[]
+  /** `[{ src, alt }]`, in order - the first is the cover. jsonb, not text[]. */
+  images: Picture[]
   total_photos: number
   max_guests_note: string
   discount_coupon_code: string | null
@@ -51,6 +54,9 @@ export interface BlogRow {
   published_on: string
   read_time: string
   image: string
+  image_alt: string | null
+  meta_title: string | null
+  meta_description: string | null
   featured: boolean
   facts: { label: string; value: string }[]
   /** The article, in the site's markdown subset. Empty means card only. */
@@ -222,8 +228,8 @@ export const COLUMNS = {
   // has a page is answered when the row is opened, not on every list load.
   blogList: 'id,slug,title,category,author,published_on,featured,published,sort_order',
   blog:
-    'id,slug,title,excerpt,category,author,published_on,read_time,image,featured,facts,body,' +
-    'sort_order,published',
+    'id,slug,title,excerpt,category,author,published_on,read_time,image,image_alt,' +
+    'meta_title,meta_description,featured,facts,body,sort_order,published',
   offer:
     'id,name,active,eyebrow,headline,headline_accent,badge_value,badge_label,description,code,' +
     'discount_percent,image,image_alt,perks,cta_label,cta_href,note,expires_on,delay_ms',

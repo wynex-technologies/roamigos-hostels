@@ -8,6 +8,7 @@ import { Container } from '@/components/ui/primitives'
 import { Icon } from '@/components/ui/Icon'
 import { enquiryUrl } from '@/lib/whatsapp'
 import { useReveal } from '@/lib/useReveal'
+import { altOf, pictures } from '@shared/media'
 
 /** Inline `--lag`, so the reveal order stays readable at the call site. */
 const lag = (seconds: number) => ({ '--lag': `${seconds}s` }) as React.CSSProperties
@@ -21,7 +22,9 @@ const section = homePage.stay
  * - as chips, not a bare icon row - on the right.
  */
 export function MoreThanARoom() {
-  const [lead, ...rest] = section.images
+  // Normalised on read: this list was plain ids before the desk could describe
+  // them, and a document saved back then still holds strings.
+  const [lead, ...rest] = pictures(section.images)
   const block = useReveal<HTMLDivElement>(0.15)
 
   return (
@@ -34,11 +37,11 @@ export function MoreThanARoom() {
               <div className="grid grid-cols-5 gap-3">
                 <div className="col-span-3 overflow-hidden rounded-xl2 bg-surface-2">
                   <Photo
-                    id={lead}
+                    id={lead?.src ?? ''}
                     width={720}
                     widths={[360, 560, 720]}
                     sizes="(min-width: 1024px) 20rem, 55vw"
-                    alt=""
+                    alt={altOf(lead)}
                     loading="lazy"
                     decoding="async"
                     className="aspect-4/5 size-full object-cover"
@@ -46,14 +49,14 @@ export function MoreThanARoom() {
                 </div>
 
                 <div className="col-span-2 flex flex-col gap-3">
-                  {rest.map((id) => (
-                    <div key={id} className="flex-1 overflow-hidden rounded-xl2 bg-surface-2">
+                  {rest.map((plate) => (
+                    <div key={plate.src} className="flex-1 overflow-hidden rounded-xl2 bg-surface-2">
                       <Photo
-                        id={id}
+                        id={plate.src}
                         width={480}
                         widths={[280, 480]}
                         sizes="(min-width: 1024px) 13rem, 36vw"
-                        alt=""
+                        alt={altOf(plate)}
                         loading="lazy"
                         decoding="async"
                         className="size-full object-cover"

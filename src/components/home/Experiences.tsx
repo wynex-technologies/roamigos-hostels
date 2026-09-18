@@ -90,7 +90,7 @@ export function Experiences() {
                         ? '(min-width: 1024px) 40rem, (min-width: 640px) 45vw, 90vw'
                         : '(min-width: 1024px) 20rem, (min-width: 640px) 45vw, 90vw'
                     }
-                    alt=""
+                    alt={item.imageAlt ?? ''}
                     loading="lazy"
                     decoding="async"
                     className="absolute inset-0 -z-10 size-full object-cover transition-transform duration-[1100ms] ease-[var(--ease-out-soft)] group-hover:scale-[1.08]"
