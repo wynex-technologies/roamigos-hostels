@@ -115,7 +115,7 @@ export function SocialMenu({ className }: { className?: string }) {
         aria-controls="social-menu"
         aria-label={open ? 'Close social links' : 'Follow us and say hello'}
         className={cn(
-          'grid size-10 place-items-center rounded-full border border-line bg-surface text-heading',
+          'grid size-10 place-items-center rounded-full border border-primary bg-surface text-heading',
           'transition-colors hover:border-primary hover:text-primary',
           open && 'border-primary text-primary',
         )}

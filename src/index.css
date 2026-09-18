@@ -91,9 +91,18 @@
   --accent: #d9a328;
   --accent-soft: #d9a328;
 
-  /* The bar carries the ground the logo artwork is drawn on, so the flamingo
-     sits in the header with no square edge showing around the mark. */
-  --header-ground: #e8ddcb;
+  /* White in light, and it is the one light surface the brand sheet does not
+     govern - the same exception the page canvas has always been. The mark
+     carries no background rectangle of its own (no `<rect>` in the artwork), so
+     it sits on this cleanly and there is no square edge to worry about; what
+     does change is that the bar no longer separates itself from the page by
+     colour, so the hairline under it and the stroke on its controls are what
+     hold it apart. Dark is unchanged: charcoal, the ground the dark cut of the
+     mark is drawn for.
+
+     `index.html` carries the first-paint copy of both values for the phone's
+     URL strip - keep the two in step. */
+  --header-ground: #ffffff;
 
   --surface-hi: #ffffff;
   --surface-lo: #ffffff;

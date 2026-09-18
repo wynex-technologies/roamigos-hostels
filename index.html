@@ -11,7 +11,7 @@
          top of the device. `--header-ground` in src/index.css is the authority;
          the script below corrects this for dark before the first paint, and
          `ThemeProvider` re-reads it straight off the stylesheet after that. -->
-    <meta name="theme-color" content="#e8ddcb" />
+    <meta name="theme-color" content="#ffffff" />
     <title>Roamigos Hostel - Stay. Explore. Connect.</title>
 
     <!-- Share card, canonical link and the site-wide schema. Generated from
@@ -43,7 +43,7 @@
           // `--header-ground` the way ThemeProvider reads them. They are the
           // first frame only - keep them equal to the two values in index.css.
           var bar = document.querySelector('meta[name="theme-color"]')
-          if (bar) bar.setAttribute('content', dark ? '#262626' : '#e8ddcb')
+          if (bar) bar.setAttribute('content', dark ? '#262626' : '#ffffff')
         } catch (e) {}
       })()
     </script>

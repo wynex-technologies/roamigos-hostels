@@ -17,8 +17,8 @@ function ThemeToggle({ className }: { className?: string }) {
       onClick={toggle}
       aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
       className={cn(
-        'grid size-10 place-items-center rounded-full border border-line bg-surface text-heading',
-        'transition-colors hover:border-primary hover:text-primary',
+        'grid size-10 place-items-center rounded-full border border-primary bg-surface text-heading',
+        'transition-colors hover:border-primary-hover hover:text-primary',
         className,
       )}
     >
@@ -101,7 +101,13 @@ export function Header() {
               href={`tel:${site.phoneDisplay.replace(/\s/g, '')}`}
               variant="secondary"
               size="sm"
-              className="hidden xl:inline-flex"
+              // Maroon stroke rather than the hairline the variant ships with.
+              // The bar is white now, and a sand hairline on white is not a
+              // border, it is a rumour - so the outlined controls in here carry
+              // the brand's own line instead. Scoped to the header on purpose:
+              // `secondary` is used on grounds all over the site that the
+              // hairline still suits.
+              className="hidden border-primary xl:inline-flex"
             >
               <Phone className="size-4" />
               {site.phoneDisplay}
@@ -119,7 +125,7 @@ export function Header() {
               type="button"
               onClick={() => setOpen(true)}
               aria-label="Open menu"
-              className="grid size-10 place-items-center rounded-full border border-line bg-surface text-heading lg:hidden"
+              className="grid size-10 place-items-center rounded-full border border-primary bg-surface text-heading lg:hidden"
             >
               <Menu className="size-[1.15rem]" />
             </button>
