@@ -5,7 +5,11 @@ const KEY = 'roamigos-admin-theme'
 const Ctx = createContext<{ theme: Theme; toggle: () => void } | null>(null)
 
 /** The desk works in here all day, so it gets the same light/dark choice the
-    site offers, remembered on this machine. */
+    site offers, remembered on this machine.
+
+    Light is the default here for the same reason it is on the site: the
+    machine's own setting does not decide what the panel opens as. Dark is a
+    tap away and it sticks once asked for. */
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     try {
@@ -14,20 +18,27 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } catch {
       // Private mode. The default is fine for this session.
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    return 'light'
   })
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
     document.documentElement.style.colorScheme = theme
-    try {
-      localStorage.setItem(KEY, theme)
-    } catch {
-      // As above.
-    }
   }, [theme])
 
-  const toggle = useCallback(() => setTheme((t) => (t === 'dark' ? 'light' : 'dark')), [])
+  // Only a toggle writes to storage, never the first render - otherwise the
+  // default is persisted on the first visit and stops being a default at all.
+  const toggle = useCallback(() => {
+    setTheme((t) => {
+      const next = t === 'dark' ? 'light' : 'dark'
+      try {
+        localStorage.setItem(KEY, next)
+      } catch {
+        // As above.
+      }
+      return next
+    })
+  }, [])
 
   return <Ctx.Provider value={{ theme, toggle }}>{children}</Ctx.Provider>
 }
