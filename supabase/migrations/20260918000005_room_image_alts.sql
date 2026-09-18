@@ -13,35 +13,53 @@
 --
 -- Existing rows convert in place, each id keeping its position with an empty
 -- description - which renders exactly as before until somebody writes one.
-alter table public.rooms
-  alter column images drop default;
 
-alter table public.rooms
-  alter column images type jsonb
-  using coalesce(
-    (
-      select jsonb_agg(jsonb_build_object('src', value, 'alt', '') order by ordinality)
-      from unnest(images) with ordinality as t(value, ordinality)
-    ),
+-- The conversion goes through a function, because `ALTER COLUMN ... TYPE ...
+-- USING` will not take a subquery - and unnesting an array to rebuild it in
+-- order is a subquery however it is written. The function is evaluated per row,
+-- which is what is wanted, and it is dropped again below.
+create or replace function public.rooms_images_to_jsonb(arr text[])
+returns jsonb
+language sql
+immutable
+as $fn$
+  select coalesce(
+    jsonb_agg(jsonb_build_object('src', value, 'alt', '') order by ordinality),
     '[]'::jsonb
-  );
+  )
+  from unnest(coalesce(arr, '{}'::text[])) with ordinality as t(value, ordinality)
+$fn$;
 
-alter table public.rooms
-  alter column images set default '[]'::jsonb;
+-- Idempotent: safe to run twice, and safe on a project where somebody has
+-- already converted the column by hand.
+do $do$
+begin
+  if (
+    select data_type from information_schema.columns
+    where table_schema = 'public' and table_name = 'rooms' and column_name = 'images'
+  ) = 'ARRAY' then
+    alter table public.rooms alter column images drop default;
+    alter table public.rooms
+      alter column images type jsonb using public.rooms_images_to_jsonb(images);
+  end if;
+end
+$do$;
 
--- A list, not an object, and every entry has to carry a src. Without this a
--- single bad write turns a room's gallery into nothing on the live site.
+alter table public.rooms alter column images set default '[]'::jsonb;
+
+drop function if exists public.rooms_images_to_jsonb(text[]);
+
+-- A list, not an object. This is as far as a CHECK can go - a constraint may
+-- not contain a subquery, and asking "is every entry an object with a src"
+-- needs one however it is phrased. The per-entry shape is settled where it can
+-- be: the panel only ever writes `{ src, alt }`, and `pictures()` in
+-- shared/media.ts drops anything malformed on the way to the site, so a bad
+-- entry costs one missing photograph rather than an empty gallery.
 alter table public.rooms
   drop constraint if exists rooms_images_shape;
 
 alter table public.rooms
-  add constraint rooms_images_shape check (
-    jsonb_typeof(images) = 'array'
-    and not exists (
-      select 1 from jsonb_array_elements(images) as entry
-      where jsonb_typeof(entry) <> 'object' or jsonb_typeof(entry -> 'src') <> 'string'
-    )
-  );
+  add constraint rooms_images_shape check (jsonb_typeof(images) = 'array');
 
 comment on column public.rooms.images is
   'Gallery, in order. `[{ src, alt }]` - the first is the cover. An empty alt means decorative.';

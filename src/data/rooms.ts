@@ -416,8 +416,18 @@ const shippedRooms: (Omit<Room, 'images'> & { images: PictureLike[] })[] = [
  * import either way and nothing downstream - the listing, the filters, the
  * detail page, the sitemap - has to know the difference.
  */
-export const rooms: Room[] = (content.rooms ??
-  shippedRooms.map((room) => ({ ...room, images: pictures(room.images) }))) as Room[]
+export const rooms: Room[] = ((content.rooms ?? shippedRooms) as Room[]).map((room) => ({
+  ...room,
+  // Normalised whichever copy won, not just the shipped one.
+  //
+  // The published `content.json` on the server was written before galleries
+  // carried descriptions, so it still holds a list of bare ids - and it keeps
+  // holding them until somebody presses Publish. Normalising only the fallback
+  // meant the live site took the file as it found it and every `images[0].src`
+  // came back undefined: no photograph on any room, on the one path that
+  // actually serves visitors.
+  images: pictures(room.images as unknown as Parameters<typeof pictures>[0]),
+}))
 
 const shippedReviews: Review[] = [
   {
