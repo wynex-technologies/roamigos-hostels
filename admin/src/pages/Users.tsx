@@ -364,11 +364,23 @@ export default function Users() {
 
       <section className="card-raised p-6 sm:p-8">
         <h2 className="text-xl font-semibold text-heading mb-6">Invite Member</h2>
-        <form onSubmit={handleCreateUser} className="max-w-xl space-y-6">
+        {/* `autoComplete` on all three of these, because without it the browser
+            reads an email input followed by a password input inside a form as a
+            sign-in form - and fills it with the credentials of whoever is
+            signed in, with the saved-passwords dropdown parked on top. The
+            fields look locked, and a submit that got through would try to
+            create an account with the admin's own address.
+
+            `new-password` is the documented way to say "this is a credential
+            being created, not one being recalled", which is what Profile.tsx
+            already does for the same reason. */}
+        <form onSubmit={handleCreateUser} className="max-w-xl space-y-6" autoComplete="off">
           
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Full Name">
               <Text 
+                name="member-name"
+                autoComplete="off"
                 value={newUserFullName} 
                 onChange={e => setNewUserFullName(e.target.value)} 
                 required 
@@ -378,10 +390,15 @@ export default function Users() {
             <Field label="Email Address">
               <Text 
                 type="email" 
+                // Not `email`: the browser matches on the name as well as the
+                // type, so a field called `email` is filled whatever the
+                // autocomplete attribute says.
+                name="member-email"
+                autoComplete="off"
                 value={newUserEmail} 
                 onChange={e => setNewUserEmail(e.target.value)} 
                 required 
-                placeholder="rahul@roamigos.com" 
+                placeholder="rahul@roamigoshostel.com" 
               />
             </Field>
           </div>
@@ -390,6 +407,8 @@ export default function Users() {
             <Field label="Temporary Password" hint="They can change this after signing in.">
               <Text 
                 type="password" 
+                name="member-password"
+                autoComplete="new-password"
                 value={newUserPassword} 
                 onChange={e => setNewUserPassword(e.target.value)} 
                 required 
@@ -401,6 +420,8 @@ export default function Users() {
               hint="Anything you like - front desk, housekeeping. Only `owner` grants full access."
             >
               <Text
+                name="member-role"
+                autoComplete="off"
                 value={newUserRole}
                 onChange={e => setNewUserRole(e.target.value)}
                 required
