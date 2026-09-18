@@ -382,9 +382,36 @@ export default function Bookings() {
     }
   }
 
+  /**
+   * The desk note, saved on blur.
+   *
+   * Two things this has to get right, neither of which it did.
+   *
+   * It has to say when it fails. A note is typed once and clicked away from,
+   * and nobody re-opens the row to check it stuck - so a write that quietly
+   * did not land is a note the desk believes it left. It is reported the same
+   * way a status change is, and the list is reloaded so what is on screen is
+   * what is actually stored.
+   *
+   * And it has to not write when nothing changed. Blur fires every time the
+   * desk clicks away from the box, opened to read and closed again included,
+   * which was one update per glance.
+   */
   async function setNote(id: string, admin_note: string) {
+    const before = rows.find((row) => row.id === id)?.admin_note ?? ''
+    if (admin_note === before) return
+
     setRows((current) => current.map((row) => (row.id === id ? { ...row, admin_note } : row)))
-    await supabase.from('bookings').update({ admin_note }).eq('id', id)
+
+    const { error: failure } = await supabase
+      .from('bookings')
+      .update({ admin_note })
+      .eq('id', id)
+
+    if (failure) {
+      setError(`That note was not saved: ${failure.message}`)
+      load()
+    }
   }
 
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE))
