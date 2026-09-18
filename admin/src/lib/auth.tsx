@@ -6,7 +6,14 @@ interface Admin {
   id: string
   email: string
   fullName: string | null
-  role: 'owner' | 'editor'
+  /**
+   * The person's designation, free text. `'owner'` is the one value that
+   * grants anything - full access and the Users screen. Every other value is a
+   * label, and what that person sees comes from `tabs`, so a job title nobody
+   * has taught the panel about is the locked-down case rather than the open
+   * one.
+   */
+  role: string
   tabs: string[]
 }
 
@@ -83,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 id: data.id,
                 email: data.email,
                 fullName: data.full_name,
-                role: data.role as Admin['role'],
+                role: data.role,
                 tabs: data.tabs || [],
               }
             : null,

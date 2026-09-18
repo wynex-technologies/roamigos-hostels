@@ -63,7 +63,9 @@ export default function Profile() {
   const rows = [
     { label: 'Email', value: admin?.email ?? session?.user?.email ?? 'Unknown' },
     { label: 'Name', value: admin?.fullName || 'Not set' },
-    { label: 'Role', value: admin?.role === 'owner' ? 'Owner' : 'Editor' },
+    // Printed as it is stored, because it is free text now - a designation the
+    // owner typed, not one of two known words to be title-cased.
+    { label: 'Role', value: admin?.role ?? '-' },
   ]
 
   return (

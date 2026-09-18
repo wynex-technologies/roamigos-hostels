@@ -27,6 +27,9 @@ import {
 } from 'lucide-react'
 import { PAGE_SETTINGS_LOCKED } from './flags'
 
+/** The one designation that means something rather than describing somebody. */
+export const OWNER = 'owner'
+
 export type Watch = 'booking' | 'enquiry'
 
 export interface Tab {
@@ -64,14 +67,15 @@ export const MANAGED_TABS = TABS.filter((tab) => !tab.ownerOnly && !tab.always)
 
 /** Who a visibility question is being asked about. `admin` may still be loading. */
 interface Grantee {
-  role: 'owner' | 'editor'
+  /** Free text. Only `'owner'` grants anything - see `auth.tsx`. */
+  role: string
   tabs?: string[]
 }
 
-/** An owner sees everything; an editor sees what they have been granted. */
+/** An owner sees everything; everybody else sees what they have been granted. */
 export function canSee(admin: Grantee | null | undefined, label: string): boolean {
   if (!admin) return false
-  if (admin.role === 'owner') return true
+  if (admin.role === OWNER) return true
   return Boolean(admin.tabs?.includes(label))
 }
 

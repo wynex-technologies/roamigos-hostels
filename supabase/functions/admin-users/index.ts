@@ -24,6 +24,39 @@ const supabase = createClient(
   { auth: { persistSession: false } },
 )
 
+/** The one role that means something. Everything else is a label. */
+const OWNER = 'owner'
+
+/**
+ * A typed designation, or null if it is not one.
+ *
+ * Trimmed and capped to what the column accepts. 'Owner', 'OWNER' and 'owner'
+ * are the same word to a person typing it, so the reserved one is matched
+ * case-insensitively and stored in the spelling the rest of the code compares
+ * against - otherwise 'Owner' would look like a promotion and grant nothing.
+ */
+function cleanRole(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+  const trimmed = value.trim().slice(0, 40)
+  if (!trimmed) return null
+  return trimmed.toLowerCase() === OWNER ? OWNER : trimmed
+}
+
+/**
+ * Refuses a change that would leave the project with no owner.
+ *
+ * Only an owner can reach this function at all, so the last one demoting
+ * themselves - or being demoted - would lock the Users screen away from
+ * everybody, and getting it back means the service_role key and a SQL editor.
+ */
+async function wouldStrandTheProject(id: string, nextRole: string) {
+  if (nextRole === OWNER) return false
+
+  const { data } = await supabase.from('admin_users').select('id').eq('role', OWNER)
+  const owners = data ?? []
+  return owners.length <= 1 && owners.some((row) => row.id === id)
+}
+
 Deno.serve(async (request) => {
   const cors = preflight(request)
   if (cors) return cors
@@ -60,10 +93,13 @@ Deno.serve(async (request) => {
   }
 
   if (request.method === 'POST') {
-    const { email, password, fullName, tabs } = body
+    const { email, password, fullName, tabs, role } = body
     if (!email || !password) {
       return text(request, 'Email and password required', 400)
     }
+
+    // Whatever the owner typed, or 'editor' when they left it blank.
+    const newRole = cleanRole(role) ?? 'editor'
 
     // 1. Create auth user
     const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
@@ -83,7 +119,7 @@ Deno.serve(async (request) => {
         id: newUser.user.id,
         email,
         full_name: fullName || null,
-        role: 'editor',
+        role: newRole,
         tabs: tabs || []
       })
 
@@ -111,8 +147,31 @@ Deno.serve(async (request) => {
   }
 
   if (request.method === 'PATCH') {
-    const { id, password, tabs } = body
+    const { id, password, tabs, role } = body
     if (!id) return text(request, 'User ID required', 400)
+
+    // The designation.
+    //
+    // Free text, and printed as-is next to the person's name. The one value
+    // that does anything is 'owner'; the rest are labels, so a typo costs a
+    // wrong word on screen rather than a wrong level of access.
+    if (role !== undefined) {
+      const nextRole = cleanRole(role)
+      if (!nextRole) return text(request, 'A designation cannot be empty', 400)
+
+      if (await wouldStrandTheProject(id, nextRole)) {
+        return text(
+          request,
+          'That is the only owner on this project. Make somebody else an owner first.',
+          400,
+        )
+      }
+
+      const { error } = await supabase.from('admin_users').update({ role: nextRole }).eq('id', id)
+      if (error) return text(request, error.message, 400)
+
+      return json(request, { success: true, role: nextRole })
+    }
 
     // Which tabs a member can see.
     //
@@ -140,7 +199,7 @@ Deno.serve(async (request) => {
       return json(request, { success: true, tabs: clean })
     }
 
-    if (!password) return text(request, 'A password or a tab list is required', 400)
+    if (!password) return text(request, 'A password, a tab list or a designation is required', 400)
 
     const { error } = await supabase.auth.admin.updateUserById(id, { password })
     if (error) return text(request, error.message, 400)
